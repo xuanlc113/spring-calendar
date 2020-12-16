@@ -1,16 +1,12 @@
-import './App.css';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from "@auth0/auth0-react";
+import Login from "./login/Login";
+import Home from "./home/Home";
+import "./App.css";
 
 function App() {
-  const { user, isAuthenticated, isLoading, loginWithRedirect, logout } = useAuth0();
+  const { user, isAuthenticated } = useAuth0();
   console.log(user);
-  return (
-    <div className="App">
-      {isAuthenticated ? <button onClick={() => logout({ returnTo: window.location.origin })}>
-        Log Out
-    </button> : <button onClick={() => loginWithRedirect()}>Log In</button>}
-    </div>
-  );
+  return <div className="App">{!isAuthenticated ? <Home /> : <Login />}</div>;
 }
 
 export default App;

@@ -1,0 +1,11 @@
+.sidebar {
+    padding: 1rem;
+}
+
+.date-selector {
+    background-color: rgb(210, 235, 255);
+    box-shadow: 2rem;
+    padding: 1rem;
+    border-radius: 5%;
+}
+

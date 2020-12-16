@@ -1,0 +1,24 @@
+.home {
+    height: 100%;
+    display: flex;
+}
+
+.sidebar {
+    flex: 1;
+}
+
+.home-layout-right {
+    flex: 4;
+}
+
+.navbar {
+    padding: 1rem;
+    background: lightblue;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.icon-friend:hover {
+    background-color: cornflowerblue;
+}
