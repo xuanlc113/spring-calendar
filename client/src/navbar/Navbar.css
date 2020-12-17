@@ -8,6 +8,8 @@
 .nav-date {
     display: flex;
     align-items: center;
+    background: white;
+    border-radius: 1rem;
 }
 
 .nav-date > h2 {
@@ -23,7 +25,7 @@
 }
 
 .nav-date > span:hover {
-    background-color: rgb(156, 174, 185);
+    background-color: lightgrey;
     cursor: pointer;
 }
 
