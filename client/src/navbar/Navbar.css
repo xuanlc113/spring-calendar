@@ -1,0 +1,46 @@
+.navbar {
+    margin: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-date {
+    display: flex;
+    align-items: center;
+}
+
+.nav-date > h2 {
+    margin: 0;
+    padding: 0;
+    cursor: default;
+}
+
+.nav-date > .anticon {
+    margin: 0 1rem;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.nav-date > span:hover {
+    background-color: rgb(156, 174, 185);
+    cursor: pointer;
+}
+
+.nav-options {
+    display: flex;
+}
+
+
+.icon-friend {
+    display: flex;
+    align-items: center;
+    margin: 0 1.5rem;
+    padding: 0 5px;
+    border-radius: 50%;
+}
+
+.icon-friend:hover {
+    background-color: rgb(156, 174, 185);
+    cursor: pointer;
+}

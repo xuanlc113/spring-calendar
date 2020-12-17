@@ -8,17 +8,15 @@
 }
 
 .home-layout-right {
-    flex: 4;
+    flex: 5;
+    display: flex;
+    flex-direction: column;
 }
 
 .navbar {
-    padding: 1rem;
-    background: lightblue;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    flex: 1;
 }
 
-.icon-friend:hover {
-    background-color: cornflowerblue;
+.content {
+    flex: 12;
 }
