@@ -1,6 +1,6 @@
 import Navbar from "../navbar/Navbar";
 import Sidebar from "../sidebar/Sidebar";
-import Content from "../content/Content";
+import Content from "../../content/Content";
 import "./Home.css";
 
 export default function Home() {

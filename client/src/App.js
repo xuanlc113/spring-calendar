@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import Login from "./login/Login";
-import Home from "./home/Home";
+import Home from "./layout/home/Home";
 import "./App.css";
 
 function App() {

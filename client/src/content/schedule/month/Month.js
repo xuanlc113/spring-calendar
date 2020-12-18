@@ -1,5 +1,5 @@
 import { Row, Col } from "antd";
-import WeekHeader from "../WeekHeader";
+import Header from "../Header";
 import "./Month.css";
 import MonthTile from "./MonthTile";
 
@@ -78,9 +78,7 @@ export default function Month() {
   }
   return (
     <div className="month" style={{ height: "100%" }}>
-      <div className="month-week-header">
-        <WeekHeader />
-      </div>
+      <Header />
       <div className="month-grid">{generate()}</div>
     </div>
   );

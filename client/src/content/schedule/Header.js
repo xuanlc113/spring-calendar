@@ -1,11 +1,12 @@
 import { Row, Col } from "antd";
+import "./Header.css";
 
-export default function WeekHeader() {
+export default function Header() {
   return (
     <Row
       justify="space-around"
       style={{ textAlign: "center" }}
-      className="week-header-row"
+      className="header-row"
     >
       <Col flex={1 / 7}>sun</Col>
       <Col flex={1 / 7}>mon</Col>

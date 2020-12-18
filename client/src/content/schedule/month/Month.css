@@ -3,19 +3,6 @@
     flex-direction: column;
 }
 
-.week-header-row > .ant-col {
-    padding-bottom: 0.5rem;
-    flex-basis: 0 !important;
-    font-size: 0.8em;
-    text-transform: uppercase;
-    font-weight: 600;
-    color: gray;
-}
-
-.week-header-row > .ant-col:not(:first-child) {
-    border-left: 1px solid lightgrey;
-}
-
 .month-grid {
     flex:1;
     display: flex;

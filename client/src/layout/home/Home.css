@@ -19,4 +19,6 @@
 
 .content {
     flex: 12;
+    min-height: 0;
+    /* overflow: auto; */
 }
