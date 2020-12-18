@@ -12,14 +12,10 @@ export default function Week() {
         <p>12 PM</p>
         <Header />
       </div>
-      <div className="week-scroller">
+      <div className="scroller">
         <div className="week-content">
           <Timeline />
-          <Row
-            justify="space-around"
-            style={{ textAlign: "center" }}
-            className="week-schedules"
-          >
+          <Row justify="space-around" className="week-schedules">
             {schedules.map(() => (
               <Col flex={1 / 7}>
                 <Schedule />
