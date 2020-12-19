@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Row, Col } from "antd";
 
 const Container = styled(Row)`
-  overflow-y: ${(props) => (props.type == "month" ? "none" : "scroll")};
+  overflow-y: ${(props) => (props.type === "month" ? "none" : "scroll")};
   text-align: center;
 
   & > .ant-col {

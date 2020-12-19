@@ -3,6 +3,7 @@ import Calendar from "react-calendar";
 import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import "./ReactCalendar.css";
+import { useEffect } from "react";
 
 const Container = styled.div`
   flex: 1;
@@ -33,19 +34,26 @@ const ContactContainer = styled.div`
   margin-top: 1rem;
 `;
 
-export default function Sidebar() {
+export default function Sidebar(props) {
+  useEffect(() => {}, [props.date]);
+
   return (
     <Container>
       <CreateButton
         type="primary"
-        size="large"
+        size="small"
         shape="round"
         icon={<PlusOutlined />}
       >
         Create
       </CreateButton>
       <DateSelector>
-        <Calendar />
+        <Calendar
+          value={props.date}
+          onChange={props.setDate}
+          showFixedNumberOfWeeks={true}
+          locale="en-US"
+        />
       </DateSelector>
       <ContactContainer>
         <p>Calendars</p>
