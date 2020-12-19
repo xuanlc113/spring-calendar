@@ -1,12 +1,17 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import styled from "styled-components";
 import Login from "./login/Login";
 import Home from "./layout/home/Home";
-import "./App.css";
+
+const Canvas = styled.div`
+  height: 100%;
+  background-color: rgb(247, 247, 247);
+`;
 
 function App() {
   const { user, isAuthenticated } = useAuth0();
   console.log(user);
-  return <div className="App">{!isAuthenticated ? <Home /> : <Login />}</div>;
+  return <Canvas>{!isAuthenticated ? <Home /> : <Login />}</Canvas>;
 }
 
 export default App;

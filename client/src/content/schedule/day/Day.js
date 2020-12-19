@@ -1,29 +1,65 @@
+import styled from "styled-components";
 import { Row, Col } from "antd";
-import CompareHeader from "../CompareHeader";
 import Schedule from "../Schedule";
 import Timeline from "../Timeline";
-import "./Day.css";
+import Header from "../Header";
+
+const Component = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  border-bottom: 2px solid lightgrey;
+
+  & > p {
+    color: transparent;
+    font-size: 0.8em;
+    cursor: default;
+    margin-right: 1rem;
+    padding-right: 2px;
+  }
+
+  & > .ant-row {
+    flex: 1;
+  }
+`;
+
+const Scroll = styled.div`
+  overflow: auto;
+`;
+
+const Content = styled.div`
+  display: flex;
+`;
+
+const Schedules = styled(Row)`
+  height: 100%;
+  width: 100%;
+`;
 
 export default function Day() {
   let users = [1, 3, 4];
   return (
-    <div className="day">
-      <div className="day-header">
+    <Component>
+      <HeaderContainer>
         <p>12 PM</p>
-        <CompareHeader />
-      </div>
-      <div className="scroller">
-        <div className="day-content">
+        <Header />
+      </HeaderContainer>
+      <Scroll>
+        <Content>
           <Timeline />
-          <Row justify="space-around" className="day-schedules">
+          <Schedules justify="space-around">
             {users.map(() => (
               <Col flex={1 / users.length}>
                 <Schedule />
               </Col>
             ))}
-          </Row>
-        </div>
-      </div>
-    </div>
+          </Schedules>
+        </Content>
+      </Scroll>
+    </Component>
   );
 }

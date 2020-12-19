@@ -1,16 +1,27 @@
+import styled from "styled-components";
 import Navbar from "../navbar/Navbar";
 import Sidebar from "../sidebar/Sidebar";
 import Content from "../../content/Content";
-import "./Home.css";
+
+const Container = styled.div`
+  height: 100%;
+  display: flex;
+`;
+
+const SubContainer = styled.div`
+  flex: 5;
+  display: flex;
+  flex-direction: column;
+`;
 
 export default function Home() {
   return (
-    <div className="home">
+    <Container>
       <Sidebar />
-      <div className="home-layout-right">
+      <SubContainer>
         <Navbar />
         <Content />
-      </div>
-    </div>
+      </SubContainer>
+    </Container>
   );
 }

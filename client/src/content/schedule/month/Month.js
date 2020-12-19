@@ -1,7 +1,38 @@
+import styled from "styled-components";
 import { Row, Col } from "antd";
 import Header from "../Header";
-import "./Month.css";
 import MonthTile from "./MonthTile";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const MonthGrid = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+`;
+
+const MonthGridRow = styled(Row)`
+  text-align: center;
+  height: 100%;
+
+  & > .ant-col {
+    flex-basis: 0 !important;
+  }
+
+  & > .ant-col:not(:first-child) {
+    border-top: 1px solid lightgrey;
+    border-left: 1px solid lightgrey;
+  }
+
+  & > .ant-col:first-child {
+    border-top: 1px solid lightgrey;
+  }
+`;
 
 export default function Month() {
   const days = [
@@ -46,10 +77,7 @@ export default function Month() {
     let rows = [];
     for (let i = 0; i < days.length / 7; i++) {
       rows.push(
-        <Row
-          style={{ textAlign: "center", height: "100%" }}
-          className="month-grid-rows"
-        >
+        <MonthGridRow>
           <Col flex={1 / 7}>
             <MonthTile date={days[i * 7]} />
           </Col>
@@ -71,15 +99,15 @@ export default function Month() {
           <Col flex={1 / 7}>
             <MonthTile date={days[i * 7 + 6]} />
           </Col>
-        </Row>
+        </MonthGridRow>
       );
     }
     return rows;
   }
   return (
-    <div className="month" style={{ height: "100%" }}>
-      <Header />
-      <div className="month-grid">{generate()}</div>
-    </div>
+    <Container>
+      <Header type="month" />
+      <MonthGrid>{generate()}</MonthGrid>
+    </Container>
   );
 }

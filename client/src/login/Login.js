@@ -1,16 +1,23 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import styled from "styled-components";
 import { Button } from "antd";
-import "./Login.css";
+
+const Wrapper = styled.div`
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 export default function Login() {
   const { isLoading, loginWithRedirect } = useAuth0();
 
   return (
-    <div className="login-page">
+    <Wrapper>
       {isLoading ? (
         <Button type="primary" size={"large"} loading>
           Log In
-        </Button> //loading
+        </Button>
       ) : (
         <Button
           type="primary"
@@ -20,6 +27,6 @@ export default function Login() {
           Log In
         </Button>
       )}
-    </div>
+    </Wrapper>
   );
 }

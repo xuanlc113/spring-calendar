@@ -1,11 +1,15 @@
+import styled from "styled-components";
 import Grid from "./Grid";
 
-import "./Schedule.css";
+const Container = styled.div`
+  height: 100%;
+  width: 100%;
+`;
 
 export default function Schedule() {
   return (
-    <div className="schedule">
+    <Container>
       <Grid />
-    </div>
+    </Container>
   );
 }

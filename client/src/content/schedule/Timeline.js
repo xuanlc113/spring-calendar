@@ -1,4 +1,35 @@
-import "./Timeline.css";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: flex;
+`;
+
+const Timestamps = styled.div`
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(24, 1fr);
+
+  & > p {
+    text-align: right;
+    font-size: 0.8em;
+    color: grey;
+    position: relative;
+    top: -10px;
+    white-space: nowrap;
+  }
+`;
+
+const Gap = styled.div`
+  width: 0.5rem;
+  margin-left: 0.5rem;
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(24, 1fr);
+
+  & > span:not(:last-child) {
+    border-bottom: 1px solid lightgrey;
+  }
+`;
 
 export default function Timeline() {
   function getTimestamp() {
@@ -21,9 +52,9 @@ export default function Timeline() {
     return blocks;
   }
   return (
-    <div className="timeline">
-      <div className="timestamps">{getTimestamp()}</div>
-      <div className="time-separator">{gridBlock()}</div>
-    </div>
+    <Container>
+      <Timestamps>{getTimestamp()}</Timestamps>
+      <Gap>{gridBlock()}</Gap>
+    </Container>
   );
 }
