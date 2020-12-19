@@ -7,7 +7,7 @@ const Container = styled.div`
 const Timestamps = styled.div`
   height: 100%;
   display: grid;
-  grid-template-rows: repeat(24, 1fr);
+  grid-template-rows: repeat(24, 40px);
 
   & > p {
     text-align: right;
@@ -24,7 +24,7 @@ const Gap = styled.div`
   margin-left: 0.5rem;
   height: 100%;
   display: grid;
-  grid-template-rows: repeat(24, 1fr);
+  grid-template-rows: repeat(24, 40px);
 
   & > span:not(:last-child) {
     border-bottom: 1px solid lightgrey;

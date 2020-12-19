@@ -15,8 +15,8 @@ const Container = styled.div`
 export default function Content() {
   return (
     <Container>
-      <Month />
-      {/* <Week /> */}
+      {/* <Month /> */}
+      <Week />
       {/* <Day /> */}
     </Container>
   );
