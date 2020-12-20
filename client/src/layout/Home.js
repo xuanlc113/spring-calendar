@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -15,13 +15,19 @@ const SubContainer = styled.div`
   flex-direction: column;
 `;
 
-export default function Home() {
+export default function Home(props) {
   const [date, setDate] = useState(new Date());
   const [period, setPeriod] = useState("week");
+  const { calendars, updateCalendars } = useCalendarSelector(props.userId);
 
   return (
     <Container>
-      <Sidebar date={date} setDate={setDate} />
+      <Sidebar
+        date={date}
+        setDate={setDate}
+        calendars={calendars}
+        updateCalendars={updateCalendars}
+      />
       <SubContainer>
         <Navbar
           date={date}
@@ -34,8 +40,40 @@ export default function Home() {
           setDate={setDate}
           period={period}
           setPeriod={setPeriod}
+          calendars={calendars}
         />
       </SubContainer>
     </Container>
   );
+}
+
+function useCalendarSelector(userId) {
+  const [calendars, setCalendars] = useState(getCalendars(userId));
+  console.log(calendars);
+
+  function getCalendars(userId) {
+    // get calendars { label: "My Calendar", id: userId, checked: true, color: blue }
+    return [
+      { label: "My Calendar", id: userId, checked: true, color: "red" },
+      { label: "My Calendar", id: userId, checked: true, color: "green" },
+      { label: "My Calendar", id: userId, checked: true, color: "blue" },
+      { label: "My Calendar", id: userId, checked: true, color: "purple" },
+      { label: "My Calendar", id: userId, checked: true, color: "green" },
+      { label: "My Calendar", id: userId, checked: true, color: "blue" },
+      { label: "My Calendar", id: userId, checked: true, color: "purple" },
+      { label: "My Calendar", id: userId, checked: true, color: "green" },
+      { label: "My Calendar", id: userId, checked: true, color: "blue" },
+      { label: "My Calendar", id: userId, checked: true, color: "purple" },
+    ];
+  }
+
+  function updateCalendars(label) {
+    setCalendars(
+      calendars.map((i) =>
+        i.label === label ? { ...i, checked: !i.checked } : i
+      )
+    );
+  }
+
+  return { calendars, updateCalendars };
 }

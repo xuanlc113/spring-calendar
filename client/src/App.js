@@ -10,8 +10,10 @@ const Container = styled.div`
 
 function App() {
   const { user, isAuthenticated } = useAuth0();
-  console.log(user);
-  return <Container>{!isAuthenticated ? <Home /> : <Login />}</Container>;
+
+  return (
+    <Container>{!isAuthenticated ? <Home user={user} /> : <Login />}</Container>
+  );
 }
 
 export default App;

@@ -17,7 +17,7 @@ const Container = styled.div`
 export default function Content(props) {
   function display() {
     if (props.period === "month") {
-      let dates = getMonthDates();
+      let dates = getMonthDates(props.date);
       return (
         <Month
           dates={dates}
@@ -26,34 +26,34 @@ export default function Content(props) {
         />
       );
     } else if (props.period === "week") {
-      let dates = getWeekDates();
+      let dates = getWeekDates(props.date);
       return <Week dates={dates} />;
     } else {
       return <Day date={props.date} />;
     }
   }
 
-  function getMonthDates() {
-    dayjs.extend(isSameOrBefore);
-    let dates = [];
-    let startDate = dayjs(props.date).startOf("month").startOf("week");
-    let endDate = dayjs(props.date).endOf("month").endOf("week");
-    while (startDate.isSameOrBefore(endDate)) {
-      dates.push(startDate.toDate());
-      startDate = startDate.add(1, "day");
-    }
-    return dates;
-  }
-
-  function getWeekDates() {
-    let dates = [];
-    let startDate = dayjs(props.date).startOf("week").toDate();
-    for (let i = 0; i < 7; i++) {
-      dates.push(startDate);
-      startDate = dayjs(startDate).add(1, "day").toDate();
-    }
-    return dates;
-  }
-
   return <Container>{display()}</Container>;
+}
+
+function getMonthDates(date) {
+  dayjs.extend(isSameOrBefore);
+  let dates = [];
+  let startDate = dayjs(date).startOf("month").startOf("week");
+  let endDate = dayjs(date).endOf("month").endOf("week");
+  while (startDate.isSameOrBefore(endDate)) {
+    dates.push(startDate.toDate());
+    startDate = startDate.add(1, "day");
+  }
+  return dates;
+}
+
+function getWeekDates(date) {
+  let dates = [];
+  let startDate = dayjs(date).startOf("week").toDate();
+  for (let i = 0; i < 7; i++) {
+    dates.push(startDate);
+    startDate = dayjs(startDate).add(1, "day").toDate();
+  }
+  return dates;
 }

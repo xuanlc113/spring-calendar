@@ -59,23 +59,11 @@ export default function Navbar(props) {
   }
 
   function incrementDate() {
-    if (props.period === "month") {
-      props.setDate(dayjs(props.date).add(1, "month").toDate());
-    } else if (props.period === "week") {
-      props.setDate(dayjs(props.date).add(1, "week").toDate());
-    } else {
-      props.setDate(dayjs(props.date).add(1, "day").toDate());
-    }
+    props.setDate(dayjs(props.date).add(1, props.period).toDate());
   }
 
   function decrementDate() {
-    if (props.period === "month") {
-      props.setDate(dayjs(props.date).subtract(1, "month").toDate());
-    } else if (props.period === "week") {
-      props.setDate(dayjs(props.date).subtract(1, "week").toDate());
-    } else {
-      props.setDate(dayjs(props.date).subtract(1, "day").toDate());
-    }
+    props.setDate(dayjs(props.date).subtract(1, props.period).toDate());
   }
 
   return (

@@ -4,6 +4,7 @@ import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import "./ReactCalendar.css";
 import { useEffect } from "react";
+import Contact from "./Contact";
 
 const Container = styled.div`
   flex: 1;
@@ -28,10 +29,20 @@ const DateSelector = styled.div`
 
 const ContactContainer = styled.div`
   flex: 10;
+  display: flex;
+  flex-direction: column;
   background-color: white;
   border-radius: 5%;
   padding: 0.75em 1em;
   margin-top: 1rem;
+  min-height: 0;
+
+  & > h3 {
+    text-align: center;
+    padding-bottom: 0.5em;
+    margin: 0;
+    border-bottom: 1px solid lightgrey;
+  }
 `;
 
 export default function Sidebar(props) {
@@ -56,7 +67,11 @@ export default function Sidebar(props) {
         />
       </DateSelector>
       <ContactContainer>
-        <p>Calendars</p>
+        <h3>Calendars</h3>
+        <Contact
+          calendars={props.calendars}
+          updateCalendars={props.updateCalendars}
+        />
       </ContactContainer>
     </Container>
   );
