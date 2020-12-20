@@ -40,7 +40,6 @@ const Schedules = styled(Row)`
 `;
 
 export default function Week(props) {
-  const schedules = [1, 2, 3, 4, 5, 6, 7];
   return (
     <Container>
       <HeaderContainer>
@@ -53,7 +52,7 @@ export default function Week(props) {
           <Schedules justify="space-around">
             {props.dates.map(() => (
               <Col flex={1 / 7}>
-                <Schedule />
+                <Schedule calendars={props.calendars} />
               </Col>
             ))}
           </Schedules>

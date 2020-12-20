@@ -52,6 +52,7 @@ export default function Month(props) {
             date={props.dates[row * 7 + i]}
             setDate={props.setDate}
             setPeriod={props.setPeriod}
+            calendars={props.calendars}
           />
         </Col>
       );

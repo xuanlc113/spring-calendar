@@ -20,14 +20,19 @@ const Container = styled(Row)`
 `;
 
 export default function Header(props) {
-  const headers = props.type
-    ? ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
-    : ["asdadwa", "reter", "sdfd"];
+  function getHeaders() {
+    let headers;
+    if (props.type !== "day") {
+      headers = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    } else {
+      headers = props.calendars.map((i) => i.label);
+    }
+    return headers.map((i) => <Col flex={1 / headers.length}>{i}</Col>);
+  }
+
   return (
     <Container justify="space-around" type={props.type}>
-      {headers.map((i) => (
-        <Col flex={1 / headers.length}>{i}</Col>
-      ))}
+      {getHeaders()}
     </Container>
   );
 }

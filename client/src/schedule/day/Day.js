@@ -40,26 +40,38 @@ const Schedules = styled(Row)`
   width: 100%;
 `;
 
-export default function Day() {
-  let users = [1, 3, 4];
+export default function Day(props) {
+  function getSchedules() {
+    return props.calendars.map((i) => (
+      <Col flex={1 / props.calendars.length}>
+        <Schedule calendars={[i]} />
+      </Col>
+    ));
+  }
   return (
     <Component>
       <HeaderContainer>
         <p>12 PM</p>
-        <Header />
+        <Header type="day" calendars={props.calendars} />
       </HeaderContainer>
       <Scroll>
         <Content>
           <Timeline />
-          <Schedules justify="space-around">
-            {users.map(() => (
-              <Col flex={1 / users.length}>
-                <Schedule />
-              </Col>
-            ))}
-          </Schedules>
+          <Schedules justify="space-around">{getSchedules()}</Schedules>
         </Content>
       </Scroll>
     </Component>
   );
 }
+
+// user
+// email: "sockpuppet113@gmail.com"
+// email_verified: true
+// family_name: "Puppy"
+// given_name: "Sock"
+// locale: "en-GB"
+// name: "Sock Puppy"
+// nickname: "sockpuppet113"
+// picture: "https://lh3.googleusercontent.com/-0yG_PnyU0Gw/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclJw-2cYUWx-wYhFGrSCCuZUUkyHg/s96-c/photo.jpg"
+// sub: "google-oauth2|105217146160079939382"
+// updated_at: "2020-12-20T07:17:53.236Z"

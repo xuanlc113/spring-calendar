@@ -5,10 +5,6 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const Board = styled.div`
-  width: 95%;
-`;
-
 const GridLine = styled.div`
   display: grid;
   width: 100%;
@@ -37,7 +33,6 @@ export default function Grid() {
   }
   return (
     <Container>
-      <Board>{/* <div>absolute events</div> */}</Board>
       <GridLine>{gridBlock()}</GridLine>
     </Container>
   );

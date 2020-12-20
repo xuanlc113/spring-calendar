@@ -33,7 +33,13 @@ export default function Contact(props) {
       <Container>
         {props.calendars.map((i) => (
           <>
-            <ColorCheckbox color={i.color}>{i.label}</ColorCheckbox>
+            <ColorCheckbox
+              checked={i.checked}
+              onChange={() => props.updateCalendars(i.label)}
+              color={i.color}
+            >
+              {i.label}
+            </ColorCheckbox>
             <br />
           </>
         ))}

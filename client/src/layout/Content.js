@@ -23,13 +23,14 @@ export default function Content(props) {
           dates={dates}
           setDate={props.setDate}
           setPeriod={props.setPeriod}
+          calendars={props.calendars}
         />
       );
     } else if (props.period === "week") {
       let dates = getWeekDates(props.date);
-      return <Week dates={dates} />;
+      return <Week dates={dates} calendars={props.calendars} />;
     } else {
-      return <Day date={props.date} />;
+      return <Day date={props.date} calendars={props.calendars} />;
     }
   }
 
