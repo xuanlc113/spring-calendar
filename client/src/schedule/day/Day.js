@@ -44,7 +44,7 @@ export default function Day(props) {
   function getSchedules() {
     return props.calendars.map((i) => (
       <Col flex={1 / props.calendars.length}>
-        <Schedule calendars={[i]} />
+        <Schedule date={props.date} calendars={[i]} />
       </Col>
     ));
   }

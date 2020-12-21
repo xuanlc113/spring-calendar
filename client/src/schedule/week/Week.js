@@ -50,9 +50,9 @@ export default function Week(props) {
         <Content>
           <Timeline />
           <Schedules justify="space-around">
-            {props.dates.map(() => (
+            {props.dates.map((date) => (
               <Col flex={1 / 7}>
-                <Schedule calendars={props.calendars} />
+                <Schedule date={date} calendars={props.calendars} />
               </Col>
             ))}
           </Schedules>
