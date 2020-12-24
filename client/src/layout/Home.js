@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import Content from "./Content";
+import dayjs from "dayjs";
 
 const Container = styled.div`
   height: 100%;
@@ -17,6 +18,7 @@ const SubContainer = styled.div`
 
 export default function Home(props) {
   const [date, setDate] = useState(new Date());
+  const { date: dd, setDate: setdd } = useDate();
   const [period, setPeriod] = useState("week");
   const { calendars, updateCalendars, activeCalendars } = useCalendarSelector(
     props.userId
@@ -25,15 +27,15 @@ export default function Home(props) {
   return (
     <Container>
       <Sidebar
-        date={date}
-        setDate={setDate}
+        date={dd}
+        setDate={setdd}
         calendars={calendars}
         updateCalendars={updateCalendars}
       />
       <SubContainer>
         <Navbar
-          date={date}
-          setDate={setDate}
+          date={dd}
+          setDate={setdd}
           period={period}
           setPeriod={setPeriod}
         />
@@ -47,6 +49,26 @@ export default function Home(props) {
       </SubContainer>
     </Container>
   );
+}
+
+function useDate() {
+  const [date, setDate] = useState(roundDate());
+
+  function roundDate() {
+    let date = dayjs();
+    const time = Math.floor(date.minute() / 5);
+    date = date.minute(5 * time).second(0);
+    return date;
+  }
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDate(date.minute(date.minute() + 5));
+    }, 5 * 60 * 1000);
+    return () => clearInterval(timer);
+  }, [date]);
+
+  return { date, setDate };
 }
 
 function useCalendarSelector(userId) {

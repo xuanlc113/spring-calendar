@@ -53,17 +53,17 @@ export default function Navbar(props) {
 
   function displayDate() {
     if (props.period !== "day") {
-      return dayjs(props.date).format("MMMM");
+      return props.date.format("MMMM");
     }
-    return dayjs(props.date).format("D MMMM");
+    return props.date.format("D MMMM");
   }
 
   function incrementDate() {
-    props.setDate(dayjs(props.date).add(1, props.period).toDate());
+    props.setDate(props.date.add(1, props.period));
   }
 
   function decrementDate() {
-    props.setDate(dayjs(props.date).subtract(1, props.period).toDate());
+    props.setDate(props.date.subtract(1, props.period));
   }
 
   return (

@@ -46,7 +46,6 @@ function getUserEvents(date, user) {
   return [
     {
       event: {
-        title: "event",
         userId: "userid1234",
         title: "run",
         description: "go for a run",

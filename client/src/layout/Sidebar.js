@@ -5,6 +5,8 @@ import { PlusOutlined } from "@ant-design/icons";
 import "./ReactCalendar.css";
 import { useEffect } from "react";
 import Contact from "./Contact";
+import Popup, { usePopup } from "../event_info/Popup";
+import dayjs from "dayjs";
 
 const Container = styled.div`
   flex: 1;
@@ -46,7 +48,18 @@ const ContactContainer = styled.div`
 `;
 
 export default function Sidebar(props) {
+  const { isVisible, openPopup, closePopup } = usePopup();
+
   useEffect(() => {}, [props.date]);
+
+  function setDateOnly(val) {
+    props.setDate(
+      props.date
+        .year(val.getFullYear())
+        .month(val.getMonth())
+        .date(val.getDate())
+    );
+  }
 
   return (
     <Container>
@@ -55,13 +68,21 @@ export default function Sidebar(props) {
         size="small"
         shape="round"
         icon={<PlusOutlined />}
+        onClick={openPopup}
       >
         Create
       </CreateButton>
+      {isVisible && (
+        <Popup
+          closePopup={closePopup}
+          title={"Create Event"}
+          date={props.date}
+        />
+      )}
       <DateSelector>
         <Calendar
-          value={props.date}
-          onChange={props.setDate}
+          value={props.date.toDate()}
+          onChange={(val) => setDateOnly(val)}
           showFixedNumberOfWeeks={true}
           locale="en-US"
         />
