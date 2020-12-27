@@ -18,7 +18,7 @@ const SubContainer = styled.div`
 
 export default function Home(props) {
   const [date, setDate] = useState(new Date());
-  const { date: dd, setDate: setdd } = useDate();
+  const { date: dd, setDate: setdd, setDateOnly } = useDate();
   const [period, setPeriod] = useState("week");
   const { calendars, updateCalendars, activeCalendars } = useCalendarSelector(
     props.userId
@@ -28,7 +28,7 @@ export default function Home(props) {
     <Container>
       <Sidebar
         date={dd}
-        setDate={setdd}
+        setDateOnly={setDateOnly}
         calendars={calendars}
         updateCalendars={updateCalendars}
       />
@@ -40,8 +40,9 @@ export default function Home(props) {
           setPeriod={setPeriod}
         />
         <Content
-          date={date}
-          setDate={setDate}
+          date={dd}
+          setDate={setdd}
+          setDateOnly={setDateOnly}
           period={period}
           setPeriod={setPeriod}
           calendars={activeCalendars.current}
@@ -53,6 +54,7 @@ export default function Home(props) {
 
 function useDate() {
   const [date, setDate] = useState(roundDate());
+  const first = useRef(true);
 
   function roundDate() {
     let date = dayjs();
@@ -62,13 +64,36 @@ function useDate() {
   }
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setDate(date.minute(date.minute() + 5));
-    }, 5 * 60 * 1000);
+    let timer;
+    if (first.current) {
+      const diff = date.add(5, "minute").diff(dayjs(), "second");
+      setTimeout(() => {
+        timer = incrementTime();
+      }, diff * 1000);
+      first.current = false;
+    } else {
+      timer = incrementTime();
+    }
     return () => clearInterval(timer);
   }, [date]);
 
-  return { date, setDate };
+  function incrementTime() {
+    const timer = setInterval(() => {
+      setDate(date.minute(date.minute() + 5));
+    }, 1000);
+    return timer;
+  }
+
+  function setDateOnly(dateObj) {
+    setDate(
+      date
+        .year(dateObj.getFullYear())
+        .month(dateObj.getMonth())
+        .date(dateObj.getDate())
+    );
+  }
+
+  return { date, setDate, setDateOnly };
 }
 
 function useCalendarSelector(userId) {

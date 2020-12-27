@@ -50,7 +50,7 @@ export default function Month(props) {
         <Col flex={1 / 7}>
           <MonthTile
             date={props.dates[row * 7 + i]}
-            setDate={props.setDate}
+            setDateOnly={props.setDateOnly}
             setPeriod={props.setPeriod}
             calendars={props.calendars}
           />

@@ -52,15 +52,6 @@ export default function Sidebar(props) {
 
   useEffect(() => {}, [props.date]);
 
-  function setDateOnly(val) {
-    props.setDate(
-      props.date
-        .year(val.getFullYear())
-        .month(val.getMonth())
-        .date(val.getDate())
-    );
-  }
-
   return (
     <Container>
       <CreateButton
@@ -82,7 +73,7 @@ export default function Sidebar(props) {
       <DateSelector>
         <Calendar
           value={props.date.toDate()}
-          onChange={(val) => setDateOnly(val)}
+          onChange={(val) => props.setDateOnly(val)}
           showFixedNumberOfWeeks={true}
           locale="en-US"
         />

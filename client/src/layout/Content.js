@@ -21,7 +21,7 @@ export default function Content(props) {
       return (
         <Month
           dates={dates}
-          setDate={props.setDate}
+          setDateOnly={props.setDateOnly}
           setPeriod={props.setPeriod}
           calendars={props.calendars}
         />
@@ -30,7 +30,7 @@ export default function Content(props) {
       let dates = getWeekDates(props.date);
       return <Week dates={dates} calendars={props.calendars} />;
     } else {
-      return <Day date={props.date} calendars={props.calendars} />;
+      return <Day date={props.date.toDate()} calendars={props.calendars} />;
     }
   }
 
@@ -40,8 +40,8 @@ export default function Content(props) {
 function getMonthDates(date) {
   dayjs.extend(isSameOrBefore);
   let dates = [];
-  let startDate = dayjs(date).startOf("month").startOf("week");
-  let endDate = dayjs(date).endOf("month").endOf("week");
+  let startDate = date.startOf("month").startOf("week");
+  let endDate = date.endOf("month").endOf("week");
   while (startDate.isSameOrBefore(endDate)) {
     dates.push(startDate.toDate());
     startDate = startDate.add(1, "day");
@@ -51,10 +51,10 @@ function getMonthDates(date) {
 
 function getWeekDates(date) {
   let dates = [];
-  let startDate = dayjs(date).startOf("week").toDate();
+  let startDate = date.startOf("week");
   for (let i = 0; i < 7; i++) {
-    dates.push(startDate);
-    startDate = dayjs(startDate).add(1, "day").toDate();
+    dates.push(startDate.toDate());
+    startDate = dayjs(startDate).add(1, "day");
   }
   return dates;
 }
