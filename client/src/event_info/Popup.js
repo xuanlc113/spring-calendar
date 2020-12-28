@@ -11,7 +11,12 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import RepeatPopup from "./RepeatPopup";
-import { useEvent, getUsers, getDuration } from "./EventInfoHooks";
+import {
+  useEvent,
+  getUsers,
+  getDuration,
+  getRepeatValue,
+} from "./EventInfoHooks";
 
 const PopupContainer = styled(Modal)`
   top: 50px;
@@ -51,7 +56,8 @@ export default function Popup(props) {
     setDuration,
     options,
     setOptions,
-  } = useEvent(props.date);
+  } = useEvent(props.date, props.event);
+  const [prevSelect, setPrevSelect] = useState(getRepeatValue(options));
 
   function blur() {
     select.current.blur();
@@ -60,6 +66,45 @@ export default function Popup(props) {
   function setRepeat(value) {
     if (value === "custom") {
       setShowRepeat(true);
+    } else if (value === "none") {
+      dispatchInfo({ type: "recurring", value: false });
+      dispatchInfo({ type: "rrule", value: "" });
+      setPrevSelect(value);
+    } else {
+      setPrevSelect(value);
+      let rrule;
+      switch (value) {
+        case "none":
+          rrule = "";
+          break;
+        case "daily":
+          rrule = "FREQ=DAILY;INTERVAL=1";
+          break;
+        case "weekly": {
+          const day = dayAbbr[dayjs(info.start).day()];
+          rrule = `FREQ=WEEKLY;BYDAY=${day};INTERVAL=1`;
+          break;
+        }
+        case "monthly": {
+          const day = dayAbbr[dayjs(info.start).day()];
+          const week = Math.ceil(dayjs(info.start).date() / 7);
+          rrule = `FREQ=MONTHLY;BYSETPOS=${week};BYDAY=${day};INTERVAL=1`;
+          break;
+        }
+        case "monthly-last": {
+          const day = dayAbbr[dayjs(info.start).day()];
+          rrule = `FREQ=MONTHLY;BYSETPOS=-1;BYDAY=${day};INTERVAL=1`;
+          break;
+        }
+        case "annually": {
+          const date = dayjs(info.start).date();
+          const month = dayjs(info.start).month() + 1;
+          rrule = `FREQ=YEARLY;BYMONTH=${month};BYMONTHDAY=${date}`;
+          break;
+        }
+      }
+      dispatchInfo({ type: "recurring", value: true });
+      dispatchInfo({ type: "rrule", value: rrule });
     }
   }
 
@@ -71,6 +116,36 @@ export default function Popup(props) {
       dispatchInfo({ type: "start", value: duration.allDayStart });
       dispatchInfo({ type: "duration", value: duration.durationDay });
     }
+  }
+
+  function monthOptions(date) {
+    const week = Math.ceil(date.date() / 7);
+    const last = Math.ceil(date.endOf("month").date() / 7);
+    if (week === last) {
+      if (week === 4) {
+        return (
+          <>
+            <Option value="monthly">
+              Monthly on Fourth {weekdays[date.day()]}
+            </Option>
+            <Option value="monthly-last">
+              Monthly on Last {weekdays[date.day()]}
+            </Option>
+          </>
+        );
+      } else if (week === 5) {
+        return (
+          <Option value="monthly-last">
+            Monthly on Last {weekdays[date.day()]}
+          </Option>
+        );
+      }
+    }
+    return (
+      <Option value="monthly">
+        Monthly on {weekNumber[week - 1]} {weekdays[date.day()]}
+      </Option>
+    );
   }
 
   return (
@@ -163,17 +238,18 @@ export default function Popup(props) {
             )}
           </DateContainer>
           <Space direction="horizontal" size="middle">
-            <Select defaultValue="none" onChange={(value) => setRepeat(value)}>
+            <Select
+              value={prevSelect}
+              onChange={(value) => setRepeat(value)}
+              dropdownStyle={{ minWidth: "25%" }}
+            >
               <Option value="none">No Repeat</Option>
               <Option value="daily">Daily</Option>
-              {/* <Option value="weekly">
-                Weekly on {weekdays[info.datetime.day()]}
+              <Option value="weekly">
+                Weekly on {weekdays[dayjs(info.start).day()]}
               </Option>
-              <Option value="monthly">
-                Monthly on {Math.ceil(info.datetime.date() / 7)}{" "}
-                {weekdays[info.datetime.day()]}
-              </Option> */}
-              <Option value="annual">Annually</Option>
+              {monthOptions(dayjs(info.start))}
+              <Option value="annually">Annually</Option>
               <Option value="custom">Custom</Option>
             </Select>
             <Checkbox
@@ -214,3 +290,17 @@ export function usePopup() {
 
   return { isVisible, openPopup, closePopup };
 }
+
+const weekdays = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+const weekNumber = ["First", "Second", "Third", "Fourth", "Last"];
+
+const dayAbbr = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];

@@ -16,7 +16,7 @@ export function useEvent(datetime, event) {
     getEventInfo(datetime, event)
   );
   const [duration, setDuration] = useState(getEventDuration(datetime, event));
-  const [options, setOptions] = useState(parseRRule());
+  const [options, setOptions] = useState(parseRRule(event));
 
   return { info, dispatchInfo, duration, setDuration, options, setOptions };
 }
@@ -35,10 +35,14 @@ function reducer(state, action) {
       return { ...state, start: action.value.toDate() };
     case "duration":
       return { ...state, duration: action.value };
+    case "recurring":
+      return { ...state, isRecurring: action.value };
+    case "rrule":
+      return { ...state, rrule: action.value };
   }
 }
 
-function getEventInfo(datetime, event = 0) {
+function getEventInfo(datetime, event) {
   if (event) {
     // modify date in controller?
     return event;
@@ -93,28 +97,36 @@ export function getDuration(dates, type) {
   return dates[1].diff(dates[0], type);
 }
 
-export function parseRRule() {
-  // let rrule = RRule.parseString("RRULE:FREQ=MONTHLY;BYDAY=-1TH,3TH");
-  // console.log(rrule);
-  // rrule > toText > parseText > options
-  const options = {
-    freq: "",
+function parseRRule(event) {
+  let template = {
+    freq: -1,
     interval: 0,
-    wkst: "",
     until: null,
     byweekno: [],
-    byweekDay: [],
-    bymonthDay: 0,
+    byweekday: [],
+    bymonthday: 0,
   };
-  return options;
+
+  if (event) {
+    let options = RRule.parseString(event.rrule);
+    template = { ...template, ...options };
+  }
+
+  // console.log(RRule.parseString("FREQ=WEEKLY;INTERVAL=0;BYDAY=MO,FR"));
+  return template;
 }
 
-const weekdays = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
+export function getRepeatValue(options) {
+  if (options.freq === -1) {
+    return "none";
+  }
+  let text = new RRule(options).toText();
+  text = text
+    .replace("every 0 days", "Daily")
+    .replace("every 0 weeks", "Weekly")
+    .replace("every 0 months", "Monthly")
+    .replace("every 0 years", "Annually")
+    .replace("every", "Every");
+
+  return text;
+}
