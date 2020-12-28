@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useState, useRef } from "react";
 import {
   Modal,
   Space,
@@ -11,17 +11,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import RepeatPopup from "./RepeatPopup";
-import RRule, { RRuleSet, rrulestr } from "rrule";
-
-const weekdays = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
+import { useEvent, getUsers, getDuration } from "./EventInfoHooks";
 
 const PopupContainer = styled(Modal)`
   top: 50px;
@@ -48,14 +38,20 @@ const DateContainer = styled.div`
 
 const { TextArea } = Input;
 const { RangePicker: DateRangePicker } = DatePicker;
-const { RangePicker } = TimePicker;
+const { RangePicker: TimeRangePicker } = TimePicker;
 const { Option } = Select;
 
 export default function Popup(props) {
   const select = useRef(null);
   const [showRepeat, setShowRepeat] = useState(false);
-  const { info, dispatchInfo, options, setOptions } = useEvent(props.date);
-  const [allDay, setAllDay] = useState(false);
+  const {
+    info,
+    dispatchInfo,
+    duration,
+    setDuration,
+    options,
+    setOptions,
+  } = useEvent(props.date);
 
   function blur() {
     select.current.blur();
@@ -64,6 +60,16 @@ export default function Popup(props) {
   function setRepeat(value) {
     if (value === "custom") {
       setShowRepeat(true);
+    }
+  }
+
+  function swapDuration() {
+    if (info.isAllDay) {
+      dispatchInfo({ type: "start", value: duration.datetimeStart });
+      dispatchInfo({ type: "duration", value: duration.durationMin });
+    } else {
+      dispatchInfo({ type: "start", value: duration.allDayStart });
+      dispatchInfo({ type: "duration", value: duration.durationDay });
     }
   }
 
@@ -105,28 +111,52 @@ export default function Popup(props) {
             }}
           />
           <DateContainer>
-            {allDay ? (
+            {info.isAllDay ? (
               <DateRangePicker
                 allowClear={false}
-                value={getDates(info.datetime, info.duration)}
-                onChange={(val) =>
-                  dispatchInfo({ type: "dateRange", value: val })
-                }
+                value={getDates(duration.allDayStart, duration.durationDay)}
+                onChange={(val) => {
+                  const durationDay = getDuration(val, "day");
+                  dispatchInfo({ type: "start", value: val[0] });
+                  dispatchInfo({
+                    type: "duration",
+                    value: durationDay,
+                  });
+                  setDuration({
+                    ...duration,
+                    allDayStart: val[0],
+                    durationDay,
+                  });
+                }}
               />
             ) : (
               <>
                 <DatePicker
                   allowClear={false}
-                  value={info.datetime}
-                  onChange={(val) => dispatchInfo({ type: "date", value: val })}
+                  value={duration.datetimeStart}
+                  onChange={(val) => {
+                    dispatchInfo({ type: "start", value: val });
+                    setDuration({ ...duration, datetimeStart: val });
+                  }}
                 />
-                <RangePicker
+                <TimeRangePicker
                   allowClear={false}
-                  value={getTime(info.datetime, info.duration)}
+                  value={getTime(duration.datetimeStart, duration.durationMin)}
                   minuteStep={15}
                   format="h:mm a"
                   onChange={(val) => {
-                    dispatchInfo({ type: "timeRange", value: val });
+                    const durationMin = getDuration(val, "minute");
+                    dispatchInfo({
+                      type: "duration",
+                      value: durationMin,
+                    });
+
+                    const hour = val[0].hour();
+                    const min = val[0].minute();
+                    const datetimeStart = duration.datetimeStart
+                      .hour(hour)
+                      .minute(min);
+                    setDuration({ ...duration, datetimeStart, durationMin });
                   }}
                 />
               </>
@@ -149,7 +179,7 @@ export default function Popup(props) {
             <Checkbox
               checked={info.isAllDay}
               onChange={(e) => {
-                setAllDay((prev) => !prev);
+                swapDuration();
                 dispatchInfo({ type: "allDay", value: e.target.checked });
               }}
             >
@@ -164,12 +194,7 @@ export default function Popup(props) {
 }
 
 function getTime(datetime, duration) {
-  const round = Math.ceil(datetime.minute() / 15);
-  console.log(datetime.minute(round * 15));
-  if (duration === 0) {
-    return [datetime.minute(round * 15), datetime.minute(round * 15 + 60)];
-  }
-  return [datetime.minute(round * 15), datetime.minute(round * 15 + duration)];
+  return [datetime, datetime.add(duration, "minute")];
 }
 
 function getDates(datetime, duration) {
@@ -188,93 +213,4 @@ export function usePopup() {
   }
 
   return { isVisible, openPopup, closePopup };
-}
-
-function getUsers() {
-  return [
-    { label: "sersd", value: "asdf" },
-    { label: "aesd", value: "ghjk" },
-    { label: "zxcsd", value: "zxcv" },
-  ];
-}
-
-function reducer(state, action) {
-  switch (action.type) {
-    case "title":
-      return { ...state, title: action.value };
-    case "description":
-      return { ...state, description: action.value };
-    case "participants":
-      return { ...state, participants: action.value };
-    case "allDay":
-      return { ...state, isAllDay: action.value };
-    case "date":
-      const date = state.datetime
-        .year(action.value.year())
-        .month(action.value.month())
-        .date(action.value.date());
-      return { ...state, datetime: date };
-    case "timeRange":
-      let [start, end] = action.value;
-      const hour = start.hour();
-      const min = start.minute();
-      const time = state.datetime.hour(hour).minute(min);
-      return { ...state, datetime: time, duration: end.diff(start, "minute") };
-    case "dateRange":
-      return {
-        ...state,
-        datetime: action.value[0],
-        duration: action.value[1].diff(action.value[0], "day"),
-      };
-  }
-}
-
-function useEvent(datetime, event) {
-  const [info, dispatchInfo] = useReducer(
-    reducer,
-    getEventInfo(datetime, event)
-  );
-  const [options, setOptions] = useState(parseRRule());
-
-  return { info, dispatchInfo, options, setOptions };
-}
-
-function getEventInfo(datetime, event = 0) {
-  if (event) {
-    // modify date in controller?
-    return event;
-  }
-
-  const round = Math.ceil(datetime.minute() / 15);
-
-  const eventTemplate = {
-    userId: "",
-    title: "",
-    description: "",
-    datetime: datetime.minute(round * 15),
-    participants: [],
-    duration: 0,
-    isAllDay: false,
-    isRepeating: false,
-    rrule: "",
-    repeatUntil: null,
-  };
-
-  return eventTemplate;
-}
-
-function parseRRule() {
-  // let rrule = RRule.parseString("RRULE:FREQ=MONTHLY;BYDAY=-1TH,3TH");
-  // console.log(rrule);
-  // rrule > toText > parseText > options
-  const options = {
-    freq: "",
-    interval: 0,
-    wkst: "",
-    until: null,
-    byweekno: [],
-    byweekDay: [],
-    bymonthDay: 0,
-  };
-  return options;
 }

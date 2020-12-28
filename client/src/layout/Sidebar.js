@@ -6,7 +6,6 @@ import "./ReactCalendar.css";
 import { useEffect } from "react";
 import Contact from "./Contact";
 import Popup, { usePopup } from "../event_info/Popup";
-import dayjs from "dayjs";
 
 const Container = styled.div`
   flex: 1;

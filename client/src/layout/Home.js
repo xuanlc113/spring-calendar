@@ -17,9 +17,8 @@ const SubContainer = styled.div`
 `;
 
 export default function Home(props) {
-  const [date, setDate] = useState(new Date());
-  const { date: dd, setDate: setdd, setDateOnly } = useDate();
   const [period, setPeriod] = useState("week");
+  const { date, setDate, setDateOnly } = useDate();
   const { calendars, updateCalendars, activeCalendars } = useCalendarSelector(
     props.userId
   );
@@ -27,21 +26,20 @@ export default function Home(props) {
   return (
     <Container>
       <Sidebar
-        date={dd}
+        date={date}
         setDateOnly={setDateOnly}
         calendars={calendars}
         updateCalendars={updateCalendars}
       />
       <SubContainer>
         <Navbar
-          date={dd}
-          setDate={setdd}
+          date={date}
+          setDate={setDate}
           period={period}
           setPeriod={setPeriod}
         />
         <Content
-          date={dd}
-          setDate={setdd}
+          date={date}
           setDateOnly={setDateOnly}
           period={period}
           setPeriod={setPeriod}
@@ -80,7 +78,7 @@ function useDate() {
   function incrementTime() {
     const timer = setInterval(() => {
       setDate(date.minute(date.minute() + 5));
-    }, 1000);
+    }, 5 * 60 * 1000);
     return timer;
   }
 
