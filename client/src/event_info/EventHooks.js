@@ -1,6 +1,10 @@
 import { useState, useReducer } from "react";
-import RRule, { RRuleSet, rrulestr } from "rrule";
-import dayjs from "dayjs";
+import RRule from "rrule";
+import {
+  eventTemplate,
+  rruleTemplate,
+  getDurationTemplate,
+} from "./EventTemplates";
 
 export function getUsers() {
   return [
@@ -21,11 +25,50 @@ export function useEvent(datetime, event) {
     parseRRule(event)
   );
 
+  function toggleAllDay(e) {
+    if (info.isAllDay) {
+      infoDispatch({ type: "start", value: duration.datetimeStart.toDate() });
+      infoDispatch({ type: "duration", value: duration.durationMin });
+    } else {
+      infoDispatch({ type: "start", value: duration.allDayStart.toDate() });
+      infoDispatch({ type: "duration", value: duration.durationDay });
+    }
+    infoDispatch({ type: "allDay", value: e.target.checked });
+  }
+
+  function setDateRange(dateRange) {
+    const durationDay = getDuration(dateRange, "day");
+    infoDispatch({ type: "start", value: dateRange[0].toDate() });
+    infoDispatch({ type: "duration", value: durationDay });
+    setDuration({ ...duration, allDayStart: dateRange[0], durationDay });
+  }
+
+  function setSingleDate(date) {
+    infoDispatch({ type: "start", value: date.toDate() });
+    setDuration({ ...duration, datetimeStart: date });
+  }
+
+  function setTimeRange(timeRange) {
+    const durationMin = getDuration(timeRange, "minute");
+    infoDispatch({
+      type: "duration",
+      value: durationMin,
+    });
+
+    const hour = timeRange[0].hour();
+    const min = timeRange[0].minute();
+    const datetimeStart = duration.datetimeStart.hour(hour).minute(min);
+    setDuration({ ...duration, datetimeStart, durationMin });
+  }
+
   return {
     info,
     infoDispatch,
     duration,
-    setDuration,
+    toggleAllDay,
+    setDateRange,
+    setSingleDate,
+    setTimeRange,
     options,
     optionsDispatch,
   };
@@ -37,12 +80,14 @@ function infoReducer(state, action) {
       return { ...state, title: action.value };
     case "description":
       return { ...state, description: action.value };
-    case "participants":
-      return { ...state, participants: action.value };
+    case "attendees":
+      return { ...state, attendees: action.value };
     case "allDay":
       return { ...state, isAllDay: action.value };
     case "start":
-      return { ...state, start: action.value.toDate() };
+      return { ...state, start: action.value };
+    case "end":
+      return { ...state, end: action.value };
     case "duration":
       return { ...state, duration: action.value };
     case "recurring":
@@ -64,23 +109,14 @@ function optionsReducer(state, action) {
       return { ...state, count: action.value };
     case "byweekday":
       return { ...state, byweekday: action.value };
-    case "byweekno":
-      return { ...state, byweekno: action.value };
+    case "bysetpos":
+      return { ...state, bysetpos: action.value };
     case "bymonthday":
       return { ...state, bymonthday: action.value };
     case "bymonth":
       return { ...state, bymonth: action.value };
     case "reset":
-      return {
-        freq: -1,
-        interval: 1,
-        until: null,
-        byweekday: [],
-        byweekno: 0,
-        bymonthday: 0,
-        bymonth: 0,
-        count: 0,
-      };
+      return parseRRule(action.value);
   }
 }
 
@@ -91,33 +127,13 @@ function getEventInfo(datetime, event) {
   }
 
   const round = Math.ceil(datetime.minute() / 15);
-
-  const eventTemplate = {
-    id: "",
-    userId: "",
-    title: "",
-    description: "",
-    attendees: [], //id number
-    start: datetime.minute(round * 15).toDate(),
-    end: null,
-    duration: 60,
-    isAllDay: false,
-    isRecurring: false,
-    rrule: "",
-    exceptions: [],
-  };
+  eventTemplate.start = datetime.minute(round * 15).toDate();
 
   return eventTemplate;
 }
 
 function getEventDuration(datetime, event) {
-  let template = {
-    datetimeStart: datetime,
-    durationMin: 60,
-    allDayStart: datetime,
-    durationDay: 0,
-  };
-
+  let template = getDurationTemplate(datetime);
   if (event) {
     if (event.isAllDay) {
       template.allDayStart = event.start;
@@ -129,7 +145,6 @@ function getEventDuration(datetime, event) {
 
     return template;
   }
-
   const round = Math.ceil(datetime.minute() / 15);
   template.datetimeStart = datetime.minute(round * 15);
   return template;
@@ -140,23 +155,18 @@ export function getDuration(dates, type) {
 }
 
 function parseRRule(event) {
-  let template = {
-    freq: -1,
-    interval: 1,
-    until: null,
-    byweekday: [],
-    byweekno: 0,
-    bymonthday: 0,
-    bymonth: 0,
-    count: 0,
-  };
-
   if (event) {
     let options = RRule.parseString(event.rrule);
-    template = { ...template, ...options };
+    return { ...rruleTemplate, ...options };
   }
 
-  return template;
+  console.log(
+    RRule.fromString(
+      "RRULE:FREQ=MONTHLY;INTERVAL=1;BYDAY=4FR;BYSETPOS=4"
+    ).toText()
+  );
+
+  return rruleTemplate;
 }
 
 export function getRepeatValue(options) {
@@ -171,5 +181,23 @@ export function getRepeatValue(options) {
     .replace("every 1 years", "Annually")
     .replace("every", "Every");
 
+  if (options.bysetpos && !Array.isArray(options.bysetpos)) {
+    text = text.replace("on ", `on the ${getPosition(options.bysetpos)} `);
+  }
   return text;
+}
+
+function getPosition(i) {
+  switch (i) {
+    case -1:
+      return "Last";
+    case 1:
+      return "1st";
+    case 2:
+      return "2nd";
+    case 3:
+      return "3rd";
+    default:
+      return `${i}th`;
+  }
 }

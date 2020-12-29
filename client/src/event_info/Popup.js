@@ -11,12 +11,8 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import RepeatPopup from "./RepeatPopup";
-import {
-  useEvent,
-  getUsers,
-  getDuration,
-  getRepeatValue,
-} from "./EventInfoHooks";
+import { useEvent, getUsers, getRepeatValue } from "./EventHooks";
+import { getDefaultRRules, getMonthOptions, getWeekday } from "./EventHelpers";
 import RRule from "rrule";
 
 const PopupContainer = styled(Modal)`
@@ -54,11 +50,14 @@ export default function Popup(props) {
     info,
     infoDispatch,
     duration,
-    setDuration,
+    toggleAllDay,
+    setDateRange,
+    setSingleDate,
+    setTimeRange,
     options,
     optionsDispatch,
   } = useEvent(props.date, props.event);
-  const [prevSelect, setPrevSelect] = useState(getRepeatValue(options));
+  const [selectLabel, setSelectLabel] = useState(getRepeatValue(options));
 
   function blur() {
     select.current.blur();
@@ -67,87 +66,17 @@ export default function Popup(props) {
   function setRepeat(value) {
     if (value === "custom") {
       setShowRepeat(true);
-      optionsDispatch({ type: "freq", value: 3 });
+      // optionsDispatch({ type: "freq", value: 3 });
     } else if (value === "none") {
       infoDispatch({ type: "recurring", value: false });
       infoDispatch({ type: "rrule", value: "" });
-      setPrevSelect(value);
+      setSelectLabel(value);
     } else {
-      setPrevSelect(value);
-      let rrule;
-      switch (value) {
-        case "none":
-          rrule = "";
-          break;
-        case "daily":
-          rrule = "FREQ=DAILY;INTERVAL=1";
-          break;
-        case "weekly": {
-          const day = dayAbbr[dayjs(info.start).day()];
-          rrule = `FREQ=WEEKLY;BYDAY=${day};INTERVAL=1`;
-          break;
-        }
-        case "monthly": {
-          const day = dayAbbr[dayjs(info.start).day()];
-          const week = Math.ceil(dayjs(info.start).date() / 7);
-          rrule = `FREQ=MONTHLY;BYSETPOS=${week};BYDAY=${day};INTERVAL=1`;
-          break;
-        }
-        case "monthly-last": {
-          const day = dayAbbr[dayjs(info.start).day()];
-          rrule = `FREQ=MONTHLY;BYSETPOS=-1;BYDAY=${day};INTERVAL=1`;
-          break;
-        }
-        case "annually": {
-          const date = dayjs(info.start).date();
-          const month = dayjs(info.start).month() + 1;
-          rrule = `FREQ=YEARLY;BYMONTH=${month};BYMONTHDAY=${date}`;
-          break;
-        }
-      }
+      let rrule = getDefaultRRules(dayjs(info.start), value);
       infoDispatch({ type: "recurring", value: true });
       infoDispatch({ type: "rrule", value: rrule });
+      setSelectLabel(value);
     }
-  }
-
-  function swapDuration() {
-    if (info.isAllDay) {
-      infoDispatch({ type: "start", value: duration.datetimeStart });
-      infoDispatch({ type: "duration", value: duration.durationMin });
-    } else {
-      infoDispatch({ type: "start", value: duration.allDayStart });
-      infoDispatch({ type: "duration", value: duration.durationDay });
-    }
-  }
-
-  function monthOptions(date) {
-    const week = Math.ceil(date.date() / 7);
-    const last = Math.ceil(date.endOf("month").date() / 7);
-    if (week === last) {
-      if (week === 4) {
-        return (
-          <>
-            <Option value="monthly">
-              Monthly on Fourth {weekdays[date.day()]}
-            </Option>
-            <Option value="monthly-last">
-              Monthly on Last {weekdays[date.day()]}
-            </Option>
-          </>
-        );
-      } else if (week === 5) {
-        return (
-          <Option value="monthly-last">
-            Monthly on Last {weekdays[date.day()]}
-          </Option>
-        );
-      }
-    }
-    return (
-      <Option value="monthly">
-        Monthly on {weekNumber[week - 1]} {weekdays[date.day()]}
-      </Option>
-    );
   }
 
   return (
@@ -183,7 +112,7 @@ export default function Popup(props) {
             allowClear
             value={info.participants}
             onChange={(val) => {
-              infoDispatch({ type: "participants", value: val });
+              infoDispatch({ type: "attendees", value: val });
               blur();
             }}
           />
@@ -192,75 +121,42 @@ export default function Popup(props) {
               <DateRangePicker
                 allowClear={false}
                 value={getDates(duration.allDayStart, duration.durationDay)}
-                onChange={(val) => {
-                  const durationDay = getDuration(val, "day");
-                  infoDispatch({ type: "start", value: val[0] });
-                  infoDispatch({
-                    type: "duration",
-                    value: durationDay,
-                  });
-                  setDuration({
-                    ...duration,
-                    allDayStart: val[0],
-                    durationDay,
-                  });
-                }}
+                onChange={(val) => setDateRange(val)}
               />
             ) : (
               <>
                 <DatePicker
                   allowClear={false}
                   value={duration.datetimeStart}
-                  onChange={(val) => {
-                    infoDispatch({ type: "start", value: val });
-                    setDuration({ ...duration, datetimeStart: val });
-                  }}
+                  onChange={(val) => setSingleDate(val)}
                 />
                 <TimeRangePicker
                   allowClear={false}
                   value={getTime(duration.datetimeStart, duration.durationMin)}
                   minuteStep={15}
                   format="h:mm a"
-                  onChange={(val) => {
-                    const durationMin = getDuration(val, "minute");
-                    infoDispatch({
-                      type: "duration",
-                      value: durationMin,
-                    });
-
-                    const hour = val[0].hour();
-                    const min = val[0].minute();
-                    const datetimeStart = duration.datetimeStart
-                      .hour(hour)
-                      .minute(min);
-                    setDuration({ ...duration, datetimeStart, durationMin });
-                  }}
+                  onChange={(val) => setTimeRange(val)}
                 />
               </>
             )}
           </DateContainer>
           <Space direction="horizontal" size="middle">
             <Select
-              value={prevSelect}
+              value={selectLabel}
               onChange={(value) => setRepeat(value)}
               dropdownStyle={{ minWidth: "25%" }}
+              style={{ maxWidth: "150%" }}
             >
               <Option value="none">No Repeat</Option>
               <Option value="daily">Daily</Option>
               <Option value="weekly">
-                Weekly on {weekdays[dayjs(info.start).day()]}
+                Weekly on {getWeekday(dayjs(info.start))}
               </Option>
-              {monthOptions(dayjs(info.start))}
+              {getMonthOptions(dayjs(info.start))}
               <Option value="annually">Annually</Option>
               <Option value="custom">Custom</Option>
             </Select>
-            <Checkbox
-              checked={info.isAllDay}
-              onChange={(e) => {
-                swapDuration();
-                infoDispatch({ type: "allDay", value: e.target.checked });
-              }}
-            >
+            <Checkbox checked={info.isAllDay} onChange={(e) => toggleAllDay(e)}>
               All Day
             </Checkbox>
           </Space>
@@ -270,7 +166,8 @@ export default function Popup(props) {
         <RepeatPopup
           cancelPopup={() => {
             setShowRepeat(false);
-            optionsDispatch({ type: "reset" });
+            optionsDispatch({ type: "reset", value: props.event });
+            infoDispatch({ type: "end", value: null });
           }}
           okPopup={() => {
             setShowRepeat(false);
@@ -279,11 +176,12 @@ export default function Popup(props) {
               type: "rrule",
               value: new RRule(options).toString(),
             });
-            setPrevSelect(getRepeatValue(options));
+            setSelectLabel(getRepeatValue(options));
           }}
+          infoDispatch={infoDispatch}
           options={options}
           optionsDispatch={optionsDispatch}
-          date={props.date}
+          date={dayjs(info.start)}
         />
       )}
     </>
@@ -311,17 +209,3 @@ export function usePopup() {
 
   return { isVisible, openPopup, closePopup };
 }
-
-const weekdays = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
-const weekNumber = ["First", "Second", "Third", "Fourth", "Last"];
-
-const dayAbbr = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];

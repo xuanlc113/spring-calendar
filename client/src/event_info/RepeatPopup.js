@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { Modal, Space, Select, InputNumber, Radio, DatePicker } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getMonthOptions } from "./EventHelpers";
 
 const { Option } = Select;
 
@@ -36,11 +37,17 @@ export default function RepeatPopup(props) {
   const [count, setCount] = useState(5);
   const [untilDate, setUntilDate] = useState(props.date);
 
+  useEffect(() => {
+    if (props.options.freq === -1) {
+      props.optionsDispatch({ type: "freq", value: 3 });
+    }
+  });
+
   function changePeriod(val) {
     switch (val) {
       case 0:
         props.optionsDispatch({ type: "byweekday", value: [] });
-        props.optionsDispatch({ type: "byweekno", value: 0 });
+        props.optionsDispatch({ type: "bysetpos", value: [] });
         props.optionsDispatch({ type: "bymonthday", value: props.date.date() });
         props.optionsDispatch({
           type: "bymonth",
@@ -49,22 +56,23 @@ export default function RepeatPopup(props) {
         break;
       case 1:
         props.optionsDispatch({ type: "byweekday", value: [] });
-        props.optionsDispatch({ type: "byweekno", value: 0 });
+        props.optionsDispatch({ type: "bysetpos", value: [] });
         props.optionsDispatch({ type: "bymonth", value: 0 });
         props.optionsDispatch({ type: "bymonthday", value: props.date.date() });
         break;
       case 2:
+        let day = props.date.day() === 0 ? 6 : props.date.day() - 1;
         props.optionsDispatch({
           type: "byweekday",
-          value: [props.date.day() - 1],
+          value: [day],
         });
-        props.optionsDispatch({ type: "byweekno", value: 0 });
+        props.optionsDispatch({ type: "bysetpos", value: [] });
         props.optionsDispatch({ type: "bymonth", value: 0 });
         props.optionsDispatch({ type: "bymonthday", value: 0 });
         break;
       case 3:
         props.optionsDispatch({ type: "byweekday", value: [] });
-        props.optionsDispatch({ type: "byweekno", value: 0 });
+        props.optionsDispatch({ type: "bysetpos", value: [] });
         props.optionsDispatch({ type: "bymonthday", value: 0 });
         props.optionsDispatch({ type: "bymonth", value: 0 });
         break;
@@ -137,38 +145,8 @@ export default function RepeatPopup(props) {
         onChange={(val) => changeMonthlyValue(val)}
       >
         <Option value="monthly-date">Monthly on {date.date()}</Option>
-        {monthWeekOptions(date)}
+        {getMonthOptions(date)}
       </Select>
-    );
-  }
-
-  function monthWeekOptions(date) {
-    const week = Math.ceil(date.date() / 7);
-    const last = Math.ceil(date.endOf("month").date() / 7);
-    if (week === last) {
-      if (week === 4) {
-        return (
-          <>
-            <Option value="monthly-week">
-              Monthly on Fourth {weekdays[date.day()]}
-            </Option>
-            <Option value="monthly-last">
-              Monthly on Last {weekdays[date.day()]}
-            </Option>
-          </>
-        );
-      } else if (week === 5) {
-        return (
-          <Option value="monthly-last">
-            Monthly on Last {weekdays[date.day()]}
-          </Option>
-        );
-      }
-    }
-    return (
-      <Option value="monthly-week">
-        Monthly on {weekNumber[week - 1]} {weekdays[date.day()]}
-      </Option>
     );
   }
 
@@ -176,10 +154,10 @@ export default function RepeatPopup(props) {
     if (props.options.bymonthday) {
       return "monthly-date";
     }
-    if (props.options.byweekno === -1) {
+    if (props.options.bysetpos === -1) {
       return "monthly-last";
     }
-    return "monthly-week";
+    return "monthly";
   }
 
   function getEndType() {
@@ -193,23 +171,25 @@ export default function RepeatPopup(props) {
   }
 
   function changeMonthlyValue(val) {
+    let day = props.date.day() === 0 ? 6 : props.date.day() - 1;
     switch (val) {
       case "monthly-date":
-        props.optionsDispatch({ type: "byweekno", value: [] });
+        props.optionsDispatch({ type: "bysetpos", value: [] });
+        props.optionsDispatch({ type: "byweekday", value: [] });
         props.optionsDispatch({ type: "bymonthday", value: props.date.date() });
         break;
       case "monthly-last":
-        props.optionsDispatch({ type: "byweekno", value: -1 });
+        props.optionsDispatch({ type: "bysetpos", value: -1 });
         props.optionsDispatch({ type: "bymonthday", value: 0 });
-        props.optionsDispatch({ type: "byweekday", value: [props.date.day()] });
+        props.optionsDispatch({ type: "byweekday", value: [day] });
         break;
-      case "monthly-week":
+      case "monthly":
         props.optionsDispatch({
-          type: "byweekno",
+          type: "bysetpos",
           value: Math.ceil(props.date.date() / 7),
         });
         props.optionsDispatch({ type: "bymonthday", value: 0 });
-        props.optionsDispatch({ type: "byweekday", value: [props.date.day()] });
+        props.optionsDispatch({ type: "byweekday", value: [day] });
         break;
     }
   }
@@ -219,14 +199,17 @@ export default function RepeatPopup(props) {
       case 1:
         props.optionsDispatch({ type: "count", value: 0 });
         props.optionsDispatch({ type: "until", value: null });
+        props.infoDispatch({ type: "end", value: null });
         break;
       case 2:
         props.optionsDispatch({ type: "count", value: 0 });
         props.optionsDispatch({ type: "until", value: untilDate.toDate() });
+        props.infoDispatch({ type: "end", value: untilDate.toDate() });
         break;
       case 3:
         props.optionsDispatch({ type: "until", value: null });
         props.optionsDispatch({ type: "count", value: count });
+        props.infoDispatch({ type: "end", value: null });
         break;
     }
   }
@@ -248,7 +231,10 @@ export default function RepeatPopup(props) {
               props.optionsDispatch({ type: "interval", value: val })
             }
           />
-          <Select defaultValue={3} onChange={(val) => changePeriod(val)}>
+          <Select
+            value={props.options.freq}
+            onChange={(val) => changePeriod(val)}
+          >
             <Option value={3}>Day</Option>
             <Option value={2}>Week</Option>
             <Option value={1}>Month</Option>
@@ -266,6 +252,7 @@ export default function RepeatPopup(props) {
               value={untilDate}
               onChange={(val) => {
                 setUntilDate(val);
+                props.infoDispatch({ type: "end", value: val.toDate() });
                 props.optionsDispatch({ type: "until", value: val.toDate() });
               }}
               style={{ marginLeft: "1rem" }}
@@ -290,15 +277,3 @@ export default function RepeatPopup(props) {
     </PopupContainer>
   );
 }
-
-const weekdays = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
-const weekNumber = ["First", "Second", "Third", "Fourth", "Last"];
