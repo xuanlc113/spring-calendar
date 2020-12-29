@@ -17,6 +17,7 @@ import {
   getDuration,
   getRepeatValue,
 } from "./EventInfoHooks";
+import RRule from "rrule";
 
 const PopupContainer = styled(Modal)`
   top: 50px;
@@ -51,11 +52,11 @@ export default function Popup(props) {
   const [showRepeat, setShowRepeat] = useState(false);
   const {
     info,
-    dispatchInfo,
+    infoDispatch,
     duration,
     setDuration,
     options,
-    setOptions,
+    optionsDispatch,
   } = useEvent(props.date, props.event);
   const [prevSelect, setPrevSelect] = useState(getRepeatValue(options));
 
@@ -66,9 +67,10 @@ export default function Popup(props) {
   function setRepeat(value) {
     if (value === "custom") {
       setShowRepeat(true);
+      optionsDispatch({ type: "freq", value: 3 });
     } else if (value === "none") {
-      dispatchInfo({ type: "recurring", value: false });
-      dispatchInfo({ type: "rrule", value: "" });
+      infoDispatch({ type: "recurring", value: false });
+      infoDispatch({ type: "rrule", value: "" });
       setPrevSelect(value);
     } else {
       setPrevSelect(value);
@@ -103,18 +105,18 @@ export default function Popup(props) {
           break;
         }
       }
-      dispatchInfo({ type: "recurring", value: true });
-      dispatchInfo({ type: "rrule", value: rrule });
+      infoDispatch({ type: "recurring", value: true });
+      infoDispatch({ type: "rrule", value: rrule });
     }
   }
 
   function swapDuration() {
     if (info.isAllDay) {
-      dispatchInfo({ type: "start", value: duration.datetimeStart });
-      dispatchInfo({ type: "duration", value: duration.durationMin });
+      infoDispatch({ type: "start", value: duration.datetimeStart });
+      infoDispatch({ type: "duration", value: duration.durationMin });
     } else {
-      dispatchInfo({ type: "start", value: duration.allDayStart });
-      dispatchInfo({ type: "duration", value: duration.durationDay });
+      infoDispatch({ type: "start", value: duration.allDayStart });
+      infoDispatch({ type: "duration", value: duration.durationDay });
     }
   }
 
@@ -161,7 +163,7 @@ export default function Popup(props) {
             placeholder="Add Title"
             value={info.title}
             onChange={(e) =>
-              dispatchInfo({ type: "title", value: e.target.value })
+              infoDispatch({ type: "title", value: e.target.value })
             }
           />
           <TextArea
@@ -169,7 +171,7 @@ export default function Popup(props) {
             placeholder="Add Description"
             value={info.description}
             onChange={(e) =>
-              dispatchInfo({ type: "description", value: e.target.value })
+              infoDispatch({ type: "description", value: e.target.value })
             }
           />
           <Select
@@ -181,7 +183,7 @@ export default function Popup(props) {
             allowClear
             value={info.participants}
             onChange={(val) => {
-              dispatchInfo({ type: "participants", value: val });
+              infoDispatch({ type: "participants", value: val });
               blur();
             }}
           />
@@ -192,8 +194,8 @@ export default function Popup(props) {
                 value={getDates(duration.allDayStart, duration.durationDay)}
                 onChange={(val) => {
                   const durationDay = getDuration(val, "day");
-                  dispatchInfo({ type: "start", value: val[0] });
-                  dispatchInfo({
+                  infoDispatch({ type: "start", value: val[0] });
+                  infoDispatch({
                     type: "duration",
                     value: durationDay,
                   });
@@ -210,7 +212,7 @@ export default function Popup(props) {
                   allowClear={false}
                   value={duration.datetimeStart}
                   onChange={(val) => {
-                    dispatchInfo({ type: "start", value: val });
+                    infoDispatch({ type: "start", value: val });
                     setDuration({ ...duration, datetimeStart: val });
                   }}
                 />
@@ -221,7 +223,7 @@ export default function Popup(props) {
                   format="h:mm a"
                   onChange={(val) => {
                     const durationMin = getDuration(val, "minute");
-                    dispatchInfo({
+                    infoDispatch({
                       type: "duration",
                       value: durationMin,
                     });
@@ -256,7 +258,7 @@ export default function Popup(props) {
               checked={info.isAllDay}
               onChange={(e) => {
                 swapDuration();
-                dispatchInfo({ type: "allDay", value: e.target.checked });
+                infoDispatch({ type: "allDay", value: e.target.checked });
               }}
             >
               All Day
@@ -264,7 +266,26 @@ export default function Popup(props) {
           </Space>
         </FullSpace>
       </PopupContainer>
-      {showRepeat && <RepeatPopup closePopup={() => setShowRepeat(false)} />}
+      {showRepeat && (
+        <RepeatPopup
+          cancelPopup={() => {
+            setShowRepeat(false);
+            optionsDispatch({ type: "reset" });
+          }}
+          okPopup={() => {
+            setShowRepeat(false);
+            infoDispatch({ type: "recurring", value: true });
+            infoDispatch({
+              type: "rrule",
+              value: new RRule(options).toString(),
+            });
+            setPrevSelect(getRepeatValue(options));
+          }}
+          options={options}
+          optionsDispatch={optionsDispatch}
+          date={props.date}
+        />
+      )}
     </>
   );
 }

@@ -11,17 +11,27 @@ export function getUsers() {
 }
 
 export function useEvent(datetime, event) {
-  const [info, dispatchInfo] = useReducer(
-    reducer,
+  const [info, infoDispatch] = useReducer(
+    infoReducer,
     getEventInfo(datetime, event)
   );
   const [duration, setDuration] = useState(getEventDuration(datetime, event));
-  const [options, setOptions] = useState(parseRRule(event));
+  const [options, optionsDispatch] = useReducer(
+    optionsReducer,
+    parseRRule(event)
+  );
 
-  return { info, dispatchInfo, duration, setDuration, options, setOptions };
+  return {
+    info,
+    infoDispatch,
+    duration,
+    setDuration,
+    options,
+    optionsDispatch,
+  };
 }
 
-function reducer(state, action) {
+function infoReducer(state, action) {
   switch (action.type) {
     case "title":
       return { ...state, title: action.value };
@@ -39,6 +49,38 @@ function reducer(state, action) {
       return { ...state, isRecurring: action.value };
     case "rrule":
       return { ...state, rrule: action.value };
+  }
+}
+
+function optionsReducer(state, action) {
+  switch (action.type) {
+    case "freq":
+      return { ...state, freq: action.value };
+    case "interval":
+      return { ...state, interval: action.value };
+    case "until":
+      return { ...state, until: action.value };
+    case "count":
+      return { ...state, count: action.value };
+    case "byweekday":
+      return { ...state, byweekday: action.value };
+    case "byweekno":
+      return { ...state, byweekno: action.value };
+    case "bymonthday":
+      return { ...state, bymonthday: action.value };
+    case "bymonth":
+      return { ...state, bymonth: action.value };
+    case "reset":
+      return {
+        freq: -1,
+        interval: 1,
+        until: null,
+        byweekday: [],
+        byweekno: 0,
+        bymonthday: 0,
+        bymonth: 0,
+        count: 0,
+      };
   }
 }
 
@@ -100,11 +142,13 @@ export function getDuration(dates, type) {
 function parseRRule(event) {
   let template = {
     freq: -1,
-    interval: 0,
+    interval: 1,
     until: null,
-    byweekno: [],
     byweekday: [],
+    byweekno: 0,
     bymonthday: 0,
+    bymonth: 0,
+    count: 0,
   };
 
   if (event) {
@@ -112,7 +156,6 @@ function parseRRule(event) {
     template = { ...template, ...options };
   }
 
-  // console.log(RRule.parseString("FREQ=WEEKLY;INTERVAL=0;BYDAY=MO,FR"));
   return template;
 }
 
@@ -122,10 +165,10 @@ export function getRepeatValue(options) {
   }
   let text = new RRule(options).toText();
   text = text
-    .replace("every 0 days", "Daily")
-    .replace("every 0 weeks", "Weekly")
-    .replace("every 0 months", "Monthly")
-    .replace("every 0 years", "Annually")
+    .replace("every 1 days", "Daily")
+    .replace("every 1 weeks", "Weekly")
+    .replace("every 1 months", "Monthly")
+    .replace("every 1 years", "Annually")
     .replace("every", "Every");
 
   return text;
