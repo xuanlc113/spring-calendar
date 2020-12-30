@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Button, Space } from "antd";
+import { Button, Space, Modal, Radio } from "antd";
 import dayjs from "dayjs";
 import {
   CalendarOutlined,
@@ -9,8 +9,9 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import { getStartTime, getEndTime } from "./EventHelpers";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../App";
+import Popup, { usePopup } from "./Popup";
 
 const PopoverHeader = styled.div`
   display: flex;
@@ -48,7 +49,28 @@ const AttendOptions = styled.div`
 `;
 
 export default function EventPopover(props) {
-  const { isOwner, isCreator } = useEventEdit(props);
+  const { isOwner, isCreator, isRecurring } = useEventEdit(props);
+  const [deleteRecurringVisible, setDeleteRecurringVisible] = useState(false);
+  const [option, setOption] = useState(1);
+  const { isVisible, openPopup, closePopup, okPopup } = usePopup();
+
+  function showDelete() {
+    if (isRecurring()) {
+      return deleteRecurringEvent();
+    }
+    return deleteEvent();
+  }
+
+  function deleteEvent() {
+    Modal.confirm({
+      title: "Delete Event",
+      maskClosable: true,
+    });
+  }
+
+  function deleteRecurringEvent() {
+    setDeleteRecurringVisible(true);
+  }
 
   return (
     <>
@@ -56,9 +78,19 @@ export default function EventPopover(props) {
         <h3>{props.canonicalEvent.title}</h3>
         <div>
           {isCreator() && isOwner() && (
-            <Button type="text" shape="circle" icon={<EditOutlined />} />
+            <Button
+              type="text"
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={openPopup}
+            />
           )}
-          <Button type="text" shape="circle" icon={<DeleteOutlined />} />
+          <Button
+            type="text"
+            shape="circle"
+            icon={<DeleteOutlined />}
+            onClick={() => showDelete()}
+          />
         </div>
       </PopoverHeader>
       <PopoverInfo>
@@ -97,6 +129,29 @@ export default function EventPopover(props) {
           )}
         </>
       )}
+      <Modal
+        visible={deleteRecurringVisible}
+        onCancel={() => setDeleteRecurringVisible(false)}
+        title="Delete Recurring"
+      >
+        <Radio.Group value={option} onChange={(e) => setOption(e.target.value)}>
+          <Radio value={1} style={{ display: "block" }}>
+            This event
+          </Radio>
+          <Radio value={2} style={{ display: "block" }}>
+            This and following events
+          </Radio>
+        </Radio.Group>
+      </Modal>
+      {isVisible && (
+        <Popup
+          okPopup={okPopup}
+          closePopup={closePopup}
+          title={"Edit Event"}
+          date={dayjs(props.canonicalEvent.start)}
+          event={props.canonicalEvent}
+        />
+      )}
     </>
   );
 }
@@ -114,5 +169,9 @@ function useEventEdit(event) {
     return userId === event.canonicalEvent.userId;
   }
 
-  return { isOwner, isCreator };
+  function isRecurring() {
+    return event.canonicalEvent.isRecurring;
+  }
+
+  return { isOwner, isCreator, isRecurring };
 }

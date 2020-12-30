@@ -33,6 +33,7 @@ export default function Event(props) {
       placement="topLeft"
       trigger="click"
       content={<EventPopover {...props} />}
+      zIndex={800}
     >
       <Container {...props.style}>
         <Info>

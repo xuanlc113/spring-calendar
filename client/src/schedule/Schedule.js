@@ -57,7 +57,7 @@ function getUserEvents(date, user) {
       ],
       canonicalEvent: {
         id: "",
-        userId: "002",
+        userId: "001",
         title: "run",
         description: "go for a run",
         attendees: [1000],
@@ -65,12 +65,12 @@ function getUserEvents(date, user) {
         end: "2021-1-09",
         duration: 45,
         isAllDay: false,
-        isRecurring: true,
+        isRecurring: false,
         rrule: "",
         exceptions: [],
       },
       style: { color: user.color },
-      userId: "002",
+      userId: "001",
     },
   ];
 }

@@ -5,6 +5,7 @@ import {
   rruleTemplate,
   getDurationTemplate,
 } from "./EventTemplates";
+import dayjs from "dayjs";
 
 export function getUsers() {
   return [
@@ -136,10 +137,10 @@ function getEventDuration(datetime, event) {
   let template = getDurationTemplate(datetime);
   if (event) {
     if (event.isAllDay) {
-      template.allDayStart = event.start;
+      template.allDayStart = dayjs(event.start);
       template.durationDay = event.duration;
     } else {
-      template.datetimeStart = event.start;
+      template.datetimeStart = dayjs(event.start);
       template.durationMin = event.duration;
     }
 
@@ -156,15 +157,11 @@ export function getDuration(dates, type) {
 
 function parseRRule(event) {
   if (event) {
-    let options = RRule.parseString(event.rrule);
-    return { ...rruleTemplate, ...options };
+    if (event.isRecurring) {
+      let options = RRule.parseString(event.rrule);
+      return { ...rruleTemplate, ...options };
+    }
   }
-
-  console.log(
-    RRule.fromString(
-      "RRULE:FREQ=MONTHLY;INTERVAL=1;BYDAY=4FR;BYSETPOS=4"
-    ).toText()
-  );
 
   return rruleTemplate;
 }
