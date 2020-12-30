@@ -98,6 +98,7 @@ export default function RepeatPopup(props) {
     } else {
       weekdays.push(val);
     }
+    weekdays.sort();
     props.optionsDispatch({ type: "byweekday", value: weekdays });
   }
 

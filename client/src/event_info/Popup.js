@@ -66,7 +66,6 @@ export default function Popup(props) {
   function setRepeat(value) {
     if (value === "custom") {
       setShowRepeat(true);
-      // optionsDispatch({ type: "freq", value: 3 });
     } else if (value === "none") {
       infoDispatch({ type: "recurring", value: false });
       infoDispatch({ type: "rrule", value: "" });
@@ -83,7 +82,7 @@ export default function Popup(props) {
     <>
       <PopupContainer
         visible={true}
-        onOk={props.closePopup}
+        onOk={props.okPopup}
         onCancel={props.closePopup}
         title={props.title}
       >
@@ -145,7 +144,7 @@ export default function Popup(props) {
               value={selectLabel}
               onChange={(value) => setRepeat(value)}
               dropdownStyle={{ minWidth: "25%" }}
-              style={{ maxWidth: "150%" }}
+              style={{ width: "100%" }}
             >
               <Option value="none">No Repeat</Option>
               <Option value="daily">Daily</Option>
@@ -207,5 +206,10 @@ export function usePopup() {
     setIsVisible(false);
   }
 
-  return { isVisible, openPopup, closePopup };
+  function okPopup() {
+    setIsVisible(false);
+    // only create/update, check if id present
+  }
+
+  return { isVisible, openPopup, closePopup, okPopup };
 }

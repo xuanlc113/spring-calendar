@@ -36,32 +36,49 @@ function getEvents(date, users) {
   for (let user of users) {
     events = events.concat(getUserEvents(date, user));
   }
-  events.sort((a, b) => a.event.start - b.event.start);
+  events.sort((a, b) => a.datetime - b.datetime);
   events = positionEvents(events);
   return events;
 }
 
 function getUserEvents(date, user) {
-  //get user events, add color
+  //get user events, add color, add user
   return [
     {
-      event: {
-        userId: "userid1234",
+      id: "",
+      canonicalEventId: "",
+      datetime: "2020-12-30 10:30",
+      attendees: [
+        { email: "attd2", status: 1 },
+        { email: "attd2", status: 1 },
+        { email: "attd2", status: 1 },
+        { email: "attd2", status: 1 },
+        { email: "attd2", status: 1 },
+      ],
+      canonicalEvent: {
+        id: "",
+        userId: "002",
         title: "run",
         description: "go for a run",
-        datetime: "2020-12-21 10:23", // '2004-10-19 10:23:54' need?
-        duration: 45 * 60,
-        participants: [{ name: "sdf" }],
+        attendees: [1000],
+        start: "2020-12-21 10:30",
+        end: "2021-1-09",
+        duration: 45,
+        isAllDay: false,
+        isRecurring: true,
+        rrule: "",
+        exceptions: [],
       },
       style: { color: user.color },
+      userId: "002",
     },
   ];
 }
 
 function positionEvents(events) {
   for (let i = 0; i < events.length; i++) {
-    let start = dayjs(events[i].event.datetime).unix();
-    let end = start + events[i].event.duration;
+    let start = dayjs(events[i].datetime).unix();
+    let end = start + events[i].canonicalEvent.duration * 60;
     console.log(start);
     let top = ((start - dayjs().startOf("day").unix()) / 900) * 10;
     let height = ((end - start) / 900) * 10;
@@ -71,12 +88,13 @@ function positionEvents(events) {
     let k = i + 1;
     while (
       j >= 0 &&
-      dayjs(events[j].event.datetime).unix() + events[j].event.duration >= start
+      dayjs(events[j].datetime).unix() + events[j].canonicalEvent.duration >=
+        start
     ) {
       prev++;
       j--;
     }
-    while (k < events.length && dayjs(events[k].event.datetime).unix() <= end) {
+    while (k < events.length && dayjs(events[k].datetime).unix() <= end) {
       next++;
       k++;
     }

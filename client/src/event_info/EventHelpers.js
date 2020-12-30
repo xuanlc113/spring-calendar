@@ -1,4 +1,5 @@
 import { Select } from "antd";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -63,6 +64,14 @@ export function getWeekday(date) {
 
 function getWeekAbbr(date) {
   return weekdayAbbr[date.day()];
+}
+
+export function getStartTime(datetime) {
+  return dayjs(datetime).format("h:mma");
+}
+
+export function getEndTime(datetime, duration) {
+  return dayjs(datetime).add(duration, "minute").format("h:mma");
 }
 
 const weekdays = [

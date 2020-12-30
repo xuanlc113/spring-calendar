@@ -47,7 +47,7 @@ const ContactContainer = styled.div`
 `;
 
 export default function Sidebar(props) {
-  const { isVisible, openPopup, closePopup } = usePopup();
+  const { isVisible, openPopup, closePopup, okPopup } = usePopup();
 
   useEffect(() => {}, [props.date]);
 
@@ -64,6 +64,7 @@ export default function Sidebar(props) {
       </CreateButton>
       {isVisible && (
         <Popup
+          okPopup={okPopup}
           closePopup={closePopup}
           title={"Create Event"}
           date={props.date}
