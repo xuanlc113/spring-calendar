@@ -1,10 +1,6 @@
-import { useState, useReducer } from "react";
-import RRule from "rrule";
-import {
-  eventTemplate,
-  rruleTemplate,
-  getDurationTemplate,
-} from "./EventTemplates";
+import { useState, useReducer, useEffect } from "react";
+import RRule, { rrulestr } from "rrule";
+import { eventTemplate, getDurationTemplate } from "./EventTemplates";
 import dayjs from "dayjs";
 
 export function getUsers() {
@@ -15,23 +11,20 @@ export function getUsers() {
   ];
 }
 
-export function useEvent(datetime, event) {
+export function useBasicEvent(datetime, event) {
   const [info, infoDispatch] = useReducer(
     infoReducer,
     getEventInfo(datetime, event)
   );
   const [duration, setDuration] = useState(getEventDuration(datetime, event));
-  const [options, optionsDispatch] = useReducer(
-    optionsReducer,
-    parseRRule(event)
-  );
+  const [repeatLabel, setRepeatLabel] = useState(getRepeatValue(info.rrule));
 
   function toggleAllDay(e) {
     if (info.isAllDay) {
-      infoDispatch({ type: "start", value: duration.datetimeStart.toDate() });
+      infoDispatch({ type: "start", value: duration.datetimeStart });
       infoDispatch({ type: "duration", value: duration.durationMin });
     } else {
-      infoDispatch({ type: "start", value: duration.allDayStart.toDate() });
+      infoDispatch({ type: "start", value: duration.allDayStart });
       infoDispatch({ type: "duration", value: duration.durationDay });
     }
     infoDispatch({ type: "allDay", value: e.target.checked });
@@ -39,13 +32,13 @@ export function useEvent(datetime, event) {
 
   function setDateRange(dateRange) {
     const durationDay = getDuration(dateRange, "day");
-    infoDispatch({ type: "start", value: dateRange[0].toDate() });
+    infoDispatch({ type: "start", value: dateRange[0] });
     infoDispatch({ type: "duration", value: durationDay });
     setDuration({ ...duration, allDayStart: dateRange[0], durationDay });
   }
 
   function setSingleDate(date) {
-    infoDispatch({ type: "start", value: date.toDate() });
+    infoDispatch({ type: "start", value: date });
     setDuration({ ...duration, datetimeStart: date });
   }
 
@@ -62,6 +55,10 @@ export function useEvent(datetime, event) {
     setDuration({ ...duration, datetimeStart, durationMin });
   }
 
+  useEffect(() => {
+    setRepeatLabel(getRepeatValue(info.rrule));
+  }, [info.rrule]);
+
   return {
     info,
     infoDispatch,
@@ -70,8 +67,7 @@ export function useEvent(datetime, event) {
     setDateRange,
     setSingleDate,
     setTimeRange,
-    options,
-    optionsDispatch,
+    repeatLabel,
   };
 }
 
@@ -98,37 +94,17 @@ function infoReducer(state, action) {
   }
 }
 
-function optionsReducer(state, action) {
-  switch (action.type) {
-    case "freq":
-      return { ...state, freq: action.value };
-    case "interval":
-      return { ...state, interval: action.value };
-    case "until":
-      return { ...state, until: action.value };
-    case "count":
-      return { ...state, count: action.value };
-    case "byweekday":
-      return { ...state, byweekday: action.value };
-    case "bysetpos":
-      return { ...state, bysetpos: action.value };
-    case "bymonthday":
-      return { ...state, bymonthday: action.value };
-    case "bymonth":
-      return { ...state, bymonth: action.value };
-    case "reset":
-      return parseRRule(action.value);
-  }
-}
-
 function getEventInfo(datetime, event) {
   if (event) {
-    // modify date in controller?
+    event.start = dayjs(event.start);
+    if (event.end) {
+      event.end = dayjs(event.end);
+    }
     return event;
   }
 
   const round = Math.ceil(datetime.minute() / 15);
-  eventTemplate.start = datetime.minute(round * 15).toDate();
+  eventTemplate.start = datetime.minute(round * 15);
 
   return eventTemplate;
 }
@@ -143,9 +119,9 @@ function getEventDuration(datetime, event) {
       template.datetimeStart = dayjs(event.start);
       template.durationMin = event.duration;
     }
-
     return template;
   }
+
   const round = Math.ceil(datetime.minute() / 15);
   template.datetimeStart = datetime.minute(round * 15);
   return template;
@@ -155,22 +131,12 @@ export function getDuration(dates, type) {
   return dates[1].diff(dates[0], type);
 }
 
-function parseRRule(event) {
-  if (event) {
-    if (event.isRecurring) {
-      let options = RRule.parseString(event.rrule);
-      return { ...rruleTemplate, ...options };
-    }
-  }
-
-  return rruleTemplate;
-}
-
-export function getRepeatValue(options) {
-  if (options.freq === -1) {
+export function getRepeatValue(rrule) {
+  if (rrule === "") {
     return "none";
   }
-  let text = new RRule(options).toText();
+  console.log(rrule);
+  let text = rrulestr(rrule).toText();
   text = text
     .replace("every 1 days", "Daily")
     .replace("every 1 weeks", "Weekly")
@@ -178,9 +144,9 @@ export function getRepeatValue(options) {
     .replace("every 1 years", "Annually")
     .replace("every", "Every");
 
-  if (options.bysetpos && !Array.isArray(options.bysetpos)) {
-    text = text.replace("on ", `on the ${getPosition(options.bysetpos)} `);
-  }
+  // if (options.bysetpos && !Array.isArray(options.bysetpos)) {
+  //   text = text.replace("on ", `on the ${getPosition(options.bysetpos)} `);
+  // }
   return text;
 }
 

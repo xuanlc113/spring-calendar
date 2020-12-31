@@ -10,8 +10,8 @@ import {
   Checkbox,
 } from "antd";
 import dayjs from "dayjs";
-import RepeatPopup from "./RepeatPopup";
-import { useEvent, getUsers, getRepeatValue } from "./EventHooks";
+import RepeatPopup, { useCustomRepeatPopup } from "./RepeatPopup";
+import { useBasicEvent, getUsers, getRepeatValue } from "./BasicEventHook";
 import { getDefaultRRules, getMonthOptions, getWeekday } from "./EventHelpers";
 import RRule from "rrule";
 
@@ -45,7 +45,6 @@ const { Option } = Select;
 
 export default function Popup(props) {
   const select = useRef(null);
-  const [showRepeat, setShowRepeat] = useState(false);
   const {
     info,
     infoDispatch,
@@ -54,10 +53,11 @@ export default function Popup(props) {
     setDateRange,
     setSingleDate,
     setTimeRange,
-    options,
-    optionsDispatch,
-  } = useEvent(props.date, props.event);
-  const [selectLabel, setSelectLabel] = useState(getRepeatValue(options));
+    repeatLabel,
+  } = useBasicEvent(props.date, props.event);
+  const { isVisible, openPopup, closePopup, okPopup } = useCustomRepeatPopup(
+    infoDispatch
+  );
 
   function blur() {
     select.current.blur();
@@ -65,16 +65,14 @@ export default function Popup(props) {
 
   function setRepeat(value) {
     if (value === "custom") {
-      setShowRepeat(true);
+      openPopup();
     } else if (value === "none") {
       infoDispatch({ type: "recurring", value: false });
       infoDispatch({ type: "rrule", value: "" });
-      setSelectLabel(value);
     } else {
-      let rrule = getDefaultRRules(dayjs(info.start), value);
+      let rrule = getDefaultRRules(info.start, value);
       infoDispatch({ type: "recurring", value: true });
       infoDispatch({ type: "rrule", value: rrule });
-      setSelectLabel(value);
     }
   }
 
@@ -120,67 +118,52 @@ export default function Popup(props) {
               <DateRangePicker
                 allowClear={false}
                 value={getDates(duration.allDayStart, duration.durationDay)}
-                onChange={(val) => setDateRange(val)}
+                onChange={setDateRange}
               />
             ) : (
               <>
                 <DatePicker
                   allowClear={false}
                   value={duration.datetimeStart}
-                  onChange={(val) => setSingleDate(val)}
+                  onChange={setSingleDate}
                 />
                 <TimeRangePicker
                   allowClear={false}
                   value={getTime(duration.datetimeStart, duration.durationMin)}
                   minuteStep={15}
                   format="h:mm a"
-                  onChange={(val) => setTimeRange(val)}
+                  onChange={setTimeRange}
                 />
               </>
             )}
           </DateContainer>
           <Space direction="horizontal" size="middle">
             <Select
-              value={selectLabel}
-              onChange={(value) => setRepeat(value)}
+              value={repeatLabel}
+              onChange={setRepeat}
               dropdownStyle={{ minWidth: "25%" }}
               style={{ width: "100%" }}
             >
               <Option value="none">No Repeat</Option>
-              <Option value="daily">Daily</Option>
-              <Option value="weekly">
-                Weekly on {getWeekday(dayjs(info.start))}
-              </Option>
-              {getMonthOptions(dayjs(info.start))}
+              <Option value="daily">Every Day</Option>
+              <Option value="weekly">Weekly on {getWeekday(info.start)}</Option>
+              {getMonthOptions(info.start)}
               <Option value="annually">Annually</Option>
               <Option value="custom">Custom</Option>
             </Select>
-            <Checkbox checked={info.isAllDay} onChange={(e) => toggleAllDay(e)}>
+            <Checkbox checked={info.isAllDay} onChange={toggleAllDay}>
               All Day
             </Checkbox>
           </Space>
         </FullSpace>
       </PopupContainer>
-      {showRepeat && (
+      {isVisible && (
         <RepeatPopup
-          cancelPopup={() => {
-            setShowRepeat(false);
-            optionsDispatch({ type: "reset", value: props.event });
-            infoDispatch({ type: "end", value: null });
-          }}
-          okPopup={() => {
-            setShowRepeat(false);
-            infoDispatch({ type: "recurring", value: true });
-            infoDispatch({
-              type: "rrule",
-              value: new RRule(options).toString(),
-            });
-            setSelectLabel(getRepeatValue(options));
-          }}
+          cancelPopup={closePopup}
+          okPopup={okPopup}
+          rrule={info.rrule}
           infoDispatch={infoDispatch}
-          options={options}
-          optionsDispatch={optionsDispatch}
-          date={dayjs(info.start)}
+          date={info.start}
         />
       )}
     </>
