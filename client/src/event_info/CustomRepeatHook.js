@@ -1,6 +1,5 @@
 import { useState, useReducer } from "react";
 import RRule from "rrule";
-import { rruleTemplate } from "./EventTemplates";
 
 export default function useCustomRepeat(rrule, date) {
   const [options, optionsDispatch] = useReducer(
@@ -120,8 +119,6 @@ export default function useCustomRepeat(rrule, date) {
 
 function optionsReducer(state, action) {
   switch (action.type) {
-    case "freq":
-      return { ...state, freq: action.value };
     case "interval":
       return { ...state, interval: action.value };
     case "until": {
@@ -140,14 +137,6 @@ function optionsReducer(state, action) {
     }
     case "byweekday":
       return { ...state, byweekday: action.value };
-    case "bysetpos":
-      return { ...state, bysetpos: action.value };
-    case "bymonthday":
-      return { ...state, bymonthday: action.value };
-    case "bymonth":
-      return { ...state, bymonth: action.value };
-    case "reset":
-      return parseRRule(action.value);
     case "custom": {
       const { dtstart, count, until } = state;
       const newState = { ...action.value, dtstart, until, count };

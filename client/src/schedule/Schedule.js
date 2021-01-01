@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Grid from "./Grid";
 import Event from "./Event";
 import dayjs from "dayjs";
+import Popup, { usePopup } from "../event_info/Popup";
 
 const Container = styled.div`
   height: 100%;
@@ -18,15 +19,34 @@ const Board = styled.div`
 export default function Schedule(props) {
   const user = useContext(UserContext); //remove reminders
   const [events, setEvents] = useState(getEvents(props.date, props.calendars)); //not all day, within one day
+  const { isVisible, openPopup, closePopup, okPopup } = usePopup();
+  const [cursorDate, setCursorDate] = useState();
+
+  function openCursorPopup(event) {
+    const height = event.target.offsetTop / 10;
+    let date = dayjs(props.date)
+      .startOf("day")
+      .add(height * 15, "minute");
+    setCursorDate(date);
+    openPopup();
+  }
 
   return (
-    <Container>
+    <Container onClick={openCursorPopup}>
       <Board>
         {events.map((e) => (
           <Event {...e} />
         ))}
       </Board>
       <Grid />
+      {isVisible && (
+        <Popup
+          okPopup={okPopup}
+          closePopup={closePopup}
+          title={"Create Event"}
+          date={cursorDate}
+        />
+      )}
     </Container>
   );
 }
@@ -47,7 +67,7 @@ function getUserEvents(date, user) {
     {
       id: "",
       canonicalEventId: "",
-      datetime: "2020-12-30 10:30",
+      datetime: "2021-1-1 10:30",
       attendees: [
         { email: "attd2", status: 1 },
         { email: "attd2", status: 1 },

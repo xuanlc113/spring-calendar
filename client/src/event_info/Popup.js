@@ -79,7 +79,7 @@ export default function Popup(props) {
     <>
       <PopupContainer
         visible={true}
-        onOk={props.okPopup}
+        onOk={() => props.okPopup(info)}
         onCancel={props.closePopup}
         title={props.title}
       >
@@ -179,17 +179,18 @@ function getDates(datetime, duration) {
 
 export function usePopup() {
   const [isVisible, setIsVisible] = useState(false);
-
   function openPopup() {
     setIsVisible(true);
   }
 
-  function closePopup() {
+  function closePopup(e) {
+    e.stopPropagation();
     setIsVisible(false);
   }
 
-  function okPopup() {
+  function okPopup(info) {
     setIsVisible(false);
+    info.start = info.start.toDate();
     // only create/update, check if id present
   }
 

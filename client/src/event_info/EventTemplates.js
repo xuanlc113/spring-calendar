@@ -13,17 +13,6 @@ export const eventTemplate = {
   exceptions: [],
 };
 
-export const rruleTemplate = {
-  freq: -1,
-  interval: 1,
-  until: null,
-  byweekday: [],
-  bysetpos: [],
-  bymonthday: 0,
-  bymonth: 0,
-  count: 0,
-};
-
 export function getDurationTemplate(datetime) {
   return {
     datetimeStart: datetime,
