@@ -73,7 +73,7 @@ export default function EventPopover(props) {
   }
 
   return (
-    <>
+    <div onClick={(e) => e.stopPropagation()}>
       <PopoverHeader>
         <h3>{props.canonicalEvent.title}</h3>
         <div>
@@ -152,7 +152,7 @@ export default function EventPopover(props) {
           event={props.canonicalEvent}
         />
       )}
-    </>
+    </div>
   );
 }
 

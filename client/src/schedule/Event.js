@@ -35,7 +35,7 @@ export default function Event(props) {
       content={<EventPopover {...props} />}
       zIndex={800}
     >
-      <Container {...props.style}>
+      <Container {...props.style} onClick={(e) => e.stopPropagation()}>
         <Info>
           {props.style.height >= 30 ? (
             <>
