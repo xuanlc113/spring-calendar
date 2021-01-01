@@ -5,7 +5,7 @@ import { rruleTemplate } from "./EventTemplates";
 export default function useCustomRepeat(rrule, date) {
   const [options, optionsDispatch] = useReducer(
     optionsReducer,
-    parseRRule(rrule)
+    parseRRule(rrule, date)
   );
   const [count, setCount] = useState(5);
   const [until, setUntil] = useState(date);
@@ -23,14 +23,15 @@ export default function useCustomRepeat(rrule, date) {
 
   function toggleWeekday(weekday) {
     if (options.byweekday.includes(weekday)) {
-      if (options.byweekday.length() > 1) {
+      if (options.byweekday.length > 1) {
         const weekdays = options.byweekday.filter((i) => i != weekday);
-        optionsDispatch({ type: "byweeekday", value: weekdays });
+        optionsDispatch({ type: "byweekday", value: weekdays });
       }
     } else {
-      const weekdays = options.byweekday.push(weekday);
+      let weekdays = options.byweekday;
+      weekdays.push(weekday);
       weekdays.sort();
-      optionsDispatch({ type: "byweeekday", value: weekdays });
+      optionsDispatch({ type: "byweekday", value: options.byweekday });
     }
   }
 
@@ -80,20 +81,24 @@ export default function useCustomRepeat(rrule, date) {
     optionsDispatch({ type: "until", value: null });
   }
 
-  function setRepeatUntil(date) {
-    if (date) {
-      setUntil(date);
-    }
+  function setRepeatUntil() {
     optionsDispatch({ type: "count", value: 0 });
     optionsDispatch({ type: "until", value: until.toDate() });
   }
 
-  function setRepeatCount(i) {
-    if (i) {
-      setCount(i);
-    }
+  function setRepeatCount() {
     optionsDispatch({ type: "until", value: null });
     optionsDispatch({ type: "count", value: count });
+  }
+
+  function changeCount(num) {
+    setCount(num);
+    optionsDispatch({ type: "count", value: num });
+  }
+
+  function changeUntil(date) {
+    setUntil(date);
+    optionsDispatch({ type: "until", value: date.toDate() });
   }
 
   return {
@@ -107,9 +112,9 @@ export default function useCustomRepeat(rrule, date) {
     getEnd,
     setEnd,
     count,
-    setCount,
+    changeCount,
     until,
-    setUntil,
+    changeUntil,
   };
 }
 
@@ -119,16 +124,20 @@ function optionsReducer(state, action) {
       return { ...state, freq: action.value };
     case "interval":
       return { ...state, interval: action.value };
-    case "until":
+    case "until": {
       if (action.value) {
         return { ...state, until: action.value };
       }
-      delete state.until;
-    case "count":
+      const { until, ...newState } = state;
+      return newState;
+    }
+    case "count": {
       if (action.value) {
         return { ...state, count: action.value };
       }
-      delete state.count;
+      const { count, ...newState } = state;
+      return newState;
+    }
     case "byweekday":
       return { ...state, byweekday: action.value };
     case "bysetpos":
@@ -139,18 +148,26 @@ function optionsReducer(state, action) {
       return { ...state, bymonth: action.value };
     case "reset":
       return parseRRule(action.value);
-    case "custom":
-      return action.value;
+    case "custom": {
+      const { dtstart, count, until } = state;
+      const newState = { ...action.value, dtstart, until, count };
+      Object.keys(newState).forEach((key) =>
+        newState[key] === undefined ? delete newState[key] : {}
+      );
+      return newState;
+    }
   }
 }
 
-function parseRRule(rrule) {
+function parseRRule(rrule, date) {
   if (rrule) {
-    return RRule.parseString(rrule);
+    const options = RRule.parseString(rrule);
+    if (options.byweekday) {
+      options.byweekday = options.byweekday.map((i) => i.weekday);
+    }
+    return options;
   }
-  return { freq: 3, interval: 1 };
-
-  return rruleTemplate;
+  return { freq: 3, interval: 1, dtstart: date.toDate() };
 }
 
 function getDefaultPeriodOptions(val, date) {
@@ -158,6 +175,7 @@ function getDefaultPeriodOptions(val, date) {
     case 0:
       return {
         freq: 0,
+        interval: 1,
         bymonth: date.month() + 1,
         bymonthday: date.date(),
       };

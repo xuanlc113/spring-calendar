@@ -20,7 +20,7 @@ export function getDefaultRRules(date, option) {
     case "annually":
       return `FREQ=YEARLY;BYMONTH=${
         date.month() + 1
-      };BYMONTHDAY=${date.date()}`;
+      };BYMONTHDAY=${date.date()};INTERVAL=1`;
   }
 }
 

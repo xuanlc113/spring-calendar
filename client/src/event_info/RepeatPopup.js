@@ -3,6 +3,7 @@ import { Modal, Space, Select, InputNumber, Radio, DatePicker } from "antd";
 import { useState } from "react";
 import { getMonthOptions } from "./EventHelpers";
 import useCustomRepeat from "./CustomRepeatHook";
+import RRule from "rrule";
 
 const { Option } = Select;
 
@@ -46,8 +47,10 @@ export default function RepeatPopup(props) {
     getEnd,
     setEnd,
     count,
+    changeCount,
     until,
-  } = useCustomRepeat(props.event, props.date);
+    changeUntil,
+  } = useCustomRepeat(props.rrule, props.date);
 
   function showPeriodOptions() {
     const freq = options.freq;
@@ -96,7 +99,7 @@ export default function RepeatPopup(props) {
   return (
     <PopupContainer
       visible={true}
-      onOk={props.okPopup}
+      onOk={() => props.okPopup(options)}
       onCancel={props.cancelPopup}
       title="Custom"
     >
@@ -129,7 +132,7 @@ export default function RepeatPopup(props) {
             <DatePicker
               disabled={getEnd() !== 2}
               value={until}
-              onChange={setEnd}
+              onChange={changeUntil}
               style={{ marginLeft: "1rem" }}
             />
           </BlockRadioButton>
@@ -139,7 +142,7 @@ export default function RepeatPopup(props) {
               disabled={getEnd() !== 3}
               min={1}
               value={count}
-              onChange={setEnd}
+              onChange={changeCount}
               style={{ margin: "0 1rem" }}
             />{" "}
             Occurrences
@@ -150,7 +153,7 @@ export default function RepeatPopup(props) {
   );
 }
 
-export function useCustomRepeatPopup() {
+export function useCustomRepeatPopup(date, infoDispatch) {
   const [isVisible, setIsVisible] = useState(false);
 
   function openPopup() {
@@ -159,19 +162,20 @@ export function useCustomRepeatPopup() {
 
   function closePopup() {
     setIsVisible(false);
-    // optionsDispatch({ type: "reset", value: props.event });
-    // infoDispatch({ type: "end", value: null });
   }
 
-  function okPopup() {
+  function okPopup(options) {
+    const rrule = new RRule(options);
     closePopup();
-    // setShowRepeat(false);
-    // infoDispatch({ type: "recurring", value: true });
-    // infoDispatch({
-    //   type: "rrule",
-    //   value: new RRule(options).toString(),
-    // });
-    // setSelectLabel(getRepeatValue(options));
+    infoDispatch({ type: "recurring", value: true });
+    infoDispatch({ type: "rrule", value: rrule.toString() });
+    let end = null;
+    if (options.count) {
+      end = rrule.all().pop();
+    } else if (options.until) {
+      end = options.until;
+    }
+    infoDispatch({ type: "end", value: end });
   }
 
   return { isVisible, openPopup, closePopup, okPopup };

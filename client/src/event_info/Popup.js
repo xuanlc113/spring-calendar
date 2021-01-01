@@ -9,11 +9,9 @@ import {
   TimePicker,
   Checkbox,
 } from "antd";
-import dayjs from "dayjs";
 import RepeatPopup, { useCustomRepeatPopup } from "./RepeatPopup";
 import { useBasicEvent, getUsers, getRepeatValue } from "./BasicEventHook";
 import { getDefaultRRules, getMonthOptions, getWeekday } from "./EventHelpers";
-import RRule from "rrule";
 
 const PopupContainer = styled(Modal)`
   top: 50px;
@@ -56,6 +54,7 @@ export default function Popup(props) {
     repeatLabel,
   } = useBasicEvent(props.date, props.event);
   const { isVisible, openPopup, closePopup, okPopup } = useCustomRepeatPopup(
+    info.start,
     infoDispatch
   );
 
@@ -145,7 +144,7 @@ export default function Popup(props) {
               style={{ width: "100%" }}
             >
               <Option value="none">No Repeat</Option>
-              <Option value="daily">Every Day</Option>
+              <Option value="daily">Daily</Option>
               <Option value="weekly">Weekly on {getWeekday(info.start)}</Option>
               {getMonthOptions(info.start)}
               <Option value="annually">Annually</Option>

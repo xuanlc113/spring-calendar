@@ -44,15 +44,12 @@ export function useBasicEvent(datetime, event) {
 
   function setTimeRange(timeRange) {
     const durationMin = getDuration(timeRange, "minute");
-    infoDispatch({
-      type: "duration",
-      value: durationMin,
-    });
-
+    infoDispatch({ type: "duration", value: durationMin });
     const hour = timeRange[0].hour();
     const min = timeRange[0].minute();
     const datetimeStart = duration.datetimeStart.hour(hour).minute(min);
     setDuration({ ...duration, datetimeStart, durationMin });
+    infoDispatch({ type: "start", value: datetimeStart });
   }
 
   useEffect(() => {
@@ -97,9 +94,6 @@ function infoReducer(state, action) {
 function getEventInfo(datetime, event) {
   if (event) {
     event.start = dayjs(event.start);
-    if (event.end) {
-      event.end = dayjs(event.end);
-    }
     return event;
   }
 
@@ -135,18 +129,23 @@ export function getRepeatValue(rrule) {
   if (rrule === "") {
     return "none";
   }
-  console.log(rrule);
   let text = rrulestr(rrule).toText();
   text = text
-    .replace("every 1 days", "Daily")
-    .replace("every 1 weeks", "Weekly")
-    .replace("every 1 months", "Monthly")
-    .replace("every 1 years", "Annually")
+    .replace("every day ", "Daily ")
+    .replace("every week ", "Weekly ")
+    .replace("every month ", "Monthly ")
+    .replace("every year ", "Annually ")
     .replace("every", "Every");
 
-  // if (options.bysetpos && !Array.isArray(options.bysetpos)) {
-  //   text = text.replace("on ", `on the ${getPosition(options.bysetpos)} `);
-  // }
+  let options = RRule.parseString(rrule);
+  if (options.bysetpos) {
+    text = text.replace("on ", `on the ${getPosition(options.bysetpos)} `);
+  }
+
+  if (text.length > 50) {
+    return text.substr(0, 50) + "...";
+  }
+
   return text;
 }
 
@@ -155,12 +154,12 @@ function getPosition(i) {
     case -1:
       return "Last";
     case 1:
-      return "1st";
+      return "First";
     case 2:
-      return "2nd";
+      return "Second";
     case 3:
-      return "3rd";
-    default:
-      return `${i}th`;
+      return "Third";
+    case 4:
+      return "Fourth";
   }
 }
