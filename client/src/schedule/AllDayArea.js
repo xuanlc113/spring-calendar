@@ -37,10 +37,7 @@ export default function AllDayArea(props) {
   }
 
   function WeekEvents() {
-    events.sort(); // by datetime
-    for (let i = 0; i < events.length; i++) {
-      //   events[i];
-    }
+    events.sort((a, b) => a.datetime.diff(b.datetime));
     return events.map((event) => (
       <AllDayEvent type="week" event={event} dateRange={props.dates} />
     ));
@@ -95,7 +92,7 @@ function getCalendarAllDayEvents(calendar, dates) {
       canonicalEvent: {
         id: "",
         userId: "001",
-        title: "run",
+        title: "Run",
         description: "go for a run",
         attendees: [1000],
         start: "2020-12-21 10:30",
@@ -106,7 +103,7 @@ function getCalendarAllDayEvents(calendar, dates) {
         rrule: "",
         exceptions: [],
       },
-      style: { color: calendar.color, left: 0, z: 5 },
+      style: { color: calendar.color },
       userId: "001",
     },
   ];
