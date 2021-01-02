@@ -6,13 +6,13 @@ export default function MonthTile(props) {
   const user = useContext(UserContext);
 
   function viewDay() {
-    props.setDateOnly(props.date);
+    props.setDateOnly(props.date.toDate());
     props.setPeriod("day");
   }
 
   return (
     <div className="month-tile" onClick={viewDay}>
-      {props.date.getDate()}
+      {props.date.date()}
     </div>
   );
 }

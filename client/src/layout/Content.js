@@ -30,7 +30,7 @@ export default function Content(props) {
       let dates = getWeekDates(props.date);
       return <Week dates={dates} calendars={props.calendars} />;
     } else {
-      return <Day date={props.date.toDate()} calendars={props.calendars} />;
+      return <Day date={props.date} calendars={props.calendars} />;
     }
   }
 
@@ -43,7 +43,7 @@ function getMonthDates(date) {
   let startDate = date.startOf("month").startOf("week");
   let endDate = date.endOf("month").endOf("week");
   while (startDate.isSameOrBefore(endDate)) {
-    dates.push(startDate.toDate());
+    dates.push(startDate);
     startDate = startDate.add(1, "day");
   }
   return dates;
@@ -53,8 +53,8 @@ function getWeekDates(date) {
   let dates = [];
   let startDate = date.startOf("week");
   for (let i = 0; i < 7; i++) {
-    dates.push(startDate.toDate());
-    startDate = dayjs(startDate).add(1, "day");
+    dates.push(startDate);
+    startDate = startDate.add(1, "day");
   }
   return dates;
 }

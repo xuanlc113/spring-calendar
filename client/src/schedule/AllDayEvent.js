@@ -1,13 +1,16 @@
 import styled from "styled-components";
-import dayjs from "dayjs";
 import EventPopover from "../event_info/EventPopover";
 import { Popover } from "antd";
 
 const Container = styled.div`
   position: relative;
-  width: ${(props) =>
-    props.end ? props.width : `calc(${props.width}% - 1rem)`}%;
+  width: ${(props) => props.width}%;
   left: ${(props) => props.left}%;
+`;
+
+const Flag = styled.div`
+  width: calc(100% - 4px);
+  margin: 2px;
   background: lightblue;
   border-top-left-radius: ${(props) => (props.start ? "5px" : 0)};
   border-bottom-left-radius: ${(props) => (props.start ? "5px" : 0)};
@@ -16,39 +19,6 @@ const Container = styled.div`
 `;
 
 export default function AllDayEvent(props) {
-  let width, left, start, end, startDate;
-  if (props.event.datetime.diff(dayjs(props.dates[0]), "day") < 0) {
-    left = 0;
-    start = false;
-    startDate = dayjs(props.dates[0]);
-  } else if (props.event.datetime.diff(dayjs(props.dates[0]), "day") === 0) {
-    left = 0;
-    start = true;
-    startDate = props.event.datetime;
-  } else {
-    left = props.event.datetime.day() * (100 / 7);
-    start = true;
-    startDate = props.event.datetime;
-  }
-
-  let endDate = getEndDate(props.event);
-  if (endDate.diff(dayjs(props.dates.slice(-1)[0]), "day") < 0) {
-    width = (props.event.canonicalEvent.duration - 1) * (100 / 7);
-    end = false;
-  } else if (endDate.diff(dayjs(props.dates.slice(-1)[0]), "day") === 0) {
-    width =
-      (dayjs(props.dates.slice(-1)[0]).diff(startDate.startOf("day"), "day") +
-        1) *
-      (100 / 7);
-    end = true;
-  } else {
-    width =
-      (dayjs(props.dates.slice(-1)[0]).diff(startDate.startOf("day"), "day") +
-        1) *
-      (100 / 7);
-    end = true;
-  }
-
   return (
     <Popover
       placement="bottomLeft"
@@ -56,13 +26,58 @@ export default function AllDayEvent(props) {
       content={<EventPopover />}
       zIndex={800}
     >
-      <Container width={width} left={left} start={start} end={end}>
-        asd
+      <Container
+        width={
+          props.type === "week" ? getWidth(props.event, props.dateRange) : 100
+        }
+        left={props.type === "week" ? getLeft(props.event, props.dateRange) : 0}
+      >
+        <Flag
+          start={hasStart(props.event, props.dateRange)}
+          end={hasEnd(props.event, props.dateRange)}
+        >
+          asd
+        </Flag>
       </Container>
     </Popover>
   );
 }
 
 function getEndDate(event) {
-  return event.datetime.add(event.canonicalEvent.duration, "day");
+  let eventStart = event.datetime.startOf("day");
+  return eventStart.add(event.canonicalEvent.duration, "day");
+}
+
+function getLeft(event, dateRange) {
+  let rangeStart = dateRange[0];
+  if (event.datetime.diff(rangeStart, "day") > 0) {
+    return event.datetime.day() * (100 / 7);
+  }
+  return 0;
+}
+
+function hasStart(event, dateRange) {
+  let eventStart = event.datetime.startOf("day");
+  let rangeStart = dateRange[0];
+  return eventStart.diff(rangeStart, "day") >= 0;
+}
+
+function hasEnd(event, dateRange) {
+  let rangeEnd = dateRange.slice(-1)[0];
+  let eventEnd = getEndDate(event);
+  return rangeEnd.diff(eventEnd) >= 0;
+}
+
+function getWidth(event, dateRange) {
+  let eventStart = event.datetime.startOf("day");
+  let eventEnd = getEndDate(event);
+  let rangeStart = dateRange[0];
+
+  const startDiff = eventStart.diff(rangeStart, "day");
+  const endDiff = eventEnd.diff(rangeStart, "day");
+  let colStart = startDiff >= 0 ? startDiff : 0;
+  let duration = endDiff - colStart;
+
+  let colLeft = 7 - colStart;
+  return (Math.min(colLeft, duration) * 100) / 7;
 }

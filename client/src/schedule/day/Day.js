@@ -3,7 +3,7 @@ import { Row, Col, Space } from "antd";
 import Schedule from "../Schedule";
 import Timeline from "../Timeline";
 import Header from "../Header";
-import AllDayEvent from "../AllDayArea";
+import AllDayArea from "../AllDayArea";
 
 const Component = styled.div`
   height: 100%;
@@ -62,7 +62,7 @@ export default function Day(props) {
         <p>12 PM</p>
         <Space direction="vertical">
           <Header type="day" calendars={props.calendars} />
-          <AllDayEvent
+          <AllDayArea
             type="day"
             calendars={props.calendars}
             dates={[props.date]}

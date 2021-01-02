@@ -28,7 +28,7 @@ export default function AllDayArea(props) {
       position.push(
         <Col flex={1 / events.length}>
           {events[i].map((event) => (
-            <AllDayEvent event={event} dates={props.dates} />
+            <AllDayEvent type="day" event={event} dateRange={props.dates} />
           ))}
         </Col>
       );
@@ -42,7 +42,7 @@ export default function AllDayArea(props) {
       //   events[i];
     }
     return events.map((event) => (
-      <AllDayEvent event={event} dates={props.dates} />
+      <AllDayEvent type="week" event={event} dateRange={props.dates} />
     ));
   }
 
@@ -100,7 +100,7 @@ function getCalendarAllDayEvents(calendar, dates) {
         attendees: [1000],
         start: "2020-12-21 10:30",
         end: "2021-1-09",
-        duration: 8,
+        duration: 2,
         isAllDay: true,
         isRecurring: false,
         rrule: "",

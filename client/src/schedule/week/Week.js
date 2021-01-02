@@ -3,8 +3,7 @@ import { Row, Col, Space } from "antd";
 import Timeline from "../Timeline";
 import Header from "../Header";
 import Schedule from "../Schedule";
-import AllDayEvent from "../AllDayArea";
-import { useEffect } from "react";
+import AllDayArea from "../AllDayArea";
 
 const Container = styled.div`
   height: 100%;
@@ -55,7 +54,7 @@ export default function Week(props) {
         <p>12 PM</p>
         <Space direction="vertical">
           <Header type="week" />
-          <AllDayEvent
+          <AllDayArea
             type="week"
             calendars={props.calendars}
             dates={props.dates}

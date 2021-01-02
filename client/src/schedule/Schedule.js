@@ -26,9 +26,7 @@ export default function Schedule(props) {
 
   function openCursorPopup(event) {
     const height = event.target.offsetTop / 10;
-    let date = dayjs(props.date)
-      .startOf("day")
-      .add(height * 15, "minute");
+    let date = props.date.startOf("day").add(height * 15, "minute");
     setCursorDate(date);
     openPopup();
   }
