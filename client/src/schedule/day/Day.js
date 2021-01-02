@@ -1,8 +1,9 @@
 import styled from "styled-components";
-import { Row, Col } from "antd";
+import { Row, Col, Space } from "antd";
 import Schedule from "../Schedule";
 import Timeline from "../Timeline";
 import Header from "../Header";
+import AllDayEvent from "../AllDayArea";
 
 const Component = styled.div`
   height: 100%;
@@ -19,7 +20,14 @@ const HeaderContainer = styled.div`
     font-size: 0.8em;
     cursor: default;
     margin-right: 1rem;
-    padding-right: 2px;
+    padding-right: 1px;
+  }
+
+  & > .ant-space {
+    flex: 1;
+    & > .ant-space-item {
+      margin-bottom: 0 !important;
+    }
   }
 
   & > .ant-row {
@@ -52,7 +60,14 @@ export default function Day(props) {
     <Component>
       <HeaderContainer>
         <p>12 PM</p>
-        <Header type="day" calendars={props.calendars} />
+        <Space direction="vertical">
+          <Header type="day" calendars={props.calendars} />
+          <AllDayEvent
+            type="day"
+            calendars={props.calendars}
+            dates={[props.date]}
+          />
+        </Space>
       </HeaderContainer>
       <Scroll>
         <Content>

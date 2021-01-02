@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Grid from "./Grid";
 import Event from "./Event";
@@ -19,6 +19,10 @@ export default function Schedule(props) {
   const [events, setEvents] = useState(getEvents(props.date, props.calendars)); //not all day, within one day
   const { isVisible, openPopup, closePopup, okPopup } = usePopup();
   const [cursorDate, setCursorDate] = useState();
+
+  useEffect(() => {
+    setEvents(getEvents(props.date, props.calendars));
+  }, [props.calendars]);
 
   function openCursorPopup(event) {
     const height = event.target.offsetTop / 10;

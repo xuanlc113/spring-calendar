@@ -1,8 +1,10 @@
 import styled from "styled-components";
-import { Row, Col } from "antd";
+import { Row, Col, Space } from "antd";
 import Timeline from "../Timeline";
 import Header from "../Header";
 import Schedule from "../Schedule";
+import AllDayEvent from "../AllDayArea";
+import { useEffect } from "react";
 
 const Container = styled.div`
   height: 100%;
@@ -19,6 +21,13 @@ const HeaderContainer = styled.div`
     cursor: default;
     margin-right: 1rem;
     padding-right: 2px;
+  }
+
+  & > .ant-space {
+    flex: 1;
+    & > .ant-space-item {
+      margin-bottom: 0 !important;
+    }
   }
 
   & > .ant-row {
@@ -44,7 +53,14 @@ export default function Week(props) {
     <Container>
       <HeaderContainer>
         <p>12 PM</p>
-        <Header type="week" />
+        <Space direction="vertical">
+          <Header type="week" />
+          <AllDayEvent
+            type="week"
+            calendars={props.calendars}
+            dates={props.dates}
+          />
+        </Space>
       </HeaderContainer>
       <Scroll>
         <Content>
