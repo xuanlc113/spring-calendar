@@ -53,6 +53,8 @@ export default function Month(props) {
             setDateOnly={props.setDateOnly}
             setPeriod={props.setPeriod}
             calendars={props.calendars}
+            weekStart={props.dates[row * 7]}
+            weekEnd={props.dates[row * 7 + 6]}
           />
         </Col>
       );

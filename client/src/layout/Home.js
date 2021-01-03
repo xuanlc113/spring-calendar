@@ -102,7 +102,7 @@ function useCalendarSelector(userId) {
   function getCalendars(userId) {
     // get calendars { label: "My Calendar", id: userId, checked: true, color: blue }
     return [
-      { label: "My Calendar", id: userId, checked: true, color: "red" },
+      { label: "My Calendar", id: userId, checked: true, color: "#3495eb" },
       { label: "user", id: userId, checked: false, color: "green" },
       { label: "ben", id: userId, checked: false, color: "blue" },
       { label: "tom", id: userId, checked: false, color: "purple" },

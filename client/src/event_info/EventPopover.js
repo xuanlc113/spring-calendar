@@ -96,9 +96,13 @@ export default function EventPopover(props) {
       <PopoverInfo>
         <CalendarOutlined />
         <p>
-          {dayjs(props.datetime).format("ddd D MMMM")}{" "}
-          {getStartTime(props.datetime)} –{" "}
-          {getEndTime(props.datetime, props.canonicalEvent.duration)}
+          {dayjs(props.datetime).format("ddd D MMMM")}
+          {props.canonicalEvent.isAllDay
+            ? ` - ${dayjs(props.datetime)
+                .add(props.canonicalEvent.duration, "day")
+                .format("ddd D MMMM")}`
+            : ` ${getStartTime(props.datetime)} -
+            ${getEndTime(props.datetime, props.canonicalEvent.duration)}`}
         </p>
       </PopoverInfo>
       <PopoverInfo>

@@ -84,7 +84,7 @@ function getCalendarAllDayEvents(calendar, dates) {
     {
       id: "",
       canonicalEventId: "",
-      datetime: dayjs("2020-12-31 10:30"),
+      datetime: dayjs("2021-01-05 10:30"),
       attendees: [
         { email: "attd2", status: 1 },
         { email: "attd3", status: 1 },

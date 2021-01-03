@@ -11,7 +11,7 @@ const Container = styled.div`
 const Flag = styled.div`
   width: calc(100% - 4px);
   margin: 2px;
-  background: lightblue;
+  background: ${(props) => props.color};
   border-top-left-radius: ${(props) => (props.start ? "5px" : 0)};
   border-bottom-left-radius: ${(props) => (props.start ? "5px" : 0)};
   border-top-right-radius: ${(props) => (props.end ? "5px" : 0)};
@@ -25,6 +25,7 @@ const Flag = styled.div`
 `;
 
 export default function AllDayEvent(props) {
+  console.log(props.event);
   return (
     <Popover
       placement="bottomLeft"
@@ -41,6 +42,7 @@ export default function AllDayEvent(props) {
         <Flag
           start={hasStart(props.event, props.dateRange)}
           end={hasEnd(props.event, props.dateRange)}
+          color={props.event.style.color}
         >
           <p>{props.event.canonicalEvent.title}</p>
         </Flag>
