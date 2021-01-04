@@ -18,6 +18,7 @@ const Flag = styled.div`
   border-bottom-right-radius: ${(props) => (props.end ? "5px" : 0)};
 
   & > p {
+    color: white;
     margin-bottom: 0;
     margin-left: 5px;
     font-weight: 600;

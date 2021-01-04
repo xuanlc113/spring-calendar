@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {
   Modal,
   Space,
@@ -8,10 +8,12 @@ import {
   DatePicker,
   TimePicker,
   Checkbox,
+  Button,
 } from "antd";
 import RepeatPopup, { useCustomRepeatPopup } from "./RepeatPopup";
-import { useBasicEvent, getUsers, getRepeatValue } from "./BasicEventHook";
+import { useBasicEvent } from "./BasicEventHook";
 import { getDefaultRRules, getMonthOptions, getWeekday } from "./EventHelpers";
+import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 
 const PopupContainer = styled(Modal)`
   top: 50px;
@@ -36,13 +38,27 @@ const DateContainer = styled.div`
   align-items: center;
 `;
 
-const { TextArea } = Input;
+const AttendeeList = styled.div`
+  margin: 0 1rem;
+  max-height: 6rem;
+  overflow-y: auto;
+`;
+
+const AttendeeTag = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  & > p {
+    margin: 0;
+  }
+`;
+
+const { TextArea, Search } = Input;
 const { RangePicker: DateRangePicker } = DatePicker;
 const { RangePicker: TimeRangePicker } = TimePicker;
 const { Option } = Select;
 
 export default function Popup(props) {
-  const select = useRef(null);
   const {
     info,
     infoDispatch,
@@ -57,10 +73,14 @@ export default function Popup(props) {
     info.start,
     infoDispatch
   );
-
-  function blur() {
-    select.current.blur();
-  }
+  const {
+    attendees,
+    input,
+    error,
+    setInput,
+    addAttendee,
+    removeAttendee,
+  } = useAttendees(infoDispatch);
 
   function setRepeat(value) {
     if (value === "custom") {
@@ -92,26 +112,36 @@ export default function Popup(props) {
             }
           />
           <TextArea
-            rows={2}
+            autoSize={{ minRows: 1, maxRows: 2 }}
             placeholder="Add Description"
             value={info.description}
             onChange={(e) =>
               infoDispatch({ type: "description", value: e.target.value })
             }
           />
-          <Select
-            mode="multiple"
-            placeholder="Add Participants"
-            style={{ width: "100%" }}
-            options={getUsers()}
-            ref={select}
+          <Search
+            placeholder="Add Participants..."
             allowClear
-            value={info.participants}
-            onChange={(val) => {
-              infoDispatch({ type: "attendees", value: val });
-              blur();
-            }}
+            enterButton={<PlusOutlined />}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onSearch={addAttendee}
           />
+          {error && <p style={{ color: "red" }}>Cannot find calender</p>}
+          {attendees.length > 0 && (
+            <AttendeeList>
+              {attendees.map((a) => (
+                <AttendeeTag>
+                  <p>{a.email}</p>
+                  <Button
+                    type="text"
+                    icon={<CloseOutlined style={{ fontSize: "0.8em" }} />}
+                    onClick={() => removeAttendee(a.email)}
+                  />
+                </AttendeeTag>
+              ))}
+            </AttendeeList>
+          )}
           <DateContainer>
             {info.isAllDay ? (
               <DateRangePicker
@@ -195,4 +225,33 @@ export function usePopup() {
   }
 
   return { isVisible, openPopup, closePopup, okPopup };
+}
+
+function useAttendees(infoDispatch) {
+  const [attendees, setAttendees] = useState([]);
+  const [input, setInput] = useState("");
+  const [error, setError] = useState(false);
+
+  function addAttendee(email) {
+    setInput("");
+    if (attendees.some((attendee) => attendee.email === email)) {
+      setError(true);
+      return;
+    }
+    if (email === "as") {
+      setError(true);
+      return;
+    }
+    setError(false);
+    setAttendees([...attendees, { email, id: 100 }]);
+    infoDispatch({ type: "attendees", value: attendees.map((a) => a.id) });
+  }
+
+  function removeAttendee(email) {
+    let filtered = attendees.filter((attendee) => attendee.email !== email);
+    setAttendees(filtered);
+    infoDispatch({ type: "attendees", value: filtered.map((a) => a.id) });
+  }
+
+  return { attendees, input, error, setInput, addAttendee, removeAttendee };
 }

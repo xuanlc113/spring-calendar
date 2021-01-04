@@ -3,14 +3,6 @@ import RRule, { rrulestr } from "rrule";
 import { eventTemplate, getDurationTemplate } from "./EventTemplates";
 import dayjs from "dayjs";
 
-export function getUsers() {
-  return [
-    { label: "sersd", value: "asdf" },
-    { label: "aesd", value: "ghjk" },
-    { label: "zxcsd", value: "zxcv" },
-  ];
-}
-
 export function useBasicEvent(datetime, event) {
   const [info, infoDispatch] = useReducer(
     infoReducer,

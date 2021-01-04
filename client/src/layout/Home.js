@@ -110,11 +110,26 @@ function useCalendarSelector(userId) {
   }
 
   function updateCalendars(label) {
+    if (
+      calendars.filter((i) => i.checked).length === 1 &&
+      getCalendar(label).checked
+    ) {
+      return;
+    }
     setCalendars(
       calendars.map((i) =>
         i.label === label ? { ...i, checked: !i.checked } : i
       )
     );
+  }
+
+  function getCalendar(label) {
+    for (let i = 0; i < calendars.length; i++) {
+      if (calendars[i].label === label) {
+        return calendars[i];
+      }
+    }
+    return {};
   }
 
   useEffect(() => {
