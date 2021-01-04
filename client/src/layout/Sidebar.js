@@ -4,8 +4,9 @@ import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import "./ReactCalendar.css";
 import { useEffect } from "react";
-import Contact from "./Contact";
+import Contact from "../contact/Contact";
 import Popup, { usePopup } from "../event_info/Popup";
+import AddContact, { useAddContact } from "../contact/AddContact";
 
 const Container = styled.div`
   flex: 1;
@@ -37,17 +38,33 @@ const ContactContainer = styled.div`
   padding: 0.75em 1em;
   margin-top: 1rem;
   min-height: 0;
-
+`;
+const ContactHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid lightgrey;
+  align-items: center;
   & > h3 {
-    text-align: center;
-    padding-bottom: 0.5em;
     margin: 0;
-    border-bottom: 1px solid lightgrey;
+  }
+
+  & > .anticon {
+    padding: 5px;
+    border-radius: 1rem;
+    &:hover {
+      background: lightgrey;
+    }
   }
 `;
 
 export default function Sidebar(props) {
   const { isVisible, openPopup, closePopup, okPopup } = usePopup();
+  const {
+    isAddContactVisible,
+    openAddContact,
+    closeAddContact,
+  } = useAddContact();
 
   useEffect(() => {}, [props.date]);
 
@@ -79,12 +96,17 @@ export default function Sidebar(props) {
         />
       </DateSelector>
       <ContactContainer>
-        <h3>Calendars</h3>
+        <ContactHeader>
+          <h3>Calendars</h3>
+          <PlusOutlined onClick={openAddContact} />
+        </ContactHeader>
+
         <Contact
           calendars={props.calendars}
           updateCalendars={props.updateCalendars}
         />
       </ContactContainer>
+      {isAddContactVisible && <AddContact close={closeAddContact} />}
     </Container>
   );
 }
