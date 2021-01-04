@@ -80,7 +80,7 @@ export default function Popup(props) {
     setInput,
     addAttendee,
     removeAttendee,
-  } = useAttendees(infoDispatch);
+  } = useAttendees(info, infoDispatch);
 
   function setRepeat(value) {
     if (value === "custom") {
@@ -227,10 +227,22 @@ export function usePopup() {
   return { isVisible, openPopup, closePopup, okPopup };
 }
 
-function useAttendees(infoDispatch) {
-  const [attendees, setAttendees] = useState([]);
+function useAttendees(info, infoDispatch) {
+  const [attendees, setAttendees] = useState(getAttendees(info));
   const [input, setInput] = useState("");
   const [error, setError] = useState(false);
+
+  function getAttendees(info) {
+    let list = [];
+    for (let i = 0; i < info.attendees.length; i++) {
+      list.push(getUser(info.attendees[i]));
+    }
+    return list;
+  }
+
+  function getUser(id) {
+    return { label: "user", id };
+  }
 
   function addAttendee(email) {
     setInput("");
