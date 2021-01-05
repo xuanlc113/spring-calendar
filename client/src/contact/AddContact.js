@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { Modal, Input } from "antd";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
+import { UserContext } from "../App";
 
 const { Search } = Input;
 
@@ -13,7 +14,7 @@ const Error = styled.p`
 `;
 
 export default function AddContact(props) {
-  const { message, search, setSearch, addCalendar } = useSearch();
+  const { message, search, changeSearch, addCalendar } = useSearch();
 
   return (
     <Modal
@@ -28,7 +29,7 @@ export default function AddContact(props) {
         enterButton="Get Permission"
         size="large"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => changeSearch(e.target.value)}
         onSearch={addCalendar}
       />
       {message === 1 && <p>Calendar Access Request Sent!</p>}
@@ -52,17 +53,28 @@ export function useAddContact() {
 }
 
 function useSearch() {
+  const userId = useContext(UserContext);
   const [message, setMessage] = useState(0);
   const [search, setSearch] = useState("");
 
   function addCalendar() {
     setSearch("");
-    if (search === "as") {
+    if (sendRequest(search)) {
       setMessage(1);
+      return;
     }
 
     setMessage(2);
   }
 
-  return { message, search, setSearch, addCalendar };
+  function changeSearch(val) {
+    setSearch(val);
+    setMessage(0);
+  }
+
+  function sendRequest(user) {
+    return true;
+  }
+
+  return { message, search, changeSearch, addCalendar };
 }

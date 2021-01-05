@@ -19,11 +19,7 @@ export default function Login() {
           Log In
         </Button>
       ) : (
-        <Button
-          type="primary"
-          size={"large"}
-          onClick={() => loginWithRedirect()}
-        >
+        <Button type="primary" size={"large"} onClick={loginWithRedirect}>
           Log In
         </Button>
       )}

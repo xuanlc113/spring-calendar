@@ -4,6 +4,7 @@ import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import Content from "./Content";
 import dayjs from "dayjs";
+import randomColor from "randomcolor";
 
 const Container = styled.div`
   height: 100%;
@@ -22,6 +23,7 @@ export default function Home(props) {
   const { calendars, updateCalendars, activeCalendars } = useCalendarSelector(
     props.userId
   );
+  console.log(date, new Date());
 
   return (
     <Container>
@@ -65,21 +67,20 @@ function useDate() {
     let timer;
     if (first.current) {
       const diff = date.add(5, "minute").diff(dayjs(), "second");
-      setTimeout(() => {
-        timer = incrementTime();
+      timer = setTimeout(() => {
+        incrementTime();
       }, diff * 1000);
       first.current = false;
     } else {
-      timer = incrementTime();
+      timer = setInterval(() => {
+        incrementTime();
+      }, 5 * 60 * 1000);
     }
     return () => clearInterval(timer);
   }, [date]);
 
   function incrementTime() {
-    const timer = setInterval(() => {
-      setDate(date.minute(date.minute() + 5));
-    }, 5 * 60 * 1000);
-    return timer;
+    setDate(date.minute(date.minute() + 5));
   }
 
   function setDateOnly(dateObj) {
@@ -100,12 +101,13 @@ function useCalendarSelector(userId) {
   activeCalendars.current = calendars.filter((i) => i.checked);
 
   function getCalendars(userId) {
+    const colors = randomColor({ seed: 4744, luminosity: "dark", count: 5 });
     // get calendars { label: "My Calendar", id: userId, checked: true, color: blue }
     return [
       { label: "My Calendar", id: userId, checked: true, color: "#3495eb" },
-      { label: "user", id: userId, checked: false, color: "green" },
-      { label: "ben", id: userId, checked: false, color: "blue" },
-      { label: "tom", id: userId, checked: false, color: "purple" },
+      { label: "user", id: userId, checked: false, color: colors[0] },
+      { label: "ben", id: userId, checked: false, color: colors[1] },
+      { label: "tom", id: userId, checked: false, color: colors[2] },
     ];
   }
 

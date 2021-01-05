@@ -13,6 +13,7 @@
     "antd": "^4.9.3",
     "antd-dayjs-webpack-plugin": "^1.0.1",
     "dayjs": "^1.9.7",
+    "randomcolor": "^0.6.2",
     "react": "^17.0.1",
     "react-app-rewired": "^2.1.8",
     "react-calendar": "^3.2.1",

@@ -14,26 +14,40 @@ const Container = styled.div`
     text-align: left;
     font-weight: 600;
     margin: 0 0.5em;
+    cursor: pointer;
   }
 `;
 
 export default function MonthAllDayEvent(props) {
   return (
-    <Popover
-      placement="bottomLeft"
-      trigger="click"
-      content={<EventPopover {...props.event} />}
-      zIndex={800}
-    >
-      <Container
-        start={isEventStart(props.event, props.date)}
-        end={isEnd(props.event, props.date)}
-        empty={isEmpty(props.event, props.date)}
-        color={props.event.style.color}
-      >
-        <p>{showTitle(props.event, props.date)}</p>
-      </Container>
-    </Popover>
+    <>
+      {isEmpty(props.event, props.date) ? (
+        <Container
+          start={isEventStart(props.event, props.date)}
+          end={isEnd(props.event, props.date)}
+          empty={isEmpty(props.event, props.date)}
+          color={props.event.style.color}
+        >
+          <p>{showTitle(props.event, props.date)}</p>
+        </Container>
+      ) : (
+        <Popover
+          placement="bottomLeft"
+          trigger="click"
+          content={<EventPopover {...props.event} />}
+          zIndex={800}
+        >
+          <Container
+            start={isEventStart(props.event, props.date)}
+            end={isEnd(props.event, props.date)}
+            empty={isEmpty(props.event, props.date)}
+            color={props.event.style.color}
+          >
+            <p>{showTitle(props.event, props.date)}</p>
+          </Container>
+        </Popover>
+      )}
+    </>
   );
 }
 

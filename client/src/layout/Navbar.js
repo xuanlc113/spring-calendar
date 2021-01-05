@@ -32,7 +32,7 @@ const DateNav = styled.div`
   }
 
   & > span:hover {
-    background-color: lightgrey;
+    background-color: #e6e6e6;
     cursor: pointer;
   }
 `;
@@ -44,7 +44,7 @@ const FriendIcon = styled.div`
   padding: 5px;
 
   &:hover {
-    background-color: rgb(156, 174, 185);
+    background-color: #e6e6e6;
     cursor: pointer;
   }
 `;
@@ -121,17 +121,17 @@ export default function Navbar(props) {
 }
 
 function useRequests() {
-  const user = useContext(UserContext);
-  const [requests, setRequests] = useState(getRequests(user));
+  const userId = useContext(UserContext);
+  const [requests, setRequests] = useState(getRequests(userId));
 
   function acceptRequest(id) {
     //
-    setRequests(getRequests(user));
+    setRequests(getRequests(userId));
   }
 
   function denyRequest(id) {
     //
-    setRequests(getRequests(user));
+    setRequests(getRequests(userId));
   }
 
   return { requests, acceptRequest, denyRequest };

@@ -78,15 +78,3 @@ export default function Day(props) {
     </Component>
   );
 }
-
-// user
-// email: "sockpuppet113@gmail.com"
-// email_verified: true
-// family_name: "Puppy"
-// given_name: "Sock"
-// locale: "en-GB"
-// name: "Sock Puppy"
-// nickname: "sockpuppet113"
-// picture: "https://lh3.googleusercontent.com/-0yG_PnyU0Gw/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclJw-2cYUWx-wYhFGrSCCuZUUkyHg/s96-c/photo.jpg"
-// sub: "google-oauth2|105217146160079939382"
-// updated_at: "2020-12-20T07:17:53.236Z"

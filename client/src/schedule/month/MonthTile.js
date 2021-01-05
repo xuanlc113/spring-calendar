@@ -8,6 +8,10 @@ const Container = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  & > p {
+    margin: 0;
+    color: ${(props) => (props.isSameMonth ? "black" : "#cbcbcb")};
+  }
 `;
 
 const Ellipsis = styled.div`
@@ -24,6 +28,10 @@ export default function MonthTile(props) {
   );
 
   const { dayEvents } = useDayEvents(props.calendars, props.date);
+
+  function isSameMonth() {
+    return props.date.month() === props.currentDate.month();
+  }
 
   function viewDay() {
     props.setDateOnly(props.date.toDate());
@@ -77,10 +85,8 @@ export default function MonthTile(props) {
   }
 
   return (
-    <Container>
-      <p onClick={viewDay} style={{ margin: 0 }}>
-        {props.date.date()}
-      </p>
+    <Container isSameMonth={isSameMonth()}>
+      <p onClick={viewDay}>{props.date.date()}</p>
       {showEvents()}
     </Container>
   );

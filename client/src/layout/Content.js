@@ -21,6 +21,7 @@ export default function Content(props) {
       return (
         <Month
           dates={dates}
+          currentDate={props.date}
           setDateOnly={props.setDateOnly}
           setPeriod={props.setPeriod}
           calendars={props.calendars}

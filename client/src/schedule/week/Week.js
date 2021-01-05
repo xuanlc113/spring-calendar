@@ -53,6 +53,7 @@ export default function Week(props) {
       <HeaderContainer>
         <p>12 PM</p>
         <Space direction="vertical">
+          <Header type="dates" dates={props.dates} />
           <Header type="week" />
           <AllDayArea
             type="week"

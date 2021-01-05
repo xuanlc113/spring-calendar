@@ -2,11 +2,11 @@ import styled from "styled-components";
 import Calendar from "react-calendar";
 import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import "./ReactCalendar.css";
 import { useEffect } from "react";
 import Contact from "../contact/Contact";
 import Popup, { usePopup } from "../event_info/Popup";
 import AddContact, { useAddContact } from "../contact/AddContact";
+import "./ReactCalendar.css";
 
 const Container = styled.div`
   flex: 1;
@@ -47,13 +47,14 @@ const ContactHeader = styled.div`
   align-items: center;
   & > h3 {
     margin: 0;
+    cursor: pointer;
   }
 
   & > .anticon {
     padding: 5px;
     border-radius: 1rem;
     &:hover {
-      background: lightgrey;
+      background: #e6e6e6;
     }
   }
 `;

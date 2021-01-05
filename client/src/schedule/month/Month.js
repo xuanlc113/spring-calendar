@@ -49,6 +49,7 @@ export default function Month(props) {
       tiles.push(
         <Col flex={1 / 7}>
           <MonthTile
+            currentDate={props.currentDate}
             date={props.dates[row * 7 + i]}
             setDateOnly={props.setDateOnly}
             setPeriod={props.setPeriod}

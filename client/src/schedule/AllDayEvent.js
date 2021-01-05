@@ -22,6 +22,7 @@ const Flag = styled.div`
     margin-bottom: 0;
     margin-left: 5px;
     font-weight: 600;
+    cursor: pointer;
   }
 `;
 
