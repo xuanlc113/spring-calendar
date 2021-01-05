@@ -7,14 +7,17 @@ const Container = styled.div`
   position: absolute;
   top: ${(props) => props.top}px;
   left: ${(props) => props.left}%;
-  width: ${(props) => props.width}%;
-  height: ${(props) => props.height}px;
+  width: calc(${(props) => props.width}% + 1px);
+  height: calc(${(props) => props.height}px + 1px);
   z-index: ${(props) => props.z};
   background: ${(props) => props.color};
-  outline: 1px solid white;
   color: white;
   font-size: 0.8em;
   min-height: 0px;
+  overflow: hidden;
+  border-radius: 5px;
+  border: 1px solid white;
+  cursor: pointer;
 `;
 
 const Info = styled.div`

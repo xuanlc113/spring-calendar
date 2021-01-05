@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -23,7 +24,15 @@ const GridLine = styled.div`
   }
 `;
 
-export default function Grid() {
+const TimeMarker = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: red;
+  top: ${(props) => props.top * 10}px;
+`;
+
+export default function Grid(props) {
   function gridBlock() {
     let blocks = [];
     for (let i = 0; i < 24; i++) {
@@ -33,7 +42,17 @@ export default function Grid() {
   }
   return (
     <Container>
+      {isToday(props.date) && <TimeMarker top={getTime()} />}
       <GridLine>{gridBlock()}</GridLine>
     </Container>
   );
+}
+
+function isToday(date) {
+  return dayjs().isSame(date, "day");
+}
+
+function getTime() {
+  const time = dayjs().diff(dayjs().startOf("day"), "minute");
+  return time / 15;
 }

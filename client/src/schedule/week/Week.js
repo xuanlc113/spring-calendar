@@ -4,6 +4,8 @@ import Timeline from "../Timeline";
 import Header from "../Header";
 import Schedule from "../Schedule";
 import AllDayArea from "../AllDayArea";
+import { useEffect, useRef } from "react";
+import dayjs from "dayjs";
 
 const Container = styled.div`
   height: 100%;
@@ -48,6 +50,13 @@ const Schedules = styled(Row)`
 `;
 
 export default function Week(props) {
+  const scroll = useRef(null);
+
+  useEffect(() => {
+    const time = dayjs().diff(dayjs().startOf("day"), "minute");
+    scroll.current.scrollBy({ top: (time / 15) * 10 - 150 });
+  }, []);
+
   return (
     <Container>
       <HeaderContainer>
@@ -62,7 +71,7 @@ export default function Week(props) {
           />
         </Space>
       </HeaderContainer>
-      <Scroll>
+      <Scroll ref={scroll}>
         <Content>
           <Timeline />
           <Schedules justify="space-around">

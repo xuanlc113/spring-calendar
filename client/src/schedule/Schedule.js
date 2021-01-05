@@ -38,7 +38,7 @@ export default function Schedule(props) {
           <Event {...e} />
         ))}
       </Board>
-      <Grid />
+      <Grid date={props.date} />
       {isVisible && (
         <Popup
           okPopup={okPopup}
