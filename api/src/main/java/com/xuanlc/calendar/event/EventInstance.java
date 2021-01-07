@@ -9,8 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.ManyToOne;
 
-import com.xuanlc.calendar.appuser.AppUser;
-
 @Entity
 public class EventInstance {
     @Id
@@ -22,13 +20,10 @@ public class EventInstance {
     @OneToMany(mappedBy = "eventInstance")
     private List<EventAttendee> attendees;
 
-    public EventInstance() {}
+    public EventInstance() {
+    }
 
-    public EventInstance(
-        EventCanonical eventCanonical, 
-        LocalDateTime datetime, 
-        List<EventAttendee> attendees
-    ) {
+    public EventInstance(EventCanonical eventCanonical, LocalDateTime datetime, List<EventAttendee> attendees) {
         this.eventCanonical = eventCanonical;
         this.datetime = datetime;
         this.attendees = attendees;

@@ -25,22 +25,12 @@ public class AppUser {
     @OneToMany(mappedBy = "receiver")
     private List<Contact> receiver;
 
-    public AppUser() {}
+    public AppUser() {
+    }
 
-    public AppUser(
-        long id, 
-        String email, 
-        List<EventCanonical> eventCanonical, 
-        List<EventAttendee> events, 
-        List<Contact> sender, 
-        List<Contact> receiver
-    ) {
+    public AppUser(long id, String email) {
         this.id = id;
         this.email = email;
-        this.eventCanonical = eventCanonical;
-        this.events = events;
-        this.sender = sender;
-        this.receiver = receiver;
     }
 
     public long getId() {
@@ -90,5 +80,5 @@ public class AppUser {
     public void setReceiver(List<Contact> receiver) {
         this.receiver = receiver;
     }
-    
+
 }

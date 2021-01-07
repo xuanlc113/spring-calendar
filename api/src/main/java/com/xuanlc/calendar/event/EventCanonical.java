@@ -35,23 +35,12 @@ public class EventCanonical {
     @OneToMany(mappedBy = "eventCanonical")
     private List<EventException> exceptions;
 
-    public EventCanonical() {}
+    public EventCanonical() {
+    }
 
-
-    public EventCanonical(
-        AppUser user, 
-        String title, 
-        String description, 
-        List<String> attendees, 
-        LocalDateTime datetimeStart, 
-        LocalDateTime dateEnd, 
-        Integer duration, 
-        boolean isAllDay, 
-        boolean isRecurring, 
-        String rrule, 
-        List<EventInstance> events, 
-        List<EventException> exceptions
-    ) {
+    public EventCanonical(AppUser user, String title, String description, List<String> attendees,
+            LocalDateTime datetimeStart, LocalDateTime dateEnd, Integer duration, boolean isAllDay, boolean isRecurring,
+            String rrule, List<EventInstance> events, List<EventException> exceptions) {
         this.user = user;
         this.title = title;
         this.description = description;
@@ -169,6 +158,5 @@ public class EventCanonical {
     public void setExceptions(List<EventException> exceptions) {
         this.exceptions = exceptions;
     }
-    
 
 }

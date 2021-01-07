@@ -13,11 +13,11 @@ public class Contact {
     @Id
     @GeneratedValue
     private long id;
+    private boolean isAccepted;
     @ManyToOne
     private AppUser sender;
     @ManyToOne
     private AppUser receiver;
-    private boolean isAccepted;
 
     public Contact() {
     }
@@ -42,10 +42,6 @@ public class Contact {
 
     public void setReceiver(AppUser receiver) {
         this.receiver = receiver;
-    }
-
-    public boolean isIsAccepted() {
-        return this.isAccepted;
     }
 
     public boolean getIsAccepted() {
