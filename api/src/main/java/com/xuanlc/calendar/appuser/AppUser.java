@@ -7,47 +7,88 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import com.xuanlc.calendar.contact.Contact;
+import com.xuanlc.calendar.event.EventCanonical;
+import com.xuanlc.calendar.event.EventAttendee;
 
 @Entity
 public class AppUser {
 
     @Id
-    private String id;
+    private long id;
     private String email;
-    @OneToMany(mappedBy = "contact")
-    private List<Contact> contacts;
+    @OneToMany(mappedBy = "user")
+    private List<EventCanonical> eventCanonical;
+    @OneToMany(mappedBy = "user")
+    private List<EventAttendee> events;
+    @OneToMany(mappedBy = "sender")
+    private List<Contact> sender;
+    @OneToMany(mappedBy = "receiver")
+    private List<Contact> receiver;
 
-    public AppUser() {
-    }
+    public AppUser() {}
 
-    public AppUser(String id, String email, List<Contact> contacts) {
+    public AppUser(
+        long id, 
+        String email, 
+        List<EventCanonical> eventCanonical, 
+        List<EventAttendee> events, 
+        List<Contact> sender, 
+        List<Contact> receiver
+    ) {
         this.id = id;
         this.email = email;
-        this.contacts = contacts;
+        this.eventCanonical = eventCanonical;
+        this.events = events;
+        this.sender = sender;
+        this.receiver = receiver;
     }
 
-    public String getId() {
-        return id;
+    public long getId() {
+        return this.id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public List<Contact> getContacts() {
-        return this.contacts;
+    public List<EventCanonical> getEventCanonical() {
+        return this.eventCanonical;
     }
 
-    public void setContacts(List<Contact> contacts) {
-        this.contacts = contacts;
+    public void setEventCanonical(List<EventCanonical> eventCanonical) {
+        this.eventCanonical = eventCanonical;
     }
 
+    public List<EventAttendee> getEvents() {
+        return this.events;
+    }
+
+    public void setEvents(List<EventAttendee> events) {
+        this.events = events;
+    }
+
+    public List<Contact> getSender() {
+        return this.sender;
+    }
+
+    public void setSender(List<Contact> sender) {
+        this.sender = sender;
+    }
+
+    public List<Contact> getReceiver() {
+        return this.receiver;
+    }
+
+    public void setReceiver(List<Contact> receiver) {
+        this.receiver = receiver;
+    }
+    
 }

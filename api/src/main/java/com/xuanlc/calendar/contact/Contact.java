@@ -14,38 +14,42 @@ public class Contact {
     @GeneratedValue
     private long id;
     @ManyToOne
-    private AppUser user;
+    private AppUser sender;
     @ManyToOne
-    private AppUser contact;
+    private AppUser receiver;
     private boolean isAccepted;
 
     public Contact() {
     }
 
-    public Contact(AppUser user, AppUser contact, boolean isAccepted) {
-        this.user = user;
-        this.contact = contact;
+    public Contact(AppUser sender, AppUser receiver, boolean isAccepted) {
+        this.sender = sender;
+        this.receiver = receiver;
         this.isAccepted = isAccepted;
     }
 
-    public AppUser getuserId() {
-        return user;
+    public AppUser getSender() {
+        return this.sender;
     }
 
-    public void setUserId(AppUser user) {
-        this.user = user;
+    public void setSender(AppUser sender) {
+        this.sender = sender;
     }
 
-    public AppUser getContactlId() {
-        return contact;
+    public AppUser getReceiver() {
+        return this.receiver;
     }
 
-    public void setContactId(AppUser contact) {
-        this.contact = contact;
+    public void setReceiver(AppUser receiver) {
+        this.receiver = receiver;
+    }
+
+    public boolean isIsAccepted() {
+        return this.isAccepted;
     }
 
     public boolean getIsAccepted() {
-        return isAccepted;
+        return this.isAccepted;
     }
 
     public void setIsAccepted(boolean isAccepted) {
