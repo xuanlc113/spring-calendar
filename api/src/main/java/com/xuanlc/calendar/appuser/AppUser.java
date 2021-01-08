@@ -20,10 +20,10 @@ public class AppUser {
     private List<EventCanonical> eventCanonical;
     @OneToMany(mappedBy = "user")
     private List<EventAttendee> events;
-    @OneToMany(mappedBy = "sender")
-    private List<Contact> sender;
-    @OneToMany(mappedBy = "receiver")
-    private List<Contact> receiver;
+    // @OneToMany(mappedBy = "sender")
+    // private List<Contact> sender;
+    // @OneToMany(mappedBy = "receiver")
+    // private List<Contact> receiver;
 
     public AppUser() {
     }
@@ -65,20 +65,20 @@ public class AppUser {
         this.events = events;
     }
 
-    public List<Contact> getSender() {
-        return this.sender;
-    }
+    // public List<Contact> getSender() {
+    // return this.sender;
+    // }
 
-    public void setSender(List<Contact> sender) {
-        this.sender = sender;
-    }
+    // public void setSender(List<Contact> sender) {
+    // this.sender = sender;
+    // }
 
-    public List<Contact> getReceiver() {
-        return this.receiver;
-    }
+    // public List<Contact> getReceiver() {
+    // return this.receiver;
+    // }
 
-    public void setReceiver(List<Contact> receiver) {
-        this.receiver = receiver;
-    }
+    // public void setReceiver(List<Contact> receiver) {
+    // this.receiver = receiver;
+    // }
 
 }
