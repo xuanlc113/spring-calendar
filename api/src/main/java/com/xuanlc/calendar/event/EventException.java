@@ -1,6 +1,6 @@
 package com.xuanlc.calendar.event;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,11 +15,12 @@ public class EventException {
     private long id;
     @ManyToOne
     private EventCanonical eventCanonical;
-    private LocalDateTime date;
+    private Instant date;
 
-    public EventException() {}
+    public EventException() {
+    }
 
-    public EventException(EventCanonical eventCanonical, LocalDateTime date) {
+    public EventException(EventCanonical eventCanonical, Instant date) {
         this.eventCanonical = eventCanonical;
         this.date = date;
     }
@@ -32,12 +33,12 @@ public class EventException {
         this.eventCanonical = eventCanonical;
     }
 
-    public LocalDateTime getDate() {
+    public Instant getDate() {
         return this.date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(Instant date) {
         this.date = date;
     }
-    
+
 }

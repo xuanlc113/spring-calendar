@@ -3,6 +3,7 @@ package com.xuanlc.calendar.event;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
@@ -11,7 +12,7 @@ import com.xuanlc.calendar.appuser.AppUser;
 
 @Entity
 public class EventAttendee {
-    
+
     @Id
     @GeneratedValue
     private long id;
@@ -19,10 +20,11 @@ public class EventAttendee {
     private EventInstance eventInstance;
     @ManyToOne
     private AppUser user;
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
-    public EventAttendee() {}
+    public EventAttendee() {
+    }
 
     public EventAttendee(EventInstance eventInstance, AppUser user, Status status) {
         this.eventInstance = eventInstance;
@@ -53,6 +55,5 @@ public class EventAttendee {
     public void setStatus(Status status) {
         this.status = status;
     }
-    
+
 }
-   

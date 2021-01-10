@@ -1,13 +1,17 @@
 package com.xuanlc.calendar.appuser;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xuanlc.calendar.contact.Contact;
 import com.xuanlc.calendar.event.EventCanonical;
+import com.xuanlc.calendar.event.EventInstance;
 import com.xuanlc.calendar.event.EventAttendee;
 
 @Entity
@@ -17,9 +21,14 @@ public class AppUser {
     private long id;
     private String email;
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<EventCanonical> eventCanonical;
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<EventAttendee> events;
+    // @JsonIgnore
+    // @ManyToMany
+    // private Set<EventInstance> events;
     // @OneToMany(mappedBy = "sender")
     // private List<Contact> sender;
     // @OneToMany(mappedBy = "receiver")

@@ -1,28 +1,17 @@
-package com.xuanlc.calendar.event;
-
-import com.xuanlc.calendar.appuser.AppUser;
+package com.xuanlc.calendar.dto;
 
 import java.time.Instant;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.ElementCollection;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.xuanlc.calendar.appuser.AppUser;
+import com.xuanlc.calendar.event.EventCanonical;
 
-@Entity
-public class EventCanonical {
+public class EventInfo {
 
-    @Id
-    @GeneratedValue
-    private Long id;
-    @ManyToOne
-    private AppUser user;
+    private Long userId;
     private String title;
     private String description;
-    @ElementCollection
     private List<Long> attendees;
     private Instant datetimeStart;
     private Instant dateEnd;
@@ -30,17 +19,10 @@ public class EventCanonical {
     private boolean isAllDay;
     private boolean isRecurring;
     private String rrule;
-    @OneToMany(mappedBy = "eventCanonical")
-    private List<EventInstance> events;
-    @OneToMany(mappedBy = "eventCanonical")
-    private List<EventException> exceptions;
 
-    public EventCanonical() {
-    }
-
-    public EventCanonical(AppUser user, String title, String description, List<Long> attendees, Instant datetimeStart,
+    public EventInfo(Long userId, String title, String description, List<Long> attendees, Instant datetimeStart,
             Instant dateEnd, Integer duration, boolean isAllDay, boolean isRecurring, String rrule) {
-        this.user = user;
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.attendees = attendees;
@@ -52,12 +34,18 @@ public class EventCanonical {
         this.rrule = rrule;
     }
 
-    public AppUser getUser() {
-        return this.user;
+    public EventCanonical convertToEntity(AppUser user) {
+        EventCanonical event = new EventCanonical(user, this.title, this.description, this.attendees,
+                this.datetimeStart, this.dateEnd, this.duration, this.isAllDay, this.isRecurring, this.rrule);
+        return event;
     }
 
-    public void setUser(AppUser user) {
-        this.user = user;
+    public Long getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getTitle() {
@@ -138,22 +126,6 @@ public class EventCanonical {
 
     public void setRrule(String rrule) {
         this.rrule = rrule;
-    }
-
-    public List<EventInstance> getEvents() {
-        return this.events;
-    }
-
-    public void setEvents(List<EventInstance> events) {
-        this.events = events;
-    }
-
-    public List<EventException> getExceptions() {
-        return this.exceptions;
-    }
-
-    public void setExceptions(List<EventException> exceptions) {
-        this.exceptions = exceptions;
     }
 
 }

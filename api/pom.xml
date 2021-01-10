@@ -45,7 +45,27 @@
 			<artifactId>json</artifactId>
 			<version>20180130</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.dmfs</groupId>
+			<artifactId>lib-recur</artifactId>
+			<version>0.12.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.scala-saddle</groupId>
+			<artifactId>google-rfc-2445</artifactId>
+			<version>20110304</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jadira.usertype</groupId>
+			<artifactId>usertype.core</artifactId>
+			<version>7.0.0.CR1</version>
+		</dependency>
+
 	</dependencies>
+	
 
 	<build>
 		<plugins>

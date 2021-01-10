@@ -1,14 +1,10 @@
 package com.xuanlc.calendar.contact;
 
-import java.util.List;
-
 import com.xuanlc.calendar.appuser.AppUser;
-import com.xuanlc.calendar.appuser.UserController;
-import com.xuanlc.calendar.appuser.UserRepository;
 import com.xuanlc.calendar.appuser.UserService;
 import com.xuanlc.calendar.dto.ContactRequest;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

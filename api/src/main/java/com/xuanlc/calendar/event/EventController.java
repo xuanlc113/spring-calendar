@@ -1,11 +1,10 @@
 package com.xuanlc.calendar.event;
 
-import java.util.List;
-
-import com.xuanlc.calendar.appuser.AppUser;
+import com.xuanlc.calendar.dto.EventInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +17,12 @@ public class EventController {
     private EventService eventService;
 
     @PostMapping("/event")
-    public void putEvent(@RequestBody EventCanonical event) {
+    public void putEvent(@RequestBody EventInfo event) {
         eventService.addEvent(event);
+    }
+
+    @PostMapping("/event/i")
+    public void getEvent(@RequestBody EventInfo event) {
+        System.out.println(event.getDatetimeStart());
     }
 }

@@ -1,12 +1,15 @@
 package com.xuanlc.calendar.event;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -16,17 +19,17 @@ public class EventInstance {
     private long id;
     @ManyToOne
     private EventCanonical eventCanonical;
-    private LocalDateTime datetime;
+    private Instant datetime;
+    @JsonIgnore
     @OneToMany(mappedBy = "eventInstance")
     private List<EventAttendee> attendees;
 
     public EventInstance() {
     }
 
-    public EventInstance(EventCanonical eventCanonical, LocalDateTime datetime, List<EventAttendee> attendees) {
+    public EventInstance(EventCanonical eventCanonical, Instant datetime) {
         this.eventCanonical = eventCanonical;
         this.datetime = datetime;
-        this.attendees = attendees;
     }
 
     public EventCanonical getEventCanonical() {
@@ -37,11 +40,11 @@ public class EventInstance {
         this.eventCanonical = eventCanonical;
     }
 
-    public LocalDateTime getDatetime() {
+    public Instant getDatetime() {
         return this.datetime;
     }
 
-    public void setDatetime(LocalDateTime datetime) {
+    public void setDatetime(Instant datetime) {
         this.datetime = datetime;
     }
 

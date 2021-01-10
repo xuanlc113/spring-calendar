@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,13 +20,13 @@ public class ContactController {
     @Autowired
     private ContactService contactService;
 
-    @GetMapping("/contact/{id}")
-    public List<Contact> getContacts(@PathVariable Long id) {
+    @GetMapping("/contact/authorized")
+    public List<Contact> getContacts(@RequestParam(value = "userId", required = true) Long id) {
         return contactService.getContacts(id);
     }
 
-    @GetMapping("/contact/requests/{id}")
-    public List<Contact> getContactRequests(@PathVariable Long id) {
+    @GetMapping("/contact/requests")
+    public List<Contact> getContactRequests(@RequestParam(value = "userId", required = true) Long id) {
         return contactService.getContactRequests(id);
     }
 

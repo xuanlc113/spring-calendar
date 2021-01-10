@@ -1,11 +1,11 @@
 package com.xuanlc.calendar.contact;
 
+import com.xuanlc.calendar.appuser.AppUser;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
-import com.xuanlc.calendar.appuser.AppUser;
 
 @Entity
 public class Contact {
