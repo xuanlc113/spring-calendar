@@ -1,15 +1,13 @@
 package com.xuanlc.calendar.event;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.xuanlc.calendar.appuser.AppUser;
 import com.xuanlc.calendar.appuser.UserService;
 import com.xuanlc.calendar.dto.EventInfo;
 import com.xuanlc.calendar.helper.Helper;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Duration;
@@ -31,6 +29,11 @@ public class EventService {
     private EventExceptionRepository exceptionRepo;
     @Autowired
     private UserService userService;
+
+    public List<EventAttendee> getEvents(Long userId, Instant start, Instant End) {
+        List<EventAttendee> attendees = new ArrayList<>();
+        return attendees;
+    }
 
     public void addEvent(EventInfo event) {
         AppUser creator = userService.getUser(event.getUserId());
@@ -77,6 +80,30 @@ public class EventService {
             attendees.add(new EventAttendee(instance, attendee, Status.PENDING));
         }
         attendeeRepo.saveAll(attendees);
+    }
+
+    public void updateEvent(Long canonicalId, EventInfo event) {
+
+    }
+
+    public void deleteEventInstance(Long instanceId) {
+
+    }
+
+    public void deleteEventInstanceAndAfter(Long instanceId) {
+
+    }
+
+    public void updateAttendee(Long attendeeId, Integer status) {
+
+    }
+
+    public void deleteAttendee(Long attendeeId) {
+
+    }
+
+    public void deleteAttendeeAndAfter(Long attendeeId) {
+
     }
 
 }

@@ -1,14 +1,13 @@
 package com.xuanlc.calendar.event;
 
+import com.xuanlc.calendar.appuser.AppUser;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
-
-import com.xuanlc.calendar.appuser.AppUser;
 
 @Entity
 public class EventAttendee {

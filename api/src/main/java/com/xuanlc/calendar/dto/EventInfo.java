@@ -3,7 +3,6 @@ package com.xuanlc.calendar.dto;
 import java.time.Instant;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.xuanlc.calendar.appuser.AppUser;
 import com.xuanlc.calendar.event.EventCanonical;
 
