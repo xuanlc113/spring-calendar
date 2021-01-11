@@ -21,14 +21,16 @@ public class EventAttendee {
     private AppUser user;
     @Enumerated(EnumType.STRING)
     private Status status;
+    private boolean isDeleted;
 
     public EventAttendee() {
     }
 
-    public EventAttendee(EventInstance eventInstance, AppUser user, Status status) {
+    public EventAttendee(EventInstance eventInstance, AppUser user, Status status, boolean isDeleted) {
         this.eventInstance = eventInstance;
         this.user = user;
         this.status = status;
+        this.isDeleted = isDeleted;
     }
 
     public EventInstance getEventInstance() {
@@ -53,6 +55,18 @@ public class EventAttendee {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public boolean isIsDeleted() {
+        return this.isDeleted;
+    }
+
+    public boolean getIsDeleted() {
+        return this.isDeleted;
+    }
+
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
 }

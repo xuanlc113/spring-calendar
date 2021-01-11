@@ -31,6 +31,10 @@ public class EventInstance {
         this.datetime = datetime;
     }
 
+    public Long getId() {
+        return this.id;
+    }
+
     public EventCanonical getEventCanonical() {
         return this.eventCanonical;
     }

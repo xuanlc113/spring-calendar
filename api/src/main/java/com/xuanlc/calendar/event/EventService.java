@@ -6,6 +6,7 @@ import com.xuanlc.calendar.dto.EventInfo;
 import com.xuanlc.calendar.helper.Helper;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,37 +74,79 @@ public class EventService {
         EventInstance instance = new EventInstance(event, date);
         instanceRepo.save(instance);
         List<EventAttendee> attendees = new ArrayList<>();
-        EventAttendee aa = new EventAttendee(instance, event.getUser(), Status.ACCEPTED);
+        EventAttendee aa = new EventAttendee(instance, event.getUser(), Status.ACCEPTED, false);
         attendees.add(aa);
         for (Long id : event.getAttendees()) {
             AppUser attendee = userService.getUser(id);
-            attendees.add(new EventAttendee(instance, attendee, Status.PENDING));
+            attendees.add(new EventAttendee(instance, attendee, Status.PENDING, false));
         }
         attendeeRepo.saveAll(attendees);
     }
 
     public void updateEvent(Long canonicalId, EventInfo event) {
+        List<EventInstance> instances = instanceRepo.findByEventCanonicalId(canonicalId);
+        List<EventAttendee> attendees = attendeeRepo.findByEventInstanceEventCanonicalId(canonicalId);
+        instanceRepo.deleteAll(instances);
+        attendeeRepo.deleteAll(attendees);
+        canonicalRepo.deleteById(canonicalId);
 
+        addEvent(event);
     }
 
     public void deleteEventInstance(Long instanceId) {
-
+        EventInstance instance = instanceRepo.findById(instanceId).get();
+        Long canonicalId = instance.getEventCanonical().getId();
+        if (!instance.getEventCanonical().getIsRecurring()) {
+            canonicalRepo.deleteById(canonicalId);
+        }
+        attendeeRepo.deleteByEventInstanceId(instanceId);
+        instanceRepo.deleteById(instanceId);
     }
 
     public void deleteEventInstanceAndAfter(Long instanceId) {
+        EventInstance instance = instanceRepo.findById(instanceId).get();
+        Long canonicalId = instance.getEventCanonical().getId();
+        Instant date = instance.getDatetime();
+        List<EventAttendee> attendees = new ArrayList<>();
+        List<EventInstance> instances = instanceRepo.findByEventCanonicalIdAndDatetimeGreaterThanEqual(canonicalId,
+                date);
+        for (EventInstance i : instances) {
+            attendees.addAll(attendeeRepo.findByEventInstanceId(i.getId()));
+        }
+        attendeeRepo.deleteAll(attendees);
+        instanceRepo.deleteAll(instances);
 
+        EventCanonical canonical = canonicalRepo.findById(canonicalId).get();
+        canonical.setDateEnd(date.minus(1, ChronoUnit.DAYS));
+        canonicalRepo.save(canonical);
     }
 
     public void updateAttendee(Long attendeeId, Integer status) {
-
+        EventAttendee attendee = attendeeRepo.findById(attendeeId).get();
+        attendee.setStatus(Status.values()[status]);
+        attendeeRepo.save(attendee);
     }
 
     public void deleteAttendee(Long attendeeId) {
-
+        EventAttendee attendee = attendeeRepo.findById(attendeeId).get();
+        attendee.setStatus(Status.DECLINED);
+        attendee.setIsDeleted(true);
+        attendeeRepo.save(attendee);
     }
 
     public void deleteAttendeeAndAfter(Long attendeeId) {
-
+        EventAttendee attendee = attendeeRepo.findById(attendeeId).get();
+        Long userId = attendee.getUser().getId();
+        Long canonicalId = attendee.getEventInstance().getEventCanonical().getId();
+        Instant date = attendee.getEventInstance().getDatetime();
+        List<EventAttendee> attendees = attendeeRepo
+                .findByUserIdAndEventInstanceEventCanonicalIdAndEventInstanceDatetimeAfter(userId, canonicalId, date);
+        attendees.add(attendee);
+        for (EventAttendee a : attendees) {
+            a.setStatus(Status.DECLINED);
+            a.setIsDeleted(true);
+        }
+        attendeeRepo.saveAll(attendees);
     }
 
 }
