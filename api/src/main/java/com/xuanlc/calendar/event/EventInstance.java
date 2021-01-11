@@ -17,17 +17,17 @@ public class EventInstance {
     @GeneratedValue
     private long id;
     @ManyToOne
-    private EventCanonical eventCanonical;
+    private EventCanonical canon;
     private Instant datetime;
     @JsonIgnore
-    @OneToMany(mappedBy = "eventInstance")
+    @OneToMany(mappedBy = "instance")
     private List<EventAttendee> attendees;
 
     public EventInstance() {
     }
 
-    public EventInstance(EventCanonical eventCanonical, Instant datetime) {
-        this.eventCanonical = eventCanonical;
+    public EventInstance(EventCanonical canon, Instant datetime) {
+        this.canon = canon;
         this.datetime = datetime;
     }
 
@@ -35,12 +35,12 @@ public class EventInstance {
         return this.id;
     }
 
-    public EventCanonical getEventCanonical() {
-        return this.eventCanonical;
+    public EventCanonical getCanon() {
+        return this.canon;
     }
 
-    public void setEventCanonical(EventCanonical eventCanonical) {
-        this.eventCanonical = eventCanonical;
+    public void setCanon(EventCanonical canon) {
+        this.canon = canon;
     }
 
     public Instant getDatetime() {

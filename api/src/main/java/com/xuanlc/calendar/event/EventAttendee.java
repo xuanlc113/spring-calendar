@@ -16,7 +16,7 @@ public class EventAttendee {
     @GeneratedValue
     private long id;
     @ManyToOne
-    private EventInstance eventInstance;
+    private EventInstance instance;
     @ManyToOne
     private AppUser user;
     @Enumerated(EnumType.STRING)
@@ -26,19 +26,19 @@ public class EventAttendee {
     public EventAttendee() {
     }
 
-    public EventAttendee(EventInstance eventInstance, AppUser user, Status status, boolean isDeleted) {
-        this.eventInstance = eventInstance;
+    public EventAttendee(EventInstance instance, AppUser user, Status status, boolean isDeleted) {
+        this.instance = instance;
         this.user = user;
         this.status = status;
         this.isDeleted = isDeleted;
     }
 
-    public EventInstance getEventInstance() {
-        return this.eventInstance;
+    public EventInstance getInstance() {
+        return this.instance;
     }
 
-    public void setEventInstance(EventInstance eventInstance) {
-        this.eventInstance = eventInstance;
+    public void setInstance(EventInstance instance) {
+        this.instance = instance;
     }
 
     public AppUser getUser() {
@@ -57,11 +57,7 @@ public class EventAttendee {
         this.status = status;
     }
 
-    public boolean isIsDeleted() {
-        return this.isDeleted;
-    }
-
-    public boolean getIsDeleted() {
+    public boolean isDeleted() {
         return this.isDeleted;
     }
 

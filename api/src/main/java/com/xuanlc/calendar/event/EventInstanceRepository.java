@@ -7,8 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface EventInstanceRepository extends CrudRepository<EventInstance, Long> {
 
-    List<EventInstance> findByEventCanonicalIdAndDatetimeGreaterThanEqual(Long canonicalId, Instant date);
+    List<EventInstance> findByCanonIdAndDatetimeGreaterThanEqual(Long canonicalId, Instant date);
 
-    List<EventInstance> findByEventCanonicalId(Long canonicalId);
+    List<EventInstance> findByCanonId(Long canonicalId);
 
 }

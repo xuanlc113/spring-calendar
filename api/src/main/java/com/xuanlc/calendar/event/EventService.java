@@ -31,9 +31,8 @@ public class EventService {
     @Autowired
     private UserService userService;
 
-    public List<EventAttendee> getEvents(Long userId, Instant start, Instant End) {
-        List<EventAttendee> attendees = new ArrayList<>();
-        return attendees;
+    public List<EventAttendee> getEvents(Long userId, Instant start, Instant end) {
+        return attendeeRepo.findByUserIdAndInstanceDatetimeBetween(userId, start, end);
     }
 
     public void addEvent(EventInfo event) {
@@ -84,8 +83,8 @@ public class EventService {
     }
 
     public void updateEvent(Long canonicalId, EventInfo event) {
-        List<EventInstance> instances = instanceRepo.findByEventCanonicalId(canonicalId);
-        List<EventAttendee> attendees = attendeeRepo.findByEventInstanceEventCanonicalId(canonicalId);
+        List<EventInstance> instances = instanceRepo.findByCanonId(canonicalId);
+        List<EventAttendee> attendees = attendeeRepo.findByInstanceCanonId(canonicalId);
         instanceRepo.deleteAll(instances);
         attendeeRepo.deleteAll(attendees);
         canonicalRepo.deleteById(canonicalId);
@@ -95,23 +94,22 @@ public class EventService {
 
     public void deleteEventInstance(Long instanceId) {
         EventInstance instance = instanceRepo.findById(instanceId).get();
-        Long canonicalId = instance.getEventCanonical().getId();
-        if (!instance.getEventCanonical().getIsRecurring()) {
+        Long canonicalId = instance.getCanon().getId();
+        if (!instance.getCanon().isRecurring()) {
             canonicalRepo.deleteById(canonicalId);
         }
-        attendeeRepo.deleteByEventInstanceId(instanceId);
+        attendeeRepo.deleteByInstanceId(instanceId);
         instanceRepo.deleteById(instanceId);
     }
 
     public void deleteEventInstanceAndAfter(Long instanceId) {
         EventInstance instance = instanceRepo.findById(instanceId).get();
-        Long canonicalId = instance.getEventCanonical().getId();
+        Long canonicalId = instance.getCanon().getId();
         Instant date = instance.getDatetime();
         List<EventAttendee> attendees = new ArrayList<>();
-        List<EventInstance> instances = instanceRepo.findByEventCanonicalIdAndDatetimeGreaterThanEqual(canonicalId,
-                date);
+        List<EventInstance> instances = instanceRepo.findByCanonIdAndDatetimeGreaterThanEqual(canonicalId, date);
         for (EventInstance i : instances) {
-            attendees.addAll(attendeeRepo.findByEventInstanceId(i.getId()));
+            attendees.addAll(attendeeRepo.findByInstanceId(i.getId()));
         }
         attendeeRepo.deleteAll(attendees);
         instanceRepo.deleteAll(instances);
@@ -137,10 +135,10 @@ public class EventService {
     public void deleteAttendeeAndAfter(Long attendeeId) {
         EventAttendee attendee = attendeeRepo.findById(attendeeId).get();
         Long userId = attendee.getUser().getId();
-        Long canonicalId = attendee.getEventInstance().getEventCanonical().getId();
-        Instant date = attendee.getEventInstance().getDatetime();
+        Long canonicalId = attendee.getInstance().getCanon().getId();
+        Instant date = attendee.getInstance().getDatetime();
         List<EventAttendee> attendees = attendeeRepo
-                .findByUserIdAndEventInstanceEventCanonicalIdAndEventInstanceDatetimeAfter(userId, canonicalId, date);
+                .findByUserIdAndInstanceCanonIdAndInstanceDatetimeGreaterThanEqual(userId, canonicalId, date);
         attendees.add(attendee);
         for (EventAttendee a : attendees) {
             a.setStatus(Status.DECLINED);

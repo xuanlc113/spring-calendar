@@ -1,5 +1,6 @@
 package com.xuanlc.calendar.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xuanlc.calendar.appuser.AppUser;
 
 import java.time.Instant;
@@ -30,8 +31,10 @@ public class EventCanonical {
     private boolean isAllDay;
     private boolean isRecurring;
     private String rrule;
-    @OneToMany(mappedBy = "eventCanonical")
+    @JsonIgnore
+    @OneToMany(mappedBy = "canon")
     private List<EventInstance> events;
+    @JsonIgnore
     @OneToMany(mappedBy = "eventCanonical")
     private List<EventException> exceptions;
 
@@ -116,11 +119,7 @@ public class EventCanonical {
         this.duration = duration;
     }
 
-    public boolean isIsAllDay() {
-        return this.isAllDay;
-    }
-
-    public boolean getIsAllDay() {
+    public boolean isAllDay() {
         return this.isAllDay;
     }
 
@@ -128,11 +127,7 @@ public class EventCanonical {
         this.isAllDay = isAllDay;
     }
 
-    public boolean isIsRecurring() {
-        return this.isRecurring;
-    }
-
-    public boolean getIsRecurring() {
+    public boolean isRecurring() {
         return this.isRecurring;
     }
 
