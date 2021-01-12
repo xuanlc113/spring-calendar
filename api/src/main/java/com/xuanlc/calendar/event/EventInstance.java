@@ -1,7 +1,7 @@
 package com.xuanlc.calendar.event;
 
-import java.time.Instant;
 import java.util.List;
+import java.time.Instant;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

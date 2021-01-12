@@ -17,31 +17,28 @@ public class ContactService {
     @Autowired
     private UserService userService;
 
-    public List<Contact> getContacts(Long id) {
-        return contactRepository.findBySenderIdAndIsAcceptedTrue(id);
+    public List<Contact> getContacts(Long userId) {
+        return contactRepository.findBySenderIdAndIsAcceptedTrue(userId);
     }
 
-    public List<Contact> getContactRequests(Long id) {
-        return contactRepository.findByReceiverIdAndIsAcceptedFalse(id);
+    public List<Contact> getContactRequests(Long userId) {
+        return contactRepository.findByReceiverIdAndIsAcceptedFalse(userId);
     }
 
     public void putContactRequest(ContactRequest request) {
-        Contact contact = new Contact();
         AppUser sender = userService.getUser(request.getSender());
         AppUser receiver = userService.getUser(request.getReceiver());
-        contact.setSender(sender);
-        contact.setReceiver(receiver);
-        contact.setIsAccepted(false);
+        Contact contact = new Contact(sender, receiver, false);
         contactRepository.save(contact);
     }
 
-    public void acceptContactRequest(Long id) {
-        Contact contact = contactRepository.findById(id).get();
+    public void acceptContactRequest(Long contactId) {
+        Contact contact = contactRepository.findById(contactId).get();
         contact.setIsAccepted(true);
         contactRepository.save(contact);
     }
 
-    public void deleteContactRequest(Long id) {
-        contactRepository.deleteById(id);
+    public void deleteContactRequest(Long contactId) {
+        contactRepository.deleteById(contactId);
     }
 }

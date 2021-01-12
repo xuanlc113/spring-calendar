@@ -11,7 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.ElementCollection;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class EventCanonical {
@@ -23,8 +23,8 @@ public class EventCanonical {
     private AppUser user;
     private String title;
     private String description;
-    @ElementCollection
-    private List<Long> attendees;
+    @ManyToMany
+    private List<AppUser> attendees;
     private Instant datetimeStart;
     private Instant dateEnd;
     private Integer duration;
@@ -34,15 +34,13 @@ public class EventCanonical {
     @JsonIgnore
     @OneToMany(mappedBy = "canon")
     private List<EventInstance> events;
-    @JsonIgnore
-    @OneToMany(mappedBy = "eventCanonical")
-    private List<EventException> exceptions;
 
     public EventCanonical() {
     }
 
-    public EventCanonical(AppUser user, String title, String description, List<Long> attendees, Instant datetimeStart,
-            Instant dateEnd, Integer duration, boolean isAllDay, boolean isRecurring, String rrule) {
+    public EventCanonical(AppUser user, String title, String description, List<AppUser> attendees,
+            Instant datetimeStart, Instant dateEnd, Integer duration, boolean isAllDay, boolean isRecurring,
+            String rrule) {
         this.user = user;
         this.title = title;
         this.description = description;
@@ -87,11 +85,11 @@ public class EventCanonical {
         this.description = description;
     }
 
-    public List<Long> getAttendees() {
+    public List<AppUser> getAttendees() {
         return this.attendees;
     }
 
-    public void setAttendees(List<Long> attendees) {
+    public void setAttendees(List<AppUser> attendees) {
         this.attendees = attendees;
     }
 
@@ -149,14 +147,6 @@ public class EventCanonical {
 
     public void setEvents(List<EventInstance> events) {
         this.events = events;
-    }
-
-    public List<EventException> getExceptions() {
-        return this.exceptions;
-    }
-
-    public void setExceptions(List<EventException> exceptions) {
-        this.exceptions = exceptions;
     }
 
 }

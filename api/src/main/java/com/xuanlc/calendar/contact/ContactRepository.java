@@ -6,8 +6,8 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ContactRepository extends CrudRepository<Contact, Long> {
 
-    List<Contact> findBySenderIdAndIsAcceptedTrue(Long id);
+    List<Contact> findBySenderIdAndIsAcceptedTrue(Long userId);
 
-    List<Contact> findByReceiverIdAndIsAcceptedFalse(Long id);
+    List<Contact> findByReceiverIdAndIsAcceptedFalse(Long userId);
 
 }

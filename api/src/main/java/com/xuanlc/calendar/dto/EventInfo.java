@@ -33,9 +33,9 @@ public class EventInfo {
         this.rrule = rrule;
     }
 
-    public EventCanonical convertToEntity(AppUser user) {
-        EventCanonical event = new EventCanonical(user, this.title, this.description, this.attendees,
-                this.datetimeStart, this.dateEnd, this.duration, this.isAllDay, this.isRecurring, this.rrule);
+    public EventCanonical convertToEntity(AppUser user, List<AppUser> attendees) {
+        EventCanonical event = new EventCanonical(user, this.title, this.description, attendees, this.datetimeStart,
+                this.dateEnd, this.duration, this.isAllDay, this.isRecurring, this.rrule);
         return event;
     }
 

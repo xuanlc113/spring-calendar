@@ -1,18 +1,14 @@
 package com.xuanlc.calendar.appuser;
 
+import com.xuanlc.calendar.event.EventCanonical;
+
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xuanlc.calendar.contact.Contact;
-import com.xuanlc.calendar.event.EventCanonical;
-import com.xuanlc.calendar.event.EventInstance;
-import com.xuanlc.calendar.event.EventAttendee;
 
 @Entity
 public class AppUser {
@@ -20,19 +16,9 @@ public class AppUser {
     @Id
     private long id;
     private String email;
-    @OneToMany(mappedBy = "user")
+    @ManyToMany(mappedBy = "attendees")
     @JsonIgnore
-    private List<EventCanonical> eventCanonical;
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    private List<EventAttendee> events;
-    // @JsonIgnore
-    // @ManyToMany
-    // private Set<EventInstance> events;
-    // @OneToMany(mappedBy = "sender")
-    // private List<Contact> sender;
-    // @OneToMany(mappedBy = "receiver")
-    // private List<Contact> receiver;
+    private List<EventCanonical> events;
 
     public AppUser() {
     }
@@ -58,36 +44,12 @@ public class AppUser {
         this.email = email;
     }
 
-    public List<EventCanonical> getEventCanonical() {
-        return this.eventCanonical;
-    }
-
-    public void setEventCanonical(List<EventCanonical> eventCanonical) {
-        this.eventCanonical = eventCanonical;
-    }
-
-    public List<EventAttendee> getEvents() {
+    public List<EventCanonical> getEvents() {
         return this.events;
     }
 
-    public void setEvents(List<EventAttendee> events) {
+    public void setEvents(List<EventCanonical> events) {
         this.events = events;
     }
-
-    // public List<Contact> getSender() {
-    // return this.sender;
-    // }
-
-    // public void setSender(List<Contact> sender) {
-    // this.sender = sender;
-    // }
-
-    // public List<Contact> getReceiver() {
-    // return this.receiver;
-    // }
-
-    // public void setReceiver(List<Contact> receiver) {
-    // this.receiver = receiver;
-    // }
 
 }

@@ -2,22 +2,14 @@ package com.xuanlc.calendar.dto;
 
 public class ContactRequest {
 
-    private boolean isAccepted;
     private Long sender;
     private Long receiver;
+    private boolean isAccepted;
 
-    public ContactRequest(boolean isAccepted, Long sender, Long receiver) {
-        this.isAccepted = isAccepted;
+    public ContactRequest(Long sender, Long receiver, boolean isAccepted) {
         this.sender = sender;
         this.receiver = receiver;
-    }
-
-    public boolean isIsAccepted() {
-        return this.isAccepted;
-    }
-
-    public boolean getIsAccepted() {
-        return this.isAccepted;
+        this.isAccepted = isAccepted;
     }
 
     public void setIsAccepted(boolean isAccepted) {
@@ -38,6 +30,14 @@ public class ContactRequest {
 
     public void setReceiver(Long receiver) {
         this.receiver = receiver;
+    }
+
+    public boolean isIsAccepted() {
+        return this.isAccepted;
+    }
+
+    public boolean getIsAccepted() {
+        return this.isAccepted;
     }
 
 }

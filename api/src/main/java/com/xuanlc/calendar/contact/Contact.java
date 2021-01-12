@@ -3,8 +3,8 @@ package com.xuanlc.calendar.contact;
 import com.xuanlc.calendar.appuser.AppUser;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
 import javax.persistence.ManyToOne;
 
 @Entity

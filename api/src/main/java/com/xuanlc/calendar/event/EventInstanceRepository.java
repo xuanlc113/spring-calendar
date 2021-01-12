@@ -1,7 +1,7 @@
 package com.xuanlc.calendar.event;
 
-import java.time.Instant;
 import java.util.List;
+import java.time.Instant;
 
 import org.springframework.data.repository.CrudRepository;
 
@@ -9,6 +9,6 @@ public interface EventInstanceRepository extends CrudRepository<EventInstance, L
 
     List<EventInstance> findByCanonIdAndDatetimeGreaterThanEqual(Long canonicalId, Instant date);
 
-    List<EventInstance> findByCanonId(Long canonicalId);
+    void deleteByCanonId(Long canonicalId);
 
 }
