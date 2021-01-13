@@ -2,6 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@auth0/auth0-react": "^1.2.0",
@@ -12,6 +13,7 @@
     "@testing-library/user-event": "^12.6.0",
     "antd": "^4.9.3",
     "antd-dayjs-webpack-plugin": "^1.0.1",
+    "axios": "^0.21.1",
     "dayjs": "^1.9.7",
     "randomcolor": "^0.6.2",
     "react": "^17.0.1",
@@ -21,6 +23,7 @@
     "react-scripts": "4.0.1",
     "rrule": "^2.6.6",
     "styled-components": "^5.2.1",
+    "uuid": "^8.3.2",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

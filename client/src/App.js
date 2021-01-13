@@ -2,7 +2,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import styled from "styled-components";
 import Login from "./login/Login";
 import Home from "./layout/Home";
-import { createContext } from "react";
+import axios from "axios";
+import { createContext, useEffect } from "react";
+import { v5 as uuidv5 } from "uuid";
 
 const Container = styled.div`
   height: 100%;
@@ -13,14 +15,32 @@ const UserContext = createContext(null);
 
 function App() {
   const { user, isAuthenticated } = useAuth0();
-  let userId = "";
-  if (user) {
-    userId = user.sub.split("|")[1];
+  let userId;
+  if (isAuthenticated) {
+    let providerId = user.sub.split("|")[1];
+    userId = uuidv5(providerId, process.env.REACT_APP_UUID_NAMESPACE);
   }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      axios.get(`/user/` + userId).catch((err) => {
+        if (err.response) {
+          console.log(err);
+          console.log(userId);
+          if (err.response.status === 500) {
+            axios.post(`/user`, {
+              id: userId,
+              email: user.email,
+            });
+          }
+        }
+      });
+    }
+  }, [user]);
 
   return (
     <Container>
-      {!isAuthenticated ? (
+      {isAuthenticated ? (
         <UserContext.Provider value={user}>
           <Home user={user} />
         </UserContext.Provider>

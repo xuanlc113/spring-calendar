@@ -1,5 +1,7 @@
 package com.xuanlc.calendar.appuser;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +16,13 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/user/{id}")
-    public AppUser getUser(@PathVariable Long id) {
+    public AppUser getUser(@PathVariable UUID id) {
         return userService.getUser(id);
+    }
+
+    @GetMapping("/user/email/{email}")
+    public AppUser getUserByEmail(@PathVariable String email) {
+        return userService.getUserByEmail(email);
     }
 
     @PostMapping("/user")
