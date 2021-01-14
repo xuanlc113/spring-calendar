@@ -28,6 +28,10 @@ public class Contact {
         this.isAccepted = isAccepted;
     }
 
+    public long getId() {
+        return this.id;
+    }
+
     public AppUser getSender() {
         return this.sender;
     }

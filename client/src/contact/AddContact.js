@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Modal, Input } from "antd";
 import { useContext, useState } from "react";
 import { UserContext } from "../App";
+import axios from "axios";
 
 const { Search } = Input;
 
@@ -57,23 +58,26 @@ function useSearch() {
   const [message, setMessage] = useState(0);
   const [search, setSearch] = useState("");
 
-  function addCalendar() {
-    setSearch("");
-    if (sendRequest(search)) {
+  async function addCalendar() {
+    try {
+      const { data } = await axios.get(`/user/email/${search}`);
+      const receiverId = data.id;
+      await axios.post("/contact", {
+        sender: userId,
+        receiver: receiverId,
+      });
       setMessage(1);
-      return;
+    } catch (err) {
+      console.log(err);
+      setMessage(2);
     }
 
-    setMessage(2);
+    setSearch("");
   }
 
   function changeSearch(val) {
     setSearch(val);
     setMessage(0);
-  }
-
-  function sendRequest(user) {
-    return true;
   }
 
   return { message, search, changeSearch, addCalendar };

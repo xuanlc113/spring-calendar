@@ -1,43 +1,31 @@
 package com.xuanlc.calendar.dto;
 
+import java.util.UUID;
+
 public class ContactRequest {
 
-    private Long sender;
-    private Long receiver;
-    private boolean isAccepted;
+    private UUID sender;
+    private UUID receiver;
 
-    public ContactRequest(Long sender, Long receiver, boolean isAccepted) {
+    public ContactRequest(UUID sender, UUID receiver) {
         this.sender = sender;
         this.receiver = receiver;
-        this.isAccepted = isAccepted;
     }
 
-    public void setIsAccepted(boolean isAccepted) {
-        this.isAccepted = isAccepted;
-    }
-
-    public Long getSender() {
+    public UUID getSender() {
         return this.sender;
     }
 
-    public void setSender(Long sender) {
+    public void setSender(UUID sender) {
         this.sender = sender;
     }
 
-    public Long getReceiver() {
+    public UUID getReceiver() {
         return this.receiver;
     }
 
-    public void setReceiver(Long receiver) {
+    public void setReceiver(UUID receiver) {
         this.receiver = receiver;
-    }
-
-    public boolean isIsAccepted() {
-        return this.isAccepted;
-    }
-
-    public boolean getIsAccepted() {
-        return this.isAccepted;
     }
 
 }

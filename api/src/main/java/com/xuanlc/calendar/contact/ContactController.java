@@ -1,8 +1,10 @@
 package com.xuanlc.calendar.contact;
 
+import com.xuanlc.calendar.appuser.AppUser;
 import com.xuanlc.calendar.dto.ContactRequest;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,12 +22,12 @@ public class ContactController {
     private ContactService contactService;
 
     @GetMapping("/contact/authorized/{userId}")
-    public List<Contact> getContacts(@PathVariable Long userId) {
+    public List<Contact> getContacts(@PathVariable UUID userId) {
         return contactService.getContacts(userId);
     }
 
     @GetMapping("/contact/requests/{userId}")
-    public List<Contact> getContactRequests(@PathVariable Long userId) {
+    public List<Contact> getContactRequests(@PathVariable UUID userId) {
         return contactService.getContactRequests(userId);
     }
 

@@ -3,8 +3,9 @@ import styled from "styled-components";
 import { Button, Badge, Select, Space, Popover } from "antd";
 import { UserOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import ContactRequest from "../contact/ContactRequest";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
+import axios from "axios";
 
 const Container = styled.div`
   flex: 1;
@@ -97,7 +98,7 @@ export default function Navbar(props) {
           }
         >
           <FriendIcon>
-            <Badge count={getRequests().length} size="small">
+            <Badge count={requests.length} size="small">
               <UserOutlined
                 className="icon"
                 style={{
@@ -122,24 +123,39 @@ export default function Navbar(props) {
 
 function useRequests() {
   const userId = useContext(UserContext);
-  const [requests, setRequests] = useState(getRequests(userId));
+  const [requests, setRequests] = useState([]);
 
-  function acceptRequest(id) {
-    //
-    setRequests(getRequests(userId));
+  async function acceptRequest(contactId) {
+    try {
+      await axios.put(`/contact/${contactId}`);
+      await getRequests();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
-  function denyRequest(id) {
-    //
-    setRequests(getRequests(userId));
+  async function denyRequest(contactId) {
+    try {
+      await axios.delete(`/contact/${contactId}`);
+      await getRequests();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useEffect(async () => {
+    await getRequests();
+  }, []);
+
+  async function getRequests() {
+    try {
+      const { data: requests } = await axios.get(`/contact/requests/${userId}`);
+      console.log(requests[0]);
+      setRequests(requests);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return { requests, acceptRequest, denyRequest };
-}
-
-function getRequests(id) {
-  return [
-    { email: "user", id: "1000" },
-    { email: "user2", id: "2000" },
-  ];
 }

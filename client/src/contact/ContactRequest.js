@@ -28,7 +28,7 @@ export default function ContactRequest(props) {
     <Container>
       {props.requests.map((request) => (
         <Request>
-          <p>{request.email}</p>
+          <p>{request.sender.email}</p>
           <div>
             <Button
               shape="circle"

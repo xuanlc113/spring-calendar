@@ -21,28 +21,26 @@ function App() {
     userId = uuidv5(providerId, process.env.REACT_APP_UUID_NAMESPACE);
   }
 
-  useEffect(() => {
+  useEffect(async () => {
     if (isAuthenticated) {
-      axios.get(`/user/` + userId).catch((err) => {
-        if (err.response) {
-          console.log(err);
-          console.log(userId);
-          if (err.response.status === 500) {
-            axios.post(`/user`, {
-              id: userId,
-              email: user.email,
-            });
-          }
+      try {
+        await axios.get(`/user/${userId}`);
+      } catch (err) {
+        if (err.response.status === 500) {
+          await axios.post(`/user`, {
+            id: userId,
+            email: user.email,
+          });
         }
-      });
+      }
     }
   }, [user]);
 
   return (
     <Container>
       {isAuthenticated ? (
-        <UserContext.Provider value={user}>
-          <Home user={user} />
+        <UserContext.Provider value={userId}>
+          <Home userId={userId} />
         </UserContext.Provider>
       ) : (
         <Login />
@@ -52,15 +50,3 @@ function App() {
 }
 
 export { App, UserContext };
-
-// user
-// email: "sockpuppet113@gmail.com"
-// email_verified: true
-// family_name: "Puppy"
-// given_name: "Sock"
-// locale: "en-GB"
-// name: "Sock Puppy"
-// nickname: "sockpuppet113"
-// picture: "https://lh3.googleusercontent.com/-0yG_PnyU0Gw/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclJw-2cYUWx-wYhFGrSCCuZUUkyHg/s96-c/photo.jpg"
-// sub: "google-oauth2|105217146160079939382"
-// updated_at: "2020-12-20T07:17:53.236Z"

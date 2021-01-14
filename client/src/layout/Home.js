@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import Content from "./Content";
 import dayjs from "dayjs";
 import randomColor from "randomcolor";
+import axios from "axios";
 
 const Container = styled.div`
   height: 100%;
@@ -23,7 +24,6 @@ export default function Home(props) {
   const { calendars, updateCalendars, activeCalendars } = useCalendarSelector(
     props.userId
   );
-  console.log(date, new Date());
 
   return (
     <Container>
@@ -96,18 +96,13 @@ function useDate() {
 }
 
 function useCalendarSelector(userId) {
-  const [calendars, setCalendars] = useState(getCalendars(userId));
   const activeCalendars = useRef(null);
+  const [calendars, setCalendars] = useState(getCalendars(userId));
   activeCalendars.current = calendars.filter((i) => i.checked);
 
   function getCalendars(userId) {
-    const colors = randomColor({ seed: 4744, luminosity: "dark", count: 5 });
-    // get calendars { label: "My Calendar", id: userId, checked: true, color: blue }
     return [
       { label: "My Calendar", id: userId, checked: true, color: "#3495eb" },
-      { label: "user", id: userId, checked: false, color: colors[0] },
-      { label: "ben", id: userId, checked: false, color: colors[1] },
-      { label: "tom", id: userId, checked: false, color: colors[2] },
     ];
   }
 
@@ -134,9 +129,31 @@ function useCalendarSelector(userId) {
     return {};
   }
 
-  useEffect(() => {
+  useEffect(async () => {
+    const colors = randomColor({ seed: 4744, luminosity: "dark", count: 5 });
+    let calendars = [
+      { label: "My Calendar", id: userId, checked: true, color: "#3495eb" },
+    ];
+
+    try {
+      const { data: contacts } = await axios.get(
+        `/contact/authorized/${userId}`
+      );
+      calendars = calendars.concat(
+        contacts.map((contact, i) => ({
+          label: contact.receiver.email,
+          id: contact.receiver.id,
+          checked: false,
+          color: colors[i],
+        }))
+      );
+    } catch (err) {
+      console.log(err);
+    }
+
+    setCalendars(calendars);
     activeCalendars.current = calendars.filter((i) => i.checked);
-  }, [calendars]);
+  }, []);
 
   return { calendars, updateCalendars, activeCalendars };
 }
