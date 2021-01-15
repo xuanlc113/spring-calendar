@@ -33,6 +33,10 @@ public class EventAttendee {
         this.isDeleted = isDeleted;
     }
 
+    public Long getId() {
+        return this.id;
+    }
+
     public EventInstance getInstance() {
         return this.instance;
     }

@@ -49,6 +49,7 @@ const AttendOptions = styled.div`
 `;
 
 export default function EventPopover(props) {
+  console.log(props);
   const { isOwner, isCreator, isRecurring } = useEventEdit(props);
   const [deleteRecurringVisible, setDeleteRecurringVisible] = useState(false);
   const [option, setOption] = useState(1);
@@ -75,7 +76,7 @@ export default function EventPopover(props) {
   return (
     <div onClick={(e) => e.stopPropagation()}>
       <PopoverHeader>
-        <h3>{props.canonicalEvent.title}</h3>
+        <h3>{props.canon.title}</h3>
         <div>
           {isCreator() && isOwner() && (
             <Button
@@ -97,26 +98,26 @@ export default function EventPopover(props) {
         <CalendarOutlined />
         <p>
           {dayjs(props.datetime).format("ddd D MMMM")}
-          {props.canonicalEvent.isAllDay
+          {props.canon.allDay
             ? ` - ${dayjs(props.datetime)
-                .add(props.canonicalEvent.duration, "day")
+                .add(props.canon.duration, "day")
                 .format("ddd D MMMM")}`
             : ` ${getStartTime(props.datetime)} -
-            ${getEndTime(props.datetime, props.canonicalEvent.duration)}`}
+            ${getEndTime(props.datetime, props.canon.duration)}`}
         </p>
       </PopoverInfo>
       <PopoverInfo>
         <AlignRightOutlined rotate={180} />
-        <p>{props.canonicalEvent.description}</p>
+        <p>{props.canon.description}</p>
       </PopoverInfo>
-      {props.attendees.length > 0 && (
+      {props.canon.attendees.length > 0 && (
         <>
           <PopoverInfo>
             <UserOutlined />
             <p>Attendees</p>
           </PopoverInfo>
           <Attendees>
-            {props.attendees.map((a) => (
+            {props.canon.attendees.map((a) => (
               <p>
                 {a.email} {a.status}
               </p>
@@ -152,8 +153,8 @@ export default function EventPopover(props) {
           okPopup={okPopup}
           closePopup={closePopup}
           title={"Edit Event"}
-          date={dayjs(props.canonicalEvent.start)}
-          event={props.canonicalEvent}
+          date={dayjs(props.canon.start)}
+          event={props.canon}
         />
       )}
     </div>
@@ -161,20 +162,17 @@ export default function EventPopover(props) {
 }
 
 function useEventEdit(event) {
-  const user = useContext(UserContext);
-  // const userId = user.sub.split("|")[1];
-  const userId = "001";
-
+  const userId = useContext(UserContext);
   function isOwner() {
-    return userId === event.userId;
+    return userId === event.canon.user.id;
   }
 
   function isCreator() {
-    return userId === event.canonicalEvent.userId;
+    return userId === event.canon.user.id;
   }
 
   function isRecurring() {
-    return event.canonicalEvent.isRecurring;
+    return event.canon.recurring;
   }
 
   return { isOwner, isCreator, isRecurring };

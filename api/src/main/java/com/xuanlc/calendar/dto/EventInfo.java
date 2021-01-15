@@ -2,16 +2,17 @@ package com.xuanlc.calendar.dto;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import com.xuanlc.calendar.appuser.AppUser;
 import com.xuanlc.calendar.event.EventCanonical;
 
 public class EventInfo {
 
-    private Long userId;
+    private UUID userId;
     private String title;
     private String description;
-    private List<Long> attendees;
+    private List<UUID> attendees;
     private Instant datetimeStart;
     private Instant dateEnd;
     private Integer duration;
@@ -19,7 +20,7 @@ public class EventInfo {
     private boolean isRecurring;
     private String rrule;
 
-    public EventInfo(Long userId, String title, String description, List<Long> attendees, Instant datetimeStart,
+    public EventInfo(UUID userId, String title, String description, List<UUID> attendees, Instant datetimeStart,
             Instant dateEnd, Integer duration, boolean isAllDay, boolean isRecurring, String rrule) {
         this.userId = userId;
         this.title = title;
@@ -39,11 +40,11 @@ public class EventInfo {
         return event;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return this.userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
@@ -63,11 +64,11 @@ public class EventInfo {
         this.description = description;
     }
 
-    public List<Long> getAttendees() {
+    public List<UUID> getAttendees() {
         return this.attendees;
     }
 
-    public void setAttendees(List<Long> attendees) {
+    public void setAttendees(List<UUID> attendees) {
         this.attendees = attendees;
     }
 

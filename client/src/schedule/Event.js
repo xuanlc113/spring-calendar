@@ -42,15 +42,15 @@ export default function Event(props) {
         <Info>
           {props.style.height >= 30 ? (
             <>
-              <p>{props.canonicalEvent.title}</p>
+              <p>{props.canon.title}</p>
               <p>
                 {getStartTime(props.datetime)} –{" "}
-                {getEndTime(props.datetime, props.canonicalEvent.duration)}
+                {getEndTime(props.datetime, props.canon.duration)}
               </p>
             </>
           ) : (
             <p>
-              {props.canonicalEvent.title} {getStartTime(props.datetime)}
+              {props.canon.title} {getStartTime(props.datetime)}
             </p>
           )}
         </Info>

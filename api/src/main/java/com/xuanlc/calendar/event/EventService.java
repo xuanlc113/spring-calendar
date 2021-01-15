@@ -6,6 +6,7 @@ import com.xuanlc.calendar.dto.EventInfo;
 import com.xuanlc.calendar.helper.Helper;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.ArrayList;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -31,8 +32,14 @@ public class EventService {
     @Autowired
     private UserService userService;
 
-    public List<EventAttendee> getEvents(Long userId, Instant start, Instant end) {
-        return attendeeRepo.findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalse(userId, start, end);
+    public List<EventAttendee> getEvents(UUID userId, Instant start, Instant end) {
+        return attendeeRepo.findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonIsAllDayFalse(userId,
+                start, end);
+    }
+
+    public List<EventAttendee> getAllDayEvents(UUID userId, Instant start, Instant end) {
+        return attendeeRepo.findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonIsAllDayTrue(userId,
+                start, end);
     }
 
     public void addEvent(EventInfo event) {
@@ -136,7 +143,7 @@ public class EventService {
 
     public void deleteAttendeeAndAfter(Long attendeeId) {
         EventAttendee attendee = attendeeRepo.findById(attendeeId).get();
-        Long userId = attendee.getUser().getId();
+        UUID userId = attendee.getUser().getId();
         Long canonicalId = attendee.getInstance().getCanon().getId();
         Instant date = attendee.getInstance().getDatetime();
         List<EventAttendee> attendees = attendeeRepo
