@@ -33,13 +33,15 @@ export default function Schedule(props) {
   }
 
   return (
-    <Container onClick={openCursorPopup}>
-      <Board>
-        {events.map((e) => (
-          <Event {...e} />
-        ))}
-      </Board>
-      <Grid date={props.date} />
+    <>
+      <Container onClick={openCursorPopup}>
+        <Board>
+          {events.map((e) => (
+            <Event {...e} />
+          ))}
+        </Board>
+        <Grid date={props.date} />
+      </Container>
       {isVisible && (
         <Popup
           okPopup={okPopup}
@@ -48,7 +50,7 @@ export default function Schedule(props) {
           date={cursorDate}
         />
       )}
-    </Container>
+    </>
   );
 }
 
@@ -65,7 +67,7 @@ async function getEvents(date, users) {
 async function getUserEvents(date, user) {
   try {
     const timezoneOffset = new Date().getTimezoneOffset();
-    const timestamp = date.subtract(timezoneOffset, "m").toDate().toJSON();
+    const timestamp = date.subtract(timezoneOffset, "m").toJSON();
     const { data } = await axios.get(
       `/event/${user.id}?start=${timestamp}&end=${timestamp}`
     );

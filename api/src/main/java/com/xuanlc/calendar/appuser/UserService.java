@@ -17,7 +17,7 @@ public class UserService {
     }
 
     public AppUser getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).get();
     }
 
     public List<AppUser> getUsersFromIds(List<UUID> userIds) {

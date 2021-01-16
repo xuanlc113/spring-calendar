@@ -1,11 +1,14 @@
-import { useState, useReducer, useEffect } from "react";
+import dayjs from "dayjs";
+import { useState, useReducer, useEffect, useContext } from "react";
 import RRule, { rrulestr } from "rrule";
-import { eventTemplate, getDurationTemplate } from "./EventTemplates";
+import { UserContext } from "../App";
+import { getDurationTemplate, getEventTemplate } from "./EventTemplates";
 
 export function useBasicEvent(datetime, event) {
+  const userId = useContext(UserContext);
   const [info, infoDispatch] = useReducer(
     infoReducer,
-    getEventInfo(datetime, event)
+    getEventInfo(datetime, event, userId)
   );
   const [duration, setDuration] = useState(getEventDuration(datetime, event));
   const [repeatLabel, setRepeatLabel] = useState(getRepeatValue(info.rrule));
@@ -82,15 +85,16 @@ function infoReducer(state, action) {
   }
 }
 
-function getEventInfo(datetime, event) {
+function getEventInfo(datetime, event, userId) {
   if (event) {
     return event;
   }
 
   const round = Math.ceil(datetime.minute() / 15);
-  eventTemplate.datetimeStart = datetime.minute(round * 15);
+  const template = getEventTemplate(userId);
+  template.datetimeStart = datetime.minute(round * 15);
 
-  return eventTemplate;
+  return template;
 }
 
 function getEventDuration(datetime, event) {

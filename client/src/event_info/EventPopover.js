@@ -49,7 +49,6 @@ const AttendOptions = styled.div`
 `;
 
 export default function EventPopover(props) {
-  console.log(props);
   const { isOwner, isCreator, isRecurring } = useEventEdit(props);
   const [deleteRecurringVisible, setDeleteRecurringVisible] = useState(false);
   const [option, setOption] = useState(1);
@@ -106,11 +105,14 @@ export default function EventPopover(props) {
             ${getEndTime(props.canon.datetimeStart, props.canon.duration)}`}
         </p>
       </PopoverInfo>
-      <PopoverInfo>
-        <AlignRightOutlined rotate={180} />
-        <p>{props.canon.description}</p>
-      </PopoverInfo>
-      {props.attendees.length > 0 && (
+
+      {props.canon.description && (
+        <PopoverInfo>
+          <AlignRightOutlined rotate={180} />
+          <p>{props.canon.description}</p>
+        </PopoverInfo>
+      )}
+      {props.attendees.length > 1 && (
         <>
           <PopoverInfo>
             <UserOutlined />
@@ -119,7 +121,7 @@ export default function EventPopover(props) {
           <Attendees>
             {props.attendees.map((a) => (
               <p>
-                {a.email} {a.status}
+                {a.user.email} {a.status}
               </p>
             ))}
           </Attendees>

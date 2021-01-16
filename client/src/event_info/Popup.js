@@ -14,6 +14,8 @@ import RepeatPopup, { useCustomRepeatPopup } from "./RepeatPopup";
 import { useBasicEvent } from "./BasicEventHook";
 import { getDefaultRRules, getMonthOptions, getWeekday } from "./EventHelpers";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import axios from "axios";
+import dayjs from "dayjs";
 
 const PopupContainer = styled(Modal)`
   top: 50px;
@@ -221,51 +223,69 @@ export function usePopup() {
     setIsVisible(false);
   }
 
-  function okPopup(info) {
+  async function okPopup(info) {
     setIsVisible(false);
-    info.datetimeStart = info.datetimeStart.toDate();
-    // only create/update, check if id present
+    let payload = parseInfo(info);
+    const canonId = payload.id;
+    delete payload.id;
+    try {
+      if (canonId) {
+        await axios.put(`/event/${canonId}`, payload);
+      } else {
+        await axios.post(`/event`, payload);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  function parseInfo(info) {
+    const timezoneOffset = new Date().getTimezoneOffset();
+    info.title = info.title === "" ? "no title" : info.title;
+    info.attendees = info.attendees.map((a) => a.id);
+    info.datetimeStart = info.datetimeStart
+      .subtract(timezoneOffset, "m")
+      .millisecond(0)
+      .toJSON();
+    info.dateEnd =
+      info.dateEnd === null
+        ? null
+        : info.dateEnd.subtract(timezoneOffset, "m").millisecond(0).toJSON();
+    return info;
   }
 
   return { isVisible, openPopup, closePopup, okPopup };
 }
 
 function useAttendees(info, infoDispatch) {
-  const [attendees, setAttendees] = useState(getAttendees(info));
+  const [attendees, setAttendees] = useState(info.attendees);
   const [input, setInput] = useState("");
   const [error, setError] = useState(false);
 
-  function getAttendees(info) {
-    let list = [];
-    for (let i = 0; i < info.attendees.length; i++) {
-      list.push(getUser(info.attendees[i]));
-    }
-    return list;
-  }
-
-  function getUser(id) {
-    return { label: "user", id };
-  }
-
-  function addAttendee(email) {
-    setInput("");
-    if (attendees.some((attendee) => attendee.email === email)) {
+  async function addAttendee() {
+    if (attendees.some((attendee) => attendee.email === input)) {
       setError(true);
       return;
     }
-    if (email === "as") {
+    try {
+      const { data } = await axios.get(`/user/email/${input}`);
+      console.log(data);
+      setError(false);
+      const updatedAttendees = [...attendees, data];
+      setAttendees(updatedAttendees);
+      infoDispatch({ type: "attendees", value: updatedAttendees });
+    } catch (err) {
+      console.log(err);
       setError(true);
-      return;
+    } finally {
+      setInput("");
     }
-    setError(false);
-    setAttendees([...attendees, { email, id: 100 }]);
-    infoDispatch({ type: "attendees", value: attendees.map((a) => a.id) });
   }
 
   function removeAttendee(email) {
     let filtered = attendees.filter((attendee) => attendee.email !== email);
     setAttendees(filtered);
-    infoDispatch({ type: "attendees", value: filtered.map((a) => a.id) });
+    infoDispatch({ type: "attendees", value: filtered });
   }
 
   return { attendees, input, error, setInput, addAttendee, removeAttendee };
