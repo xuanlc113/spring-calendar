@@ -1,7 +1,6 @@
 import { useState, useReducer, useEffect } from "react";
 import RRule, { rrulestr } from "rrule";
 import { eventTemplate, getDurationTemplate } from "./EventTemplates";
-import dayjs from "dayjs";
 
 export function useBasicEvent(datetime, event) {
   const [info, infoDispatch] = useReducer(
@@ -69,15 +68,15 @@ function infoReducer(state, action) {
     case "attendees":
       return { ...state, attendees: action.value };
     case "allDay":
-      return { ...state, isAllDay: action.value };
+      return { ...state, allDay: action.value };
     case "start":
-      return { ...state, start: action.value };
+      return { ...state, datetimeStart: action.value };
     case "end":
-      return { ...state, end: action.value };
+      return { ...state, dateEnd: action.value };
     case "duration":
       return { ...state, duration: action.value };
     case "recurring":
-      return { ...state, isRecurring: action.value };
+      return { ...state, recurring: action.value };
     case "rrule":
       return { ...state, rrule: action.value };
   }
@@ -85,12 +84,11 @@ function infoReducer(state, action) {
 
 function getEventInfo(datetime, event) {
   if (event) {
-    event.start = dayjs(event.start);
     return event;
   }
 
   const round = Math.ceil(datetime.minute() / 15);
-  eventTemplate.start = datetime.minute(round * 15);
+  eventTemplate.datetimeStart = datetime.minute(round * 15);
 
   return eventTemplate;
 }
@@ -98,11 +96,9 @@ function getEventInfo(datetime, event) {
 function getEventDuration(datetime, event) {
   let template = getDurationTemplate(datetime);
   if (event) {
-    if (event.isAllDay) {
-      template.allDayStart = dayjs(event.start);
+    if (event.allDay) {
       template.durationDay = event.duration;
     } else {
-      template.datetimeStart = dayjs(event.start);
       template.durationMin = event.duration;
     }
     return template;

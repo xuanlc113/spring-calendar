@@ -36,7 +36,7 @@ export default function Schedule(props) {
     <Container onClick={openCursorPopup}>
       <Board>
         {events.map((e) => (
-          <Event {...e.instance} />
+          <Event {...e} />
         ))}
       </Board>
       <Grid date={props.date} />
@@ -57,7 +57,7 @@ async function getEvents(date, users) {
   for (let user of users) {
     events = events.concat(await getUserEvents(date, user));
   }
-  events.sort((a, b) => a.instance.datetime.diff(b.instance.datetime));
+  events.sort((a, b) => a.datetime.diff(b.datetime));
   events = positionEvents(events);
   return events;
 }
@@ -71,12 +71,15 @@ async function getUserEvents(date, user) {
     );
     const style = { color: user.color, left: 0, z: 5 };
     for (let item of data) {
-      let instance = item.instance;
-      instance.style = style;
-      instance.datetime = dayjs(instance.datetime);
-      instance.canon.datetimeStart = dayjs(instance.canon.datetimeStart);
-      instance.canon.dateEnd = dayjs(instance.canon.dateEnd);
+      item.style = style;
+      item.datetime = dayjs(item.datetime).add(timezoneOffset, "m");
+      item.canon.datetimeStart = dayjs(item.canon.datetimeStart).add(
+        timezoneOffset,
+        "m"
+      );
+      item.canon.dateEnd = dayjs(item.canon.dateEnd).add(timezoneOffset, "m");
     }
+    console.log(data);
     return data;
   } catch (err) {
     console.log(err);
@@ -110,165 +113,42 @@ async function getUserEvents(date, user) {
   //     userId: "001",
   //   },
   //   {
-  //     id: "",
-  //     canonicalEventId: "",
-  //     datetime: dayjs("2021-1-1 11:00"),
-  //     attendees: [
-  //       { email: "attd2", status: 1 },
-  //       { email: "attd3", status: 1 },
-  //     ],
-  //     canonicalEvent: {
-  //       id: "",
-  //       userId: "001",
-  //       title: "run",
-  //       description: "go for a run",
-  //       attendees: [1000],
-  //       start: "2020-12-21 10:30",
-  //       end: "2021-1-09",
-  //       duration: 45,
-  //       isAllDay: false,
-  //       isRecurring: false,
-  //       rrule: "",
-  //       exceptions: [],
-  //     },
-  //     style: { color: user.color, left: 0, z: 5 },
-  //     userId: "001",
-  //   },
-  // ];
-
-  //   [
-  //     {
-  //         "id": 7,
-  //         "instance": {
-  //             "id": 6,
-  //             "canon": {
-  //                 "id": 1,
-  //                 "user": {
-  //                     "id": "3f46d3de-2441-4750-ae01-19253e632db9",
-  //                     "email": "test3"
-  //                 },
-  //                 "title": "event3",
-  //                 "description": "desc",
-  //                 "attendees": [],
-  //                 "datetimeStart": "2021-01-10T16:30:00Z",
-  //                 "dateEnd": "2021-01-29T00:00:00Z",
-  //                 "duration": 45,
-  //                 "rrule": "FREQ=WEEKLY;BYDAY=SU,TU;INTERVAL=1",
-  //                 "recurring": true,
-  //                 "allDay": false
-  //             },
-  //             "datetime": "2021-01-17T00:00:00Z"
-  //         },
+  //     "id": 2,
+  //     "canon": {
+  //         "id": 1,
   //         "user": {
-  //             "id": "3f46d3de-2441-4750-ae01-19253e632db9",
-  //             "email": "test3"
+  //             "id": "0fe86006-3fcf-59a3-ae86-032578eadf23",
+  //             "email": "test2"
   //         },
-  //         "status": "ACCEPTED",
-  //         "deleted": false
+  //         "title": "event3",
+  //         "description": "desc",
+  //         "attendees": [],
+  //         "datetimeStart": "2021-01-10T16:30:00Z",
+  //         "dateEnd": "2021-01-29T00:00:00Z",
+  //         "duration": 45,
+  //         "rrule": "FREQ=WEEKLY;BYDAY=SU,TU;INTERVAL=1",
+  //         "recurring": true,
+  //         "allDay": false
   //     },
-  //     {
-  //         "id": 9,
-  //         "instance": {
-  //             "id": 8,
-  //             "canon": {
-  //                 "id": 1,
-  //                 "user": {
-  //                     "id": "3f46d3de-2441-4750-ae01-19253e632db9",
-  //                     "email": "test3"
-  //                 },
-  //                 "title": "event3",
-  //                 "description": "desc",
-  //                 "attendees": [],
-  //                 "datetimeStart": "2021-01-10T16:30:00Z",
-  //                 "dateEnd": "2021-01-29T00:00:00Z",
-  //                 "duration": 45,
-  //                 "rrule": "FREQ=WEEKLY;BYDAY=SU,TU;INTERVAL=1",
-  //                 "recurring": true,
-  //                 "allDay": false
-  //             },
-  //             "datetime": "2021-01-19T00:00:00Z"
-  //         },
-  //         "user": {
-  //             "id": "3f46d3de-2441-4750-ae01-19253e632db9",
-  //             "email": "test3"
-  //         },
-  //         "status": "ACCEPTED",
-  //         "deleted": false
-  //     },
-  //   {
-  //     "id": 22,
-  //     "instance": {
-  //         "id": 21,
-  //         "canon": {
-  //             "id": 14,
+  //     "datetime": "2021-01-10T00:00:00Z",
+  //     "attendees": [
+  //         {
+  //             "id": 3,
   //             "user": {
-  //                 "id": "3f46d3de-2441-4750-ae01-19253e632db9",
-  //                 "email": "test3"
+  //                 "id": "0fe86006-3fcf-59a3-ae86-032578eadf23",
+  //                 "email": "test2"
   //             },
-  //             "title": "event3",
-  //             "description": "desc",
-  //             "attendees": [
-  //                 {
-  //                     "id": "ebd6ae48-c3d0-4884-8b2c-b470908db7a9",
-  //                     "email": "test2"
-  //                 }
-  //             ],
-  //             "datetimeStart": "2021-01-10T16:30:00Z",
-  //             "dateEnd": "2021-01-29T00:00:00Z",
-  //             "duration": 45,
-  //             "rrule": "FREQ=WEEKLY;BYDAY=SU,TU;INTERVAL=1",
-  //             "recurring": true,
-  //             "allDay": false
-  //         },
-  //         "datetime": "2021-01-17T00:00:00Z"
-  //     },
-  //     "user": {
-  //         "id": "3f46d3de-2441-4750-ae01-19253e632db9",
-  //         "email": "test3"
-  //     },
-  //     "status": "ACCEPTED",
-  //     "deleted": false
-  // },
-  // {
-  //     "id": 25,
-  //     "instance": {
-  //         "id": 24,
-  //         "canon": {
-  //             "id": 14,
-  //             "user": {
-  //                 "id": "3f46d3de-2441-4750-ae01-19253e632db9",
-  //                 "email": "test3"
-  //             },
-  //             "title": "event3",
-  //             "description": "desc",
-  //             "attendees": [
-  //                 {
-  //                     "id": "ebd6ae48-c3d0-4884-8b2c-b470908db7a9",
-  //                     "email": "test2"
-  //                 }
-  //             ],
-  //             "datetimeStart": "2021-01-10T16:30:00Z",
-  //             "dateEnd": "2021-01-29T00:00:00Z",
-  //             "duration": 45,
-  //             "rrule": "FREQ=WEEKLY;BYDAY=SU,TU;INTERVAL=1",
-  //             "recurring": true,
-  //             "allDay": false
-  //         },
-  //         "datetime": "2021-01-19T00:00:00Z"
-  //     },
-  //     "user": {
-  //         "id": "3f46d3de-2441-4750-ae01-19253e632db9",
-  //         "email": "test3"
-  //     },
-  //     "status": "ACCEPTED",
-  //     "deleted": false
-  // },
+  //             "status": "ACCEPTED",
+  //             "deleted": false
+  //         }
+  //     ]
+  // }
   // ]
 }
 
 function positionEvents(events) {
   for (let i = 0; i < events.length; i++) {
-    let event = events[i].instance;
+    let event = events[i];
     let start = event.datetime.unix();
     let end = getEndUnix(event);
     let top = (getTimeInMinutes(event) / 15) * 10;
@@ -277,11 +157,11 @@ function positionEvents(events) {
     let next = 0;
     let j = i - 1;
     let k = i + 1;
-    while (j >= 0 && getEndUnix(events[j].instance) > start) {
+    while (j >= 0 && getEndUnix(events[j]) > start) {
       prev++;
       j--;
     }
-    while (k < events.length && events[k].instance.datetime.unix() < end) {
+    while (k < events.length && events[k].datetime.unix() < end) {
       next++;
       k++;
     }
@@ -318,9 +198,10 @@ function positionEvents(events) {
 }
 
 function getEndUnix(event) {
-  return event.datetime.unix() + event.canon.duration * 60;
+  return event.canon.datetimeStart.unix() + event.canon.duration * 60;
 }
 
 function getTimeInMinutes(event) {
-  return (event.datetime.unix() - event.datetime.startOf("day").unix()) / 60;
+  const datetime = event.canon.datetimeStart;
+  return (datetime.unix() - datetime.startOf("day").unix()) / 60;
 }

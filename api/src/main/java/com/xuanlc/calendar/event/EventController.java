@@ -25,16 +25,15 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping("/event/{userId}")
-    public List<EventAttendee> getEvents(@PathVariable UUID userId, @RequestParam("start") String start,
+    public List<EventInstance> getEvents(@PathVariable UUID userId, @RequestParam("start") String start,
             @RequestParam("end") String end) {
         Instant startInstant = Instant.parse(start);
         Instant endInstant = Instant.parse(end);
         return eventService.getEvents(userId, startInstant, endInstant);
     }
 
-    // @DateTimeFormat(iso = ISO.DATE_TIME)
     @GetMapping("/event/allday/{userId}")
-    public List<EventAttendee> getAllDayEvents(@PathVariable UUID userId, @RequestParam("start") String start,
+    public List<EventInstance> getAllDayEvents(@PathVariable UUID userId, @RequestParam("start") String start,
             @RequestParam("end") String end) {
         Instant startInstant = Instant.parse(start);
         Instant endInstant = Instant.parse(end);

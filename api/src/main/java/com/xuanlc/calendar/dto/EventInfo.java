@@ -16,12 +16,12 @@ public class EventInfo {
     private Instant datetimeStart;
     private Instant dateEnd;
     private Integer duration;
-    private boolean isAllDay;
-    private boolean isRecurring;
+    private boolean allDay;
+    private boolean recurring;
     private String rrule;
 
     public EventInfo(UUID userId, String title, String description, List<UUID> attendees, Instant datetimeStart,
-            Instant dateEnd, Integer duration, boolean isAllDay, boolean isRecurring, String rrule) {
+            Instant dateEnd, Integer duration, boolean allDay, boolean recurring, String rrule) {
         this.userId = userId;
         this.title = title;
         this.description = description;
@@ -29,14 +29,14 @@ public class EventInfo {
         this.datetimeStart = datetimeStart;
         this.dateEnd = dateEnd;
         this.duration = duration;
-        this.isAllDay = isAllDay;
-        this.isRecurring = isRecurring;
+        this.allDay = allDay;
+        this.recurring = recurring;
         this.rrule = rrule;
     }
 
     public EventCanonical convertToEntity(AppUser user, List<AppUser> attendees) {
         EventCanonical event = new EventCanonical(user, this.title, this.description, attendees, this.datetimeStart,
-                this.dateEnd, this.duration, this.isAllDay, this.isRecurring, this.rrule);
+                this.dateEnd, this.duration, this.allDay, this.recurring, this.rrule);
         return event;
     }
 
@@ -96,28 +96,28 @@ public class EventInfo {
         this.duration = duration;
     }
 
-    public boolean isIsAllDay() {
-        return this.isAllDay;
+    public boolean isAllDay() {
+        return this.allDay;
     }
 
-    public boolean getIsAllDay() {
-        return this.isAllDay;
+    public boolean getAllDay() {
+        return this.allDay;
     }
 
-    public void setIsAllDay(boolean isAllDay) {
-        this.isAllDay = isAllDay;
+    public void setAllDay(boolean allDay) {
+        this.allDay = allDay;
     }
 
-    public boolean isIsRecurring() {
-        return this.isRecurring;
+    public boolean isRecurring() {
+        return this.recurring;
     }
 
-    public boolean getIsRecurring() {
-        return this.isRecurring;
+    public boolean getRecurring() {
+        return this.recurring;
     }
 
-    public void setIsRecurring(boolean isRecurring) {
-        this.isRecurring = isRecurring;
+    public void setRecurring(boolean recurring) {
+        this.recurring = recurring;
     }
 
     public String getRrule() {

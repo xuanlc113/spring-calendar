@@ -32,14 +32,25 @@ public class EventService {
     @Autowired
     private UserService userService;
 
-    public List<EventAttendee> getEvents(UUID userId, Instant start, Instant end) {
-        return attendeeRepo.findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonIsAllDayFalse(userId,
-                start, end);
+    public List<EventInstance> getEvents(UUID userId, Instant start, Instant end) {
+        List<EventAttendee> attendees = attendeeRepo
+                .findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonAllDayFalse(userId, start, end);
+        List<EventInstance> instances = new ArrayList<>();
+        for (EventAttendee a : attendees) {
+            instances.add(a.getInstance());
+        }
+        return instances;
     }
 
-    public List<EventAttendee> getAllDayEvents(UUID userId, Instant start, Instant end) {
-        return attendeeRepo.findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonIsAllDayTrue(userId,
-                start, end);
+    public List<EventInstance> getAllDayEvents(UUID userId, Instant start, Instant end) {
+        List<EventAttendee> attendees = attendeeRepo
+                .findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonAllDayTrue(userId, start, end);
+
+        List<EventInstance> instances = new ArrayList<>();
+        for (EventAttendee a : attendees) {
+            instances.add(a.getInstance());
+        }
+        return instances;
     }
 
     public void addEvent(EventInfo event) {
@@ -48,7 +59,7 @@ public class EventService {
         EventCanonical eventCanonical = event.convertToEntity(creator, attendees);
         canonicalRepo.save(eventCanonical);
 
-        if (event.isIsRecurring()) {
+        if (event.isRecurring()) {
             try {
                 RecurrenceRule rule = new RecurrenceRule(event.getRrule());
                 DateTime start = Helper.convertToDT(event.getDatetimeStart());

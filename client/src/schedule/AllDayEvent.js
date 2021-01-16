@@ -46,7 +46,7 @@ export default function AllDayEvent(props) {
           end={hasEnd(props.event, props.dateRange)}
           color={props.event.style.color}
         >
-          <p>{props.event.canonicalEvent.title}</p>
+          <p>{props.event.canon.title}</p>
         </Flag>
       </Container>
     </Popover>
@@ -55,7 +55,7 @@ export default function AllDayEvent(props) {
 
 function getEndDate(event) {
   let eventStart = event.datetime.startOf("day");
-  return eventStart.add(event.canonicalEvent.duration, "day");
+  return eventStart.add(event.canon.duration, "day");
 }
 
 function getLeft(event, dateRange) {

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Row, Col } from "antd";
 import dayjs from "dayjs";
 import AllDayEvent from "./AllDayEvent";
+import axios from "axios";
 
 const Grid = styled.div`
   background-image: linear-gradient(to right, lightgrey 0.5px, transparent 1px);
@@ -53,33 +54,59 @@ export default function AllDayArea(props) {
 }
 
 function useAllDay(period, calendars, dates) {
-  const [events, setEvents] = useState(
-    getAllDayEvents(period, calendars, dates)
-  );
+  const [events, setEvents] = useState([]);
 
-  useEffect(() => {
-    setEvents(getAllDayEvents(period, calendars, dates));
+  useEffect(async () => {
+    setEvents(await getAllDayEvents(period, calendars, dates));
   }, [calendars]);
 
   return { events };
 }
 
-function getAllDayEvents(period, calendars, dates) {
+async function getAllDayEvents(period, calendars, dates) {
   let events = [];
   for (let i = 0; i < calendars.length; i++) {
     if (period === "day") {
-      let calendarEvents = getCalendarAllDayEvents(calendars[i], dates);
+      let calendarEvents = await getCalendarAllDayEvents(calendars[i], dates);
       events.push(calendarEvents);
     } else {
-      events = events.concat(getCalendarAllDayEvents(calendars[i], dates));
+      events = events.concat(
+        await getCalendarAllDayEvents(calendars[i], dates)
+      );
     }
   }
 
   return events;
 }
 
-function getCalendarAllDayEvents(calendar, dates) {
-  // get events(id, dates[0], dates[-1]) get array of events, add color
+async function getCalendarAllDayEvents(calendar, dates) {
+  try {
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const start = dates[0].subtract(timezoneOffset, "m").toDate().toJSON();
+    const end = dates
+      .slice(-1)[0]
+      .subtract(timezoneOffset, "m")
+      .toDate()
+      .toJSON();
+    const { data } = await axios.get(
+      `/event/allday/${calendar.id}?start=${start}&end=${end}`
+    );
+    const style = { color: calendar.color };
+    for (let item of data) {
+      item.style = style;
+      item.datetime = dayjs(item.datetime).add(timezoneOffset, "m");
+      item.canon.datetimeStart = dayjs(item.canon.datetimeStart).add(
+        timezoneOffset,
+        "m"
+      );
+      item.canon.dateEnd = dayjs(item.canon.dateEnd).add(timezoneOffset, "m");
+    }
+    console.log(data);
+    return data;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
   return [
     {
       id: "",

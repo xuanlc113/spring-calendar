@@ -8,10 +8,10 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface EventAttendeeRepository extends CrudRepository<EventAttendee, Long> {
 
-        List<EventAttendee> findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonIsAllDayFalse(
+        List<EventAttendee> findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonAllDayFalse(
                         UUID userId, Instant start, Instant end);
 
-        List<EventAttendee> findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonIsAllDayTrue(
+        List<EventAttendee> findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonAllDayTrue(
                         UUID userId, Instant start, Instant end);
 
         List<EventAttendee> findByUserIdAndInstanceCanonIdAndInstanceDatetimeGreaterThanEqual(UUID userId,

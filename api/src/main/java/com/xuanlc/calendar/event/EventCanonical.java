@@ -28,8 +28,8 @@ public class EventCanonical {
     private Instant datetimeStart;
     private Instant dateEnd;
     private Integer duration;
-    private boolean isAllDay;
-    private boolean isRecurring;
+    private boolean allDay;
+    private boolean recurring;
     private String rrule;
     @JsonIgnore
     @OneToMany(mappedBy = "canon")
@@ -39,8 +39,7 @@ public class EventCanonical {
     }
 
     public EventCanonical(AppUser user, String title, String description, List<AppUser> attendees,
-            Instant datetimeStart, Instant dateEnd, Integer duration, boolean isAllDay, boolean isRecurring,
-            String rrule) {
+            Instant datetimeStart, Instant dateEnd, Integer duration, boolean allDay, boolean recurring, String rrule) {
         this.user = user;
         this.title = title;
         this.description = description;
@@ -48,8 +47,8 @@ public class EventCanonical {
         this.datetimeStart = datetimeStart;
         this.dateEnd = dateEnd;
         this.duration = duration;
-        this.isAllDay = isAllDay;
-        this.isRecurring = isRecurring;
+        this.allDay = allDay;
+        this.recurring = recurring;
         this.rrule = rrule;
     }
 
@@ -118,19 +117,27 @@ public class EventCanonical {
     }
 
     public boolean isAllDay() {
-        return this.isAllDay;
+        return this.allDay;
     }
 
-    public void setIsAllDay(boolean isAllDay) {
-        this.isAllDay = isAllDay;
+    public boolean getAllDay() {
+        return this.allDay;
+    }
+
+    public void setAllDay(boolean allDay) {
+        this.allDay = allDay;
     }
 
     public boolean isRecurring() {
-        return this.isRecurring;
+        return this.recurring;
     }
 
-    public void setIsRecurring(boolean isRecurring) {
-        this.isRecurring = isRecurring;
+    public boolean getRecurring() {
+        return this.recurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        this.recurring = recurring;
     }
 
     public String getRrule() {

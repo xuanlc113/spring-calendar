@@ -30,6 +30,7 @@ const TimeMarker = styled.div`
   height: 2px;
   background: red;
   top: ${(props) => props.top * 10}px;
+  z-index: 100;
 `;
 
 export default function Grid(props) {

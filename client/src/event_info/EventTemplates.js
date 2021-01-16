@@ -4,13 +4,12 @@ export const eventTemplate = {
   title: "",
   description: "",
   attendees: [],
-  start: null,
-  end: null,
+  datetimeStart: null,
+  dateEnd: null,
   duration: 60,
-  isAllDay: false,
-  isRecurring: false,
+  allDay: false,
+  recurring: false,
   rrule: "",
-  exceptions: [],
 };
 
 export function getDurationTemplate(datetime) {

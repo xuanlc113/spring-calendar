@@ -19,7 +19,6 @@ public class EventInstance {
     @ManyToOne
     private EventCanonical canon;
     private Instant datetime;
-    @JsonIgnore
     @OneToMany(mappedBy = "instance")
     private List<EventAttendee> attendees;
 

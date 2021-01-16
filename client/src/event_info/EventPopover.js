@@ -97,27 +97,27 @@ export default function EventPopover(props) {
       <PopoverInfo>
         <CalendarOutlined />
         <p>
-          {dayjs(props.datetime).format("ddd D MMMM")}
+          {props.datetime.format("ddd D MMMM")}
           {props.canon.allDay
-            ? ` - ${dayjs(props.datetime)
+            ? ` - ${props.datetime
                 .add(props.canon.duration, "day")
                 .format("ddd D MMMM")}`
-            : ` ${getStartTime(props.datetime)} -
-            ${getEndTime(props.datetime, props.canon.duration)}`}
+            : ` ${getStartTime(props.canon.datetimeStart)} -
+            ${getEndTime(props.canon.datetimeStart, props.canon.duration)}`}
         </p>
       </PopoverInfo>
       <PopoverInfo>
         <AlignRightOutlined rotate={180} />
         <p>{props.canon.description}</p>
       </PopoverInfo>
-      {props.canon.attendees.length > 0 && (
+      {props.attendees.length > 0 && (
         <>
           <PopoverInfo>
             <UserOutlined />
             <p>Attendees</p>
           </PopoverInfo>
           <Attendees>
-            {props.canon.attendees.map((a) => (
+            {props.attendees.map((a) => (
               <p>
                 {a.email} {a.status}
               </p>
@@ -153,7 +153,7 @@ export default function EventPopover(props) {
           okPopup={okPopup}
           closePopup={closePopup}
           title={"Edit Event"}
-          date={dayjs(props.canon.start)}
+          date={props.canon.datetimeStart}
           event={props.canon}
         />
       )}

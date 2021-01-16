@@ -44,8 +44,8 @@ export default function Event(props) {
             <>
               <p>{props.canon.title}</p>
               <p>
-                {getStartTime(props.datetime)} –{" "}
-                {getEndTime(props.datetime, props.canon.duration)}
+                {getStartTime(props.canon.datetimeStart)} –{" "}
+                {getEndTime(props.canon.datetimeStart, props.canon.duration)}
               </p>
             </>
           ) : (

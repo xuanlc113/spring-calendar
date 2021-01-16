@@ -69,6 +69,7 @@ export default function Popup(props) {
     setTimeRange,
     repeatLabel,
   } = useBasicEvent(props.date, props.event);
+  console.log(info);
   const { isVisible, openPopup, closePopup, okPopup } = useCustomRepeatPopup(
     info.start,
     infoDispatch
@@ -143,7 +144,7 @@ export default function Popup(props) {
             </AttendeeList>
           )}
           <DateContainer>
-            {info.isAllDay ? (
+            {info.allDay ? (
               <DateRangePicker
                 allowClear={false}
                 value={getDates(duration.allDayStart, duration.durationDay)}
@@ -175,12 +176,14 @@ export default function Popup(props) {
             >
               <Option value="none">No Repeat</Option>
               <Option value="daily">Daily</Option>
-              <Option value="weekly">Weekly on {getWeekday(info.start)}</Option>
-              {getMonthOptions(info.start)}
+              <Option value="weekly">
+                Weekly on {getWeekday(info.datetimeStart)}
+              </Option>
+              {getMonthOptions(info.datetimeStart)}
               <Option value="annually">Annually</Option>
               <Option value="custom">Custom</Option>
             </Select>
-            <Checkbox checked={info.isAllDay} onChange={toggleAllDay}>
+            <Checkbox checked={info.allDay} onChange={toggleAllDay}>
               All Day
             </Checkbox>
           </Space>
@@ -192,7 +195,7 @@ export default function Popup(props) {
           okPopup={okPopup}
           rrule={info.rrule}
           infoDispatch={infoDispatch}
-          date={info.start}
+          date={info.datetimeStart}
         />
       )}
     </>
@@ -220,7 +223,7 @@ export function usePopup() {
 
   function okPopup(info) {
     setIsVisible(false);
-    info.start = info.start.toDate();
+    info.datetimeStart = info.datetimeStart.toDate();
     // only create/update, check if id present
   }
 

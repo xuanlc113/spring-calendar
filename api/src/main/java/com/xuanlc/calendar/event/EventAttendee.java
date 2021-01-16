@@ -1,5 +1,6 @@
 package com.xuanlc.calendar.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xuanlc.calendar.appuser.AppUser;
 
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ public class EventAttendee {
     @Id
     @GeneratedValue
     private long id;
+    @JsonIgnore
     @ManyToOne
     private EventInstance instance;
     @ManyToOne
