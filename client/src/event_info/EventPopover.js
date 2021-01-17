@@ -11,7 +11,7 @@ import {
 import { getStartTime, getEndTime } from "./EventHelpers";
 import { useContext, useState } from "react";
 import { UserContext } from "../App";
-import Popup, { usePopup } from "./Popup";
+import Popup, { usePopup } from "./EventEditor";
 
 const PopoverHeader = styled.div`
   display: flex;
@@ -52,7 +52,7 @@ export default function EventPopover(props) {
   const { isOwner, isCreator, isRecurring } = useEventEdit(props);
   const [deleteRecurringVisible, setDeleteRecurringVisible] = useState(false);
   const [option, setOption] = useState(1);
-  const { isVisible, openPopup, closePopup, okPopup } = usePopup();
+  // const { isVisible, openPopup, closePopup, okPopup } = usePopup();
 
   function showDelete() {
     if (isRecurring()) {
@@ -82,7 +82,13 @@ export default function EventPopover(props) {
               type="text"
               shape="circle"
               icon={<EditOutlined />}
-              onClick={openPopup}
+              onClick={() =>
+                props.openPopup(
+                  "Edit Event",
+                  props.canon.datetimeStart,
+                  props.canon
+                )
+              }
             />
           )}
           <Button
@@ -150,7 +156,7 @@ export default function EventPopover(props) {
           </Radio>
         </Radio.Group>
       </Modal>
-      {isVisible && (
+      {/* {isVisible && (
         <Popup
           okPopup={okPopup}
           closePopup={closePopup}
@@ -158,7 +164,7 @@ export default function EventPopover(props) {
           date={props.canon.datetimeStart}
           event={props.canon}
         />
-      )}
+      )} */}
     </div>
   );
 }

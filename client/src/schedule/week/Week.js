@@ -77,7 +77,11 @@ export default function Week(props) {
           <Schedules justify="space-around">
             {props.dates.map((date) => (
               <Col flex={1 / 7}>
-                <Schedule date={date} calendars={props.calendars} />
+                <Schedule
+                  date={date}
+                  calendars={props.calendars}
+                  openPopup={props.openPopup}
+                />
               </Col>
             ))}
           </Schedules>

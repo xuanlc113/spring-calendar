@@ -56,8 +56,10 @@ export default function AllDayArea(props) {
 function useAllDay(period, calendars, dates) {
   const [events, setEvents] = useState([]);
 
-  useEffect(async () => {
-    setEvents(await getAllDayEvents(period, calendars, dates));
+  useEffect(() => {
+    (async function () {
+      setEvents(await getAllDayEvents(period, calendars, dates));
+    })();
   }, [calendars]);
 
   return { events };

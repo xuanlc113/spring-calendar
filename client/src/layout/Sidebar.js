@@ -4,7 +4,7 @@ import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 import Contact from "../contact/Contact";
-import Popup, { usePopup } from "../event_info/Popup";
+import Popup, { usePopup } from "../event_info/EventEditor";
 import AddContact, { useAddContact } from "../contact/AddContact";
 import "./ReactCalendar.css";
 
@@ -76,18 +76,10 @@ export default function Sidebar(props) {
         size="small"
         shape="round"
         icon={<PlusOutlined />}
-        onClick={openPopup}
+        onClick={() => props.openPopup("Create Event", props.date, null)}
       >
         Create
       </CreateButton>
-      {isVisible && (
-        <Popup
-          okPopup={okPopup}
-          closePopup={closePopup}
-          title={"Create Event"}
-          date={props.date}
-        />
-      )}
       <DateSelector>
         <Calendar
           value={props.date.toDate()}

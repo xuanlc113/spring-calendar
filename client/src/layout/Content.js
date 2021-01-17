@@ -29,9 +29,21 @@ export default function Content(props) {
       );
     } else if (props.period === "week") {
       let dates = getWeekDates(props.date);
-      return <Week dates={dates} calendars={props.calendars} />;
+      return (
+        <Week
+          dates={dates}
+          calendars={props.calendars}
+          openPopup={props.openPopup}
+        />
+      );
     } else {
-      return <Day date={props.date} calendars={props.calendars} />;
+      return (
+        <Day
+          date={props.date}
+          calendars={props.calendars}
+          openPopup={props.openPopup}
+        />
+      );
     }
   }
 

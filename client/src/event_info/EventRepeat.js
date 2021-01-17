@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Modal, Space, Select, InputNumber, Radio, DatePicker } from "antd";
 import { useState } from "react";
 import { getMonthOptions } from "./EventHelpers";
-import useCustomRepeat from "./CustomRepeatHook";
+import useCustomRepeat from "../hooks/useCustomRepeat";
 import RRule from "rrule";
 
 const { Option } = Select;
@@ -35,7 +35,7 @@ const BlockRadioButton = styled(Radio)`
   line-height: 3rem;
 `;
 
-export default function RepeatPopup(props) {
+export default function EventRepeat(props) {
   const {
     options,
     optionsDispatch,

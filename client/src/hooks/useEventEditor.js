@@ -1,10 +1,12 @@
-import dayjs from "dayjs";
 import { useState, useReducer, useEffect, useContext } from "react";
 import RRule, { rrulestr } from "rrule";
 import { UserContext } from "../App";
-import { getDurationTemplate, getEventTemplate } from "./EventTemplates";
+import {
+  getDurationTemplate,
+  getEventTemplate,
+} from "../event_info/EventTemplates";
 
-export function useBasicEvent(datetime, event) {
+export function useEventEditor(datetime, event) {
   const userId = useContext(UserContext);
   const [info, infoDispatch] = useReducer(
     infoReducer,
@@ -12,6 +14,11 @@ export function useBasicEvent(datetime, event) {
   );
   const [duration, setDuration] = useState(getEventDuration(datetime, event));
   const [repeatLabel, setRepeatLabel] = useState(getRepeatValue(info.rrule));
+
+  useEffect(() => {
+    setDuration(getEventDuration(datetime, event));
+    infoDispatch({ type: "new", value: getEventInfo(datetime, event, userId) });
+  }, [datetime, JSON.stringify(event)]);
 
   function toggleAllDay(e) {
     if (info.isAllDay) {
@@ -49,7 +56,7 @@ export function useBasicEvent(datetime, event) {
   useEffect(() => {
     setRepeatLabel(getRepeatValue(info.rrule));
   }, [info.rrule]);
-
+  // console.log(duration);
   return {
     info,
     infoDispatch,
@@ -82,6 +89,8 @@ function infoReducer(state, action) {
       return { ...state, recurring: action.value };
     case "rrule":
       return { ...state, rrule: action.value };
+    case "new":
+      return action.value;
   }
 }
 
@@ -89,11 +98,10 @@ function getEventInfo(datetime, event, userId) {
   if (event) {
     return event;
   }
-
   const round = Math.ceil(datetime.minute() / 15);
   const template = getEventTemplate(userId);
   template.datetimeStart = datetime.minute(round * 15);
-
+  console.log(template);
   return template;
 }
 

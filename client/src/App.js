@@ -21,19 +21,21 @@ function App() {
     userId = uuidv5(providerId, process.env.REACT_APP_UUID_NAMESPACE);
   }
 
-  useEffect(async () => {
-    if (isAuthenticated) {
-      try {
-        await axios.get(`/user/${userId}`);
-      } catch (err) {
-        if (err.response.status === 500) {
-          await axios.post(`/user`, {
-            id: userId,
-            email: user.email,
-          });
+  useEffect(() => {
+    (async function () {
+      if (isAuthenticated) {
+        try {
+          await axios.get(`/user/${userId}`);
+        } catch (err) {
+          if (err.response.status === 500) {
+            await axios.post(`/user`, {
+              id: userId,
+              email: user.email,
+            });
+          }
         }
       }
-    }
+    })();
   }, [user]);
 
   return (

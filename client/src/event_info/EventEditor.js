@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Modal,
   Space,
@@ -10,11 +10,11 @@ import {
   Checkbox,
   Button,
 } from "antd";
-import RepeatPopup, { useCustomRepeatPopup } from "./RepeatPopup";
-import { useBasicEvent } from "./BasicEventHook";
+import { useEventEditor } from "../hooks/useEventEditor";
 import { getDefaultRRules, getMonthOptions, getWeekday } from "./EventHelpers";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
+import EventRepeat, { useCustomRepeatPopup } from "./EventRepeat";
 import dayjs from "dayjs";
 
 const PopupContainer = styled(Modal)`
@@ -60,7 +60,8 @@ const { RangePicker: DateRangePicker } = DatePicker;
 const { RangePicker: TimeRangePicker } = TimePicker;
 const { Option } = Select;
 
-export default function Popup(props) {
+export default function EventEditor(props) {
+  console.log(props);
   const {
     info,
     infoDispatch,
@@ -70,8 +71,7 @@ export default function Popup(props) {
     setSingleDate,
     setTimeRange,
     repeatLabel,
-  } = useBasicEvent(props.date, props.event);
-  console.log(info);
+  } = useEventEditor(props.date, props.event);
   const { isVisible, openPopup, closePopup, okPopup } = useCustomRepeatPopup(
     info.start,
     infoDispatch
@@ -101,7 +101,7 @@ export default function Popup(props) {
   return (
     <>
       <PopupContainer
-        visible={true}
+        visible={props.visible}
         onOk={() => props.okPopup(info)}
         onCancel={props.closePopup}
         title={props.title}
@@ -192,7 +192,7 @@ export default function Popup(props) {
         </FullSpace>
       </PopupContainer>
       {isVisible && (
-        <RepeatPopup
+        <EventRepeat
           cancelPopup={closePopup}
           okPopup={okPopup}
           rrule={info.rrule}
@@ -214,8 +214,22 @@ function getDates(datetime, duration) {
 
 export function usePopup() {
   const [isVisible, setIsVisible] = useState(false);
-  function openPopup() {
-    setIsVisible(true);
+  const [eventInfo, setEventInfo] = useState({
+    title: "",
+    date: dayjs(),
+    event: null,
+  });
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (eventInfo.title !== "") {
+      setIsVisible(true);
+    }
+  }, [open]);
+
+  function openPopup(title, infoDate, infoEvent) {
+    setEventInfo({ title, date: infoDate, event: infoEvent });
+    setOpen(!open);
   }
 
   function closePopup(e) {
@@ -224,10 +238,11 @@ export function usePopup() {
   }
 
   async function okPopup(info) {
-    setIsVisible(false);
-    let payload = parseInfo(info);
+    let payload = parseInfo({ ...info });
     const canonId = payload.id;
     delete payload.id;
+    console.log(payload);
+    console.log(info);
     try {
       if (canonId) {
         await axios.put(`/event/${canonId}`, payload);
@@ -237,10 +252,16 @@ export function usePopup() {
     } catch (err) {
       console.log(err);
     }
+    console.log("up");
+    setIsVisible(false);
   }
 
   function parseInfo(info) {
     const timezoneOffset = new Date().getTimezoneOffset();
+    if (info.user) {
+      info.userId = info.user.id;
+      delete info.user;
+    }
     info.title = info.title === "" ? "no title" : info.title;
     info.attendees = info.attendees.map((a) => a.id);
     info.datetimeStart = info.datetimeStart
@@ -254,7 +275,7 @@ export function usePopup() {
     return info;
   }
 
-  return { isVisible, openPopup, closePopup, okPopup };
+  return { isVisible, eventInfo, openPopup, closePopup, okPopup };
 }
 
 function useAttendees(info, infoDispatch) {

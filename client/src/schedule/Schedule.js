@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Grid from "./Grid";
 import Event from "./Event";
 import dayjs from "dayjs";
-import Popup, { usePopup } from "../event_info/Popup";
+import Popup, { usePopup } from "../event_info/EventEditor";
 import axios from "axios";
 
 const Container = styled.div`
@@ -18,18 +18,17 @@ const Board = styled.div`
 
 export default function Schedule(props) {
   const [events, setEvents] = useState([]);
-  const { isVisible, openPopup, closePopup, okPopup } = usePopup();
-  const [cursorDate, setCursorDate] = useState();
 
-  useEffect(async () => {
-    setEvents(await getEvents(props.date, props.calendars));
+  useEffect(() => {
+    (async function () {
+      setEvents(await getEvents(props.date, props.calendars));
+    })();
   }, [props.calendars]);
 
   function openCursorPopup(event) {
     const height = event.target.offsetTop / 10;
     let date = props.date.startOf("day").add(height * 15, "minute");
-    setCursorDate(date);
-    openPopup();
+    props.openPopup("Create Event", date, null);
   }
 
   return (
@@ -37,19 +36,11 @@ export default function Schedule(props) {
       <Container onClick={openCursorPopup}>
         <Board>
           {events.map((e) => (
-            <Event {...e} />
+            <Event {...e} openPopup={props.openPopup} />
           ))}
         </Board>
         <Grid date={props.date} />
       </Container>
-      {isVisible && (
-        <Popup
-          okPopup={okPopup}
-          closePopup={closePopup}
-          title={"Create Event"}
-          date={cursorDate}
-        />
-      )}
     </>
   );
 }

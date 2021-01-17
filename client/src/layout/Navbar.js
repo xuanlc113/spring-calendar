@@ -143,8 +143,10 @@ function useRequests() {
     }
   }
 
-  useEffect(async () => {
-    await getRequests();
+  useEffect(() => {
+    (async function () {
+      await getRequests();
+    })();
   }, []);
 
   async function getRequests() {

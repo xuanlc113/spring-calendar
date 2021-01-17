@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import Content from "./Content";
-import dayjs from "dayjs";
-import randomColor from "randomcolor";
-import axios from "axios";
+import EventEditor, { usePopup } from "../event_info/EventEditor";
+import useDatetime from "../hooks/useDatetime";
+import useCalendarSelector from "../hooks/useCalendarSelector";
 
 const Container = styled.div`
   height: 100%;
@@ -20,11 +20,12 @@ const SubContainer = styled.div`
 
 export default function Home(props) {
   const [period, setPeriod] = useState("week");
-  const { date, setDate, setDateOnly } = useDate();
+  const { date, setDate, setDateOnly } = useDatetime();
   const { calendars, updateCalendars, activeCalendars } = useCalendarSelector(
     props.userId
   );
-
+  const { isVisible, eventInfo, openPopup, closePopup, okPopup } = usePopup();
+  console.log("re");
   return (
     <Container>
       <Sidebar
@@ -32,6 +33,7 @@ export default function Home(props) {
         setDateOnly={setDateOnly}
         calendars={calendars}
         updateCalendars={updateCalendars}
+        openPopup={openPopup}
       />
       <SubContainer>
         <Navbar
@@ -46,114 +48,17 @@ export default function Home(props) {
           period={period}
           setPeriod={setPeriod}
           calendars={activeCalendars.current}
+          openPopup={openPopup}
         />
       </SubContainer>
+      <EventEditor
+        visible={isVisible}
+        okPopup={okPopup}
+        closePopup={closePopup}
+        title={eventInfo.title}
+        date={eventInfo.date}
+        event={eventInfo.event}
+      />
     </Container>
   );
-}
-
-function useDate() {
-  const [date, setDate] = useState(roundDate());
-  const first = useRef(true);
-
-  function roundDate() {
-    let date = dayjs();
-    const time = Math.floor(date.minute() / 5);
-    date = date.minute(5 * time).second(0);
-    return date;
-  }
-
-  useEffect(() => {
-    let timer;
-    if (first.current) {
-      const diff = date.add(5, "minute").diff(dayjs(), "second");
-      timer = setTimeout(() => {
-        incrementTime();
-      }, diff * 1000);
-      first.current = false;
-    } else {
-      timer = setInterval(() => {
-        incrementTime();
-      }, 5 * 60 * 1000);
-    }
-    return () => clearInterval(timer);
-  }, [date]);
-
-  function incrementTime() {
-    setDate(date.minute(date.minute() + 5));
-  }
-
-  function setDateOnly(dateObj) {
-    setDate(
-      date
-        .year(dateObj.getFullYear())
-        .month(dateObj.getMonth())
-        .date(dateObj.getDate())
-    );
-  }
-
-  return { date, setDate, setDateOnly };
-}
-
-function useCalendarSelector(userId) {
-  const activeCalendars = useRef(null);
-  const [calendars, setCalendars] = useState(getCalendars(userId));
-  activeCalendars.current = calendars.filter((i) => i.checked);
-
-  function getCalendars(userId) {
-    return [
-      { label: "My Calendar", id: userId, checked: true, color: "#3495eb" },
-    ];
-  }
-
-  function updateCalendars(label) {
-    if (
-      calendars.filter((i) => i.checked).length === 1 &&
-      getCalendar(label).checked
-    ) {
-      return;
-    }
-    setCalendars(
-      calendars.map((i) =>
-        i.label === label ? { ...i, checked: !i.checked } : i
-      )
-    );
-  }
-
-  function getCalendar(label) {
-    for (let i = 0; i < calendars.length; i++) {
-      if (calendars[i].label === label) {
-        return calendars[i];
-      }
-    }
-    return {};
-  }
-
-  useEffect(async () => {
-    const colors = randomColor({ seed: 4744, luminosity: "dark", count: 5 });
-    let calendars = [
-      { label: "My Calendar", id: userId, checked: true, color: "#3495eb" },
-    ];
-
-    try {
-      const { data: contacts } = await axios.get(
-        `/contact/authorized/${userId}`
-      );
-      calendars = calendars.concat(
-        contacts.map((contact, i) => ({
-          label: contact.receiver.email,
-          id: contact.receiver.id,
-          checked: false,
-          color: colors[i],
-        }))
-      );
-    } catch (err) {
-      console.log(err);
-    }
-
-    setCalendars(calendars);
-    activeCalendars.current = calendars.filter((i) => i.checked);
-  }, []);
-
-  return { calendars, updateCalendars, activeCalendars };
 }

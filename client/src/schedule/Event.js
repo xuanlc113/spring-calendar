@@ -37,6 +37,7 @@ export default function Event(props) {
       trigger="click"
       content={<EventPopover {...props} />}
       zIndex={800}
+      openPopup={props.openPopup}
     >
       <Container {...props.style} onClick={(e) => e.stopPropagation()}>
         <Info>
