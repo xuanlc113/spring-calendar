@@ -27,12 +27,17 @@ const Flag = styled.div`
 `;
 
 export default function AllDayEvent(props) {
-  console.log(props.event);
   return (
     <Popover
       placement="bottomLeft"
       trigger="click"
-      content={<EventPopover {...props.event} />}
+      content={
+        <EventPopover
+          {...props.event}
+          openPopup={props.openPopup}
+          refresh={props.refresh}
+        />
+      }
       zIndex={800}
     >
       <Container
@@ -79,12 +84,12 @@ function hasEnd(event, dateRange) {
 }
 
 function getWidth(event, dateRange) {
-  let eventStart = event.datetime.startOf("day");
+  let eventStart = event.datetime;
   let eventEnd = getEndDate(event);
   let rangeStart = dateRange[0];
 
   const startDiff = eventStart.diff(rangeStart, "day");
-  const endDiff = eventEnd.diff(rangeStart, "day");
+  const endDiff = eventEnd.diff(rangeStart, "day") + 1;
   let colStart = startDiff >= 0 ? startDiff : 0;
   let duration = endDiff - colStart;
 

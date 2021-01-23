@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 const { Option } = Select;
 
 export function getDefaultRRules(date, option) {
+  console.log(date);
   switch (option) {
     case "daily":
       return "FREQ=DAILY;INTERVAL=1";

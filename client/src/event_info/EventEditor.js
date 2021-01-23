@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   Space,
@@ -92,7 +92,7 @@ export default function EventEditor(props) {
       infoDispatch({ type: "recurring", value: false });
       infoDispatch({ type: "rrule", value: "" });
     } else {
-      let rrule = getDefaultRRules(info.start, value);
+      let rrule = getDefaultRRules(info.datetimeStart, value);
       infoDispatch({ type: "recurring", value: true });
       infoDispatch({ type: "rrule", value: rrule });
     }
@@ -252,7 +252,6 @@ export function usePopup() {
     } catch (err) {
       console.log(err);
     }
-    console.log("up");
     setIsVisible(false);
   }
 

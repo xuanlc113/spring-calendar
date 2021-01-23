@@ -1,17 +1,19 @@
 import styled from "styled-components";
 import { Button, Space, Modal, Radio } from "antd";
-import dayjs from "dayjs";
 import {
   CalendarOutlined,
   AlignRightOutlined,
   UserOutlined,
   EditOutlined,
   DeleteOutlined,
+  CheckCircleTwoTone,
+  CloseCircleTwoTone,
+  MinusCircleTwoTone,
 } from "@ant-design/icons";
 import { getStartTime, getEndTime } from "./EventHelpers";
 import { useContext, useState } from "react";
 import { UserContext } from "../App";
-import Popup, { usePopup } from "./EventEditor";
+import axios from "axios";
 
 const PopoverHeader = styled.div`
   display: flex;
@@ -49,27 +51,58 @@ const AttendOptions = styled.div`
 `;
 
 export default function EventPopover(props) {
+  const userId = useContext(UserContext);
   const { isOwner, isCreator, isRecurring } = useEventEdit(props);
   const [deleteRecurringVisible, setDeleteRecurringVisible] = useState(false);
   const [option, setOption] = useState(1);
-  // const { isVisible, openPopup, closePopup, okPopup } = usePopup();
 
   function showDelete() {
     if (isRecurring()) {
       return deleteRecurringEvent();
     }
-    return deleteEvent();
+    return deleteSingleEvent();
   }
 
-  function deleteEvent() {
+  function deleteSingleEvent() {
     Modal.confirm({
       title: "Delete Event",
       maskClosable: true,
+      onOk: () => deleteEvent(),
     });
   }
 
   function deleteRecurringEvent() {
     setDeleteRecurringVisible(true);
+  }
+
+  async function deleteEvent() {
+    const [attendee] = props.attendees.filter((a) => a.user.id === userId);
+    const attendeeId = attendee.id;
+    const instanceId = props.id;
+    if (isCreator()) {
+      if (option === 1) {
+        await axios.delete(`/event/instance/${instanceId}`);
+      } else {
+        await axios.delete(`/event/instance/after/${instanceId}`);
+      }
+    } else {
+      if (option === 1) {
+        await axios.delete(`/event/attendee/${attendeeId}`);
+      } else {
+        await axios.delete(`/event/attendee/after/${attendeeId}`);
+      }
+    }
+    props.refresh();
+  }
+
+  async function updateAttendee(status) {
+    console.log("te");
+    const [attendee] = props.attendees.filter((a) => a.user.id === userId);
+    const attendeeId = attendee.id;
+    await axios.put(`/event/attendee/${attendeeId}`, status, {
+      headers: { "Content-Type": "application/json" },
+    });
+    props.refresh();
   }
 
   return (
@@ -126,17 +159,32 @@ export default function EventPopover(props) {
           </PopoverInfo>
           <Attendees>
             {props.attendees.map((a) => (
-              <p>
-                {a.user.email} {a.status}
-              </p>
+              <div>
+                <p>{a.user.email}</p>
+                {a.status === "ACCEPTED" && (
+                  <CheckCircleTwoTone twoToneColor="#06d6a0" />
+                )}
+                {a.status === "DECLINED" && (
+                  <CloseCircleTwoTone twoToneColor="#ef476f" />
+                )}
+                {a.status === "ACCEPTED" && (
+                  <MinusCircleTwoTone twoToneColor="#ffd166" />
+                )}
+              </div>
             ))}
           </Attendees>
           {isOwner() && !isCreator() && (
             <AttendOptions>
               <Space>
-                <Button type="default">Yes</Button>
-                <Button type="default">No</Button>
-                <Button type="default">Maybe</Button>
+                <Button type="default" onClick={() => updateAttendee(1)}>
+                  Yes
+                </Button>
+                <Button type="default" onClick={() => updateAttendee(2)}>
+                  No
+                </Button>
+                <Button type="default" onClick={() => updateAttendee(3)}>
+                  Maybe
+                </Button>
               </Space>
             </AttendOptions>
           )}
@@ -145,6 +193,7 @@ export default function EventPopover(props) {
       <Modal
         visible={deleteRecurringVisible}
         onCancel={() => setDeleteRecurringVisible(false)}
+        onOk={deleteEvent}
         title="Delete Recurring"
       >
         <Radio.Group value={option} onChange={(e) => setOption(e.target.value)}>
@@ -156,15 +205,6 @@ export default function EventPopover(props) {
           </Radio>
         </Radio.Group>
       </Modal>
-      {/* {isVisible && (
-        <Popup
-          okPopup={okPopup}
-          closePopup={closePopup}
-          title={"Edit Event"}
-          date={props.canon.datetimeStart}
-          event={props.canon}
-        />
-      )} */}
     </div>
   );
 }
@@ -172,7 +212,7 @@ export default function EventPopover(props) {
 function useEventEdit(event) {
   const userId = useContext(UserContext);
   function isOwner() {
-    return userId === event.canon.user.id;
+    return userId === event.owner;
   }
 
   function isCreator() {

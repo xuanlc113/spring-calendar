@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Grid from "./Grid";
 import Event from "./Event";
 import dayjs from "dayjs";
-import Popup, { usePopup } from "../event_info/EventEditor";
 import axios from "axios";
 
 const Container = styled.div`
@@ -18,12 +17,17 @@ const Board = styled.div`
 
 export default function Schedule(props) {
   const [events, setEvents] = useState([]);
+  const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     (async function () {
       setEvents(await getEvents(props.date, props.calendars));
     })();
-  }, [props.calendars]);
+  }, [props.calendars, update]);
+
+  function refresh() {
+    setUpdate(!update);
+  }
 
   function openCursorPopup(event) {
     const height = event.target.offsetTop / 10;
@@ -36,7 +40,7 @@ export default function Schedule(props) {
       <Container onClick={openCursorPopup}>
         <Board>
           {events.map((e) => (
-            <Event {...e} openPopup={props.openPopup} />
+            <Event {...e} openPopup={props.openPopup} refresh={refresh} />
           ))}
         </Board>
         <Grid date={props.date} />
@@ -58,7 +62,7 @@ async function getEvents(date, users) {
 async function getUserEvents(date, user) {
   try {
     const timezoneOffset = new Date().getTimezoneOffset();
-    const timestamp = date.subtract(timezoneOffset, "m").toJSON();
+    const timestamp = date.startOf("d").subtract(timezoneOffset, "m").toJSON();
     const { data } = await axios.get(
       `/event/${user.id}?start=${timestamp}&end=${timestamp}`
     );
@@ -71,72 +75,13 @@ async function getUserEvents(date, user) {
         "m"
       );
       item.canon.dateEnd = dayjs(item.canon.dateEnd).add(timezoneOffset, "m");
+      item.owner = user.id;
     }
-    console.log(data);
     return data;
   } catch (err) {
     console.log(err);
     return [];
   }
-  //get user events, add color, add user
-  // return [
-  //   {
-  //     id: "",
-  //     canonicalEventId: "",
-  //     datetime: dayjs("2021-1-1 10:30"),
-  //     attendees: [
-  //       { email: "attd2", status: 1 },
-  //       { email: "attd3", status: 1 },
-  //     ],
-  //     canonicalEvent: {
-  //       id: "",
-  //       userId: "001",
-  //       title: "run",
-  //       description: "go for a run",
-  //       attendees: [1000],
-  //       start: "2020-12-21 10:30",
-  //       end: "2021-1-09",
-  //       duration: 45,
-  //       isAllDay: false,
-  //       isRecurring: false,
-  //       rrule: "",
-  //       exceptions: [],
-  //     },
-  //     style: { color: user.color, left: 0, z: 5 },
-  //     userId: "001",
-  //   },
-  //   {
-  //     "id": 2,
-  //     "canon": {
-  //         "id": 1,
-  //         "user": {
-  //             "id": "0fe86006-3fcf-59a3-ae86-032578eadf23",
-  //             "email": "test2"
-  //         },
-  //         "title": "event3",
-  //         "description": "desc",
-  //         "attendees": [],
-  //         "datetimeStart": "2021-01-10T16:30:00Z",
-  //         "dateEnd": "2021-01-29T00:00:00Z",
-  //         "duration": 45,
-  //         "rrule": "FREQ=WEEKLY;BYDAY=SU,TU;INTERVAL=1",
-  //         "recurring": true,
-  //         "allDay": false
-  //     },
-  //     "datetime": "2021-01-10T00:00:00Z",
-  //     "attendees": [
-  //         {
-  //             "id": 3,
-  //             "user": {
-  //                 "id": "0fe86006-3fcf-59a3-ae86-032578eadf23",
-  //                 "email": "test2"
-  //             },
-  //             "status": "ACCEPTED",
-  //             "deleted": false
-  //         }
-  //     ]
-  // }
-  // ]
 }
 
 function positionEvents(events) {

@@ -25,7 +25,6 @@ export default function Home(props) {
     props.userId
   );
   const { isVisible, eventInfo, openPopup, closePopup, okPopup } = usePopup();
-  console.log("re");
   return (
     <Container>
       <Sidebar

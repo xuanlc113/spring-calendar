@@ -43,8 +43,7 @@ public class EventService {
     }
 
     public List<EventInstance> getAllDayEvents(UUID userId, Instant start, Instant end) {
-        List<EventAttendee> attendees = attendeeRepo
-                .findByUserIdAndInstanceDatetimeBetweenAndIsDeletedFalseAndInstanceCanonAllDayTrue(userId, start, end);
+        List<EventAttendee> attendees = attendeeRepo.getAllDayEvents(userId, start, end);
 
         List<EventInstance> instances = new ArrayList<>();
         for (EventAttendee a : attendees) {

@@ -34,7 +34,13 @@ export default function MonthAllDayEvent(props) {
         <Popover
           placement="bottomLeft"
           trigger="click"
-          content={<EventPopover {...props.event} />}
+          content={
+            <EventPopover
+              {...props.event}
+              openPopup={props.openPopup}
+              refresh={props.refresh}
+            />
+          }
           zIndex={800}
         >
           <Container
@@ -53,7 +59,7 @@ export default function MonthAllDayEvent(props) {
 
 function showTitle(event, date) {
   if (isStart(event, date)) {
-    return event.canonicalEvent.title;
+    return event.canon.title;
   }
   return "\u00A0";
 }
@@ -74,13 +80,13 @@ function isStart(event, date) {
 
 function isEnd(event, date) {
   const eventStart = event.datetime.startOf("day");
-  const eventEnd = eventStart.add(event.canonicalEvent.duration - 1, "day");
+  const eventEnd = eventStart.add(event.canon.duration, "day");
   return date.diff(eventEnd, "day") === 0;
 }
 
 function isEmpty(event, date) {
   const eventStart = event.datetime.startOf("day");
-  const eventEnd = eventStart.add(event.canonicalEvent.duration, "day");
+  const eventEnd = eventStart.add(event.canon.duration + 1, "day");
   const isEventBefore = eventStart.diff(date, "day") > 0;
   const isEventAfter = date.diff(eventEnd, "day") >= 0;
   return isEventBefore || isEventAfter;

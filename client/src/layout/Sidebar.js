@@ -60,7 +60,6 @@ const ContactHeader = styled.div`
 `;
 
 export default function Sidebar(props) {
-  const { isVisible, openPopup, closePopup, okPopup } = usePopup();
   const {
     isAddContactVisible,
     openAddContact,

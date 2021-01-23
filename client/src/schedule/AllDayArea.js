@@ -14,7 +14,11 @@ const Grid = styled.div`
 `;
 
 export default function AllDayArea(props) {
-  const { events } = useAllDay(props.type, props.calendars, props.dates);
+  const { events, refresh } = useAllDay(
+    props.type,
+    props.calendars,
+    props.dates
+  );
 
   function displayAllDayEvents() {
     if (props.type === "day") {
@@ -29,7 +33,13 @@ export default function AllDayArea(props) {
       position.push(
         <Col flex={1 / events.length}>
           {events[i].map((event) => (
-            <AllDayEvent type="day" event={event} dateRange={props.dates} />
+            <AllDayEvent
+              type="day"
+              event={event}
+              dateRange={props.dates}
+              openPopup={props.openPopup}
+              refresh={refresh}
+            />
           ))}
         </Col>
       );
@@ -40,7 +50,13 @@ export default function AllDayArea(props) {
   function WeekEvents() {
     events.sort((a, b) => a.datetime.diff(b.datetime));
     return events.map((event) => (
-      <AllDayEvent type="week" event={event} dateRange={props.dates} />
+      <AllDayEvent
+        type="week"
+        event={event}
+        dateRange={props.dates}
+        openPopup={props.openPopup}
+        refresh={refresh}
+      />
     ));
   }
 
@@ -55,14 +71,19 @@ export default function AllDayArea(props) {
 
 function useAllDay(period, calendars, dates) {
   const [events, setEvents] = useState([]);
+  const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     (async function () {
       setEvents(await getAllDayEvents(period, calendars, dates));
     })();
-  }, [calendars]);
+  }, [calendars, update]);
 
-  return { events };
+  function refresh() {
+    setUpdate(!update);
+  }
+
+  return { events, refresh };
 }
 
 async function getAllDayEvents(period, calendars, dates) {
@@ -84,11 +105,11 @@ async function getAllDayEvents(period, calendars, dates) {
 async function getCalendarAllDayEvents(calendar, dates) {
   try {
     const timezoneOffset = new Date().getTimezoneOffset();
-    const start = dates[0].subtract(timezoneOffset, "m").toDate().toJSON();
+    const start = dates[0].startOf("d").subtract(timezoneOffset, "m").toJSON();
     const end = dates
       .slice(-1)[0]
+      .startOf("d")
       .subtract(timezoneOffset, "m")
-      .toDate()
       .toJSON();
     const { data } = await axios.get(
       `/event/allday/${calendar.id}?start=${start}&end=${end}`
@@ -102,38 +123,11 @@ async function getCalendarAllDayEvents(calendar, dates) {
         "m"
       );
       item.canon.dateEnd = dayjs(item.canon.dateEnd).add(timezoneOffset, "m");
+      item.owner = calendar.id;
     }
-    console.log(data);
     return data;
   } catch (err) {
     console.log(err);
     return [];
   }
-  return [
-    {
-      id: "",
-      canonicalEventId: "",
-      datetime: dayjs("2021-01-05 10:30"),
-      attendees: [
-        { email: "attd2", status: 1 },
-        { email: "attd3", status: 1 },
-      ],
-      canonicalEvent: {
-        id: "",
-        userId: "001",
-        title: "Run",
-        description: "go for a run",
-        attendees: [1000],
-        start: "2020-12-21 10:30",
-        end: "2021-1-09",
-        duration: 2,
-        isAllDay: true,
-        isRecurring: false,
-        rrule: "",
-        exceptions: [],
-      },
-      style: { color: calendar.color },
-      userId: "001",
-    },
-  ];
 }

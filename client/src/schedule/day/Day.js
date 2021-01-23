@@ -80,6 +80,7 @@ export default function Day(props) {
             type="day"
             calendars={props.calendars}
             dates={[props.date]}
+            openPopup={props.openPopup}
           />
         </Space>
       </HeaderContainer>

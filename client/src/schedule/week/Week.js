@@ -68,6 +68,7 @@ export default function Week(props) {
             type="week"
             calendars={props.calendars}
             dates={props.dates}
+            openPopup={props.openPopup}
           />
         </Space>
       </HeaderContainer>

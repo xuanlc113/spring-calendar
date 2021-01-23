@@ -18,11 +18,17 @@ export default function MonthDayEvent(props) {
     <Popover
       placement="bottomLeft"
       trigger="click"
-      content={<EventPopover {...props.event} />}
+      content={
+        <EventPopover
+          {...props.event}
+          openPopup={props.openPopup}
+          refresh={props.refresh}
+        />
+      }
       zIndex={800}
     >
       <Container color={props.event.style.color}>
-        {props.event.canonicalEvent.title}
+        {props.event.canon.title}
       </Container>
     </Popover>
   );

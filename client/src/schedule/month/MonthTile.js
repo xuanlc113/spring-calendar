@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
 import MonthAllDayEvent from "./MonthAllDayEvent";
 import MonthDayEvent from "./MonthDayEvent";
+import axios from "axios";
 
 const Container = styled.div`
   height: 100%;
@@ -20,14 +22,17 @@ const Ellipsis = styled.div`
   height: 1em;
 `;
 
+dayjs.extend(isBetween);
+
 export default function MonthTile(props) {
   const { allDayEvents } = useAllDay(
     props.calendars,
     props.weekStart,
-    props.weekEnd
+    props.weekEnd,
+    props.update
   );
 
-  const { dayEvents } = useDayEvents(props.calendars, props.date);
+  const { dayEvents } = useDayEvents(props.calendars, props.date, props.update);
 
   function isSameMonth() {
     return props.date.month() === props.currentDate.month();
@@ -42,7 +47,12 @@ export default function MonthTile(props) {
     const events = [];
     for (let i = 0; i < allDayEvents.length && i < 2; i++) {
       events.push(
-        <MonthAllDayEvent event={allDayEvents[i]} date={props.date} />
+        <MonthAllDayEvent
+          event={allDayEvents[i]}
+          date={props.date}
+          openPopup={props.openPopup}
+          refresh={props.refresh}
+        />
       );
     }
     return events;
@@ -51,13 +61,37 @@ export default function MonthTile(props) {
   function getDayEvents(num = 2) {
     let events = [];
     for (let i = 0; i < dayEvents.length && i < num; i++) {
-      events.push(<MonthDayEvent event={dayEvents[i]} />);
+      events.push(
+        <MonthDayEvent
+          event={dayEvents[i]}
+          openPopup={props.openPopup}
+          refresh={props.refresh}
+        />
+      );
     }
     return events;
   }
 
+  function getTotalEvents() {
+    let total = 0;
+    for (let event of allDayEvents) {
+      if (
+        props.date.isBetween(
+          event.datetime,
+          event.datetime.add(event.canon.duration, "d"),
+          "d",
+          "[]"
+        )
+      ) {
+        total++;
+      }
+    }
+    total += dayEvents.length;
+    return total;
+  }
+
   function showEvents() {
-    const total = allDayEvents.length + dayEvents.length;
+    const total = getTotalEvents();
     if (total > 2) {
       if (allDayEvents.length >= 2) {
         return (
@@ -92,129 +126,97 @@ export default function MonthTile(props) {
   );
 }
 
-function useAllDay(calendars, start, end) {
-  const [allDayEvents, setAllDayEvents] = useState(
-    getAllDayEvents(calendars, start, end)
-  );
+function useAllDay(calendars, start, end, update) {
+  const [allDayEvents, setAllDayEvents] = useState([]);
 
   useEffect(() => {
-    setAllDayEvents(getAllDayEvents(calendars, start, end));
-  }, [calendars]);
+    (async function () {
+      setAllDayEvents(await getAllDayEvents(calendars, start, end));
+    })();
+  }, [calendars, update]);
 
   return { allDayEvents };
 }
 
-function getAllDayEvents(calendars, start, end) {
+async function getAllDayEvents(calendars, start, end) {
   let events = [];
   for (let i = 0; i < calendars.length; i++) {
-    events = events.concat(getCalendarAllDayEvents(calendars[i], start, end));
+    events = events.concat(
+      await getCalendarAllDayEvents(calendars[i], start, end)
+    );
   }
 
   return events;
 }
 
-function getCalendarAllDayEvents(calendar, start, end) {
-  // get events(id, dates[0], dates[-1]) get array of events, add color
-  return [
-    {
-      id: "",
-      canonicalEventId: "",
-      datetime: dayjs("2021-01-05 10:30"),
-      attendees: [
-        { email: "attd2", status: 1 },
-        { email: "attd3", status: 1 },
-      ],
-      canonicalEvent: {
-        id: "",
-        userId: "001",
-        title: "Run",
-        description: "go for a run",
-        attendees: [1000],
-        start: "2020-12-21 10:30",
-        end: "2021-1-09",
-        duration: 8,
-        isAllDay: true,
-        isRecurring: false,
-        rrule: "",
-        exceptions: [],
-      },
-      style: { color: calendar.color },
-      userId: "001",
-    },
-  ];
+async function getCalendarAllDayEvents(calendar, start, end) {
+  try {
+    const timezoneOffset = new Date().getTimezoneOffset();
+    start = start.startOf("d").subtract(timezoneOffset, "m").toJSON();
+    end = end.startOf("d").subtract(timezoneOffset, "m").toJSON();
+    const { data } = await axios.get(
+      `/event/allday/${calendar.id}?start=${start}&end=${end}`
+    );
+    const style = { color: calendar.color };
+    for (let item of data) {
+      item.style = style;
+      item.datetime = dayjs(item.datetime).add(timezoneOffset, "m");
+      item.canon.datetimeStart = dayjs(item.canon.datetimeStart).add(
+        timezoneOffset,
+        "m"
+      );
+      item.canon.dateEnd = dayjs(item.canon.dateEnd).add(timezoneOffset, "m");
+      item.owner = calendar.id;
+    }
+    return data;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 }
 
-function useDayEvents(calendars, date) {
-  const [dayEvents, setDayEvents] = useState(getDayEvents(calendars, date));
+function useDayEvents(calendars, date, update) {
+  const [dayEvents, setDayEvents] = useState([]);
 
   useEffect(() => {
-    setDayEvents(getDayEvents(calendars, date));
-  }, [calendars]);
+    (async function () {
+      setDayEvents(await getDayEvents(calendars, date));
+    })();
+  }, [calendars, update]);
 
   return { dayEvents };
 }
 
-function getDayEvents(calendars, date) {
+async function getDayEvents(calendars, date) {
   let events = [];
   for (let calendar of calendars) {
-    events = events.concat(getEvents(calendar, date));
+    events = events.concat(await getEvents(calendar, date));
   }
   events.sort((a, b) => a.datetime.diff(b.datetime));
   return events;
 }
 
-function getEvents(calendar, date) {
-  //
-  return [
-    {
-      id: "",
-      canonicalEventId: "",
-      datetime: dayjs("2021-01-05 10:30"),
-      attendees: [
-        { email: "attd2", status: 1 },
-        { email: "attd3", status: 1 },
-      ],
-      canonicalEvent: {
-        id: "",
-        userId: "001",
-        title: "Run",
-        description: "go for a run",
-        attendees: [1000],
-        start: "2020-12-21 10:30",
-        end: "2021-1-09",
-        duration: 8,
-        isAllDay: true,
-        isRecurring: false,
-        rrule: "",
-        exceptions: [],
-      },
-      style: { color: calendar.color },
-      userId: "001",
-    },
-    {
-      id: "",
-      canonicalEventId: "",
-      datetime: dayjs("2021-01-05 10:30"),
-      attendees: [
-        { email: "attd2", status: 1 },
-        { email: "attd3", status: 1 },
-      ],
-      canonicalEvent: {
-        id: "",
-        userId: "001",
-        title: "Run",
-        description: "go for a run",
-        attendees: [1000],
-        start: "2020-12-21 10:30",
-        end: "2021-1-09",
-        duration: 8,
-        isAllDay: true,
-        isRecurring: false,
-        rrule: "",
-        exceptions: [],
-      },
-      style: { color: calendar.color },
-      userId: "001",
-    },
-  ];
+async function getEvents(user, date) {
+  try {
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const timestamp = date.startOf("d").subtract(timezoneOffset, "m").toJSON();
+    const { data } = await axios.get(
+      `/event/${user.id}?start=${timestamp}&end=${timestamp}`
+    );
+    const style = { color: user.color, left: 0, z: 5 };
+    for (let item of data) {
+      item.style = style;
+      item.datetime = dayjs(item.datetime).add(timezoneOffset, "m");
+      item.canon.datetimeStart = dayjs(item.canon.datetimeStart).add(
+        timezoneOffset,
+        "m"
+      );
+      item.canon.dateEnd = dayjs(item.canon.dateEnd).add(timezoneOffset, "m");
+      item.owner = user.id;
+    }
+    return data;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 }

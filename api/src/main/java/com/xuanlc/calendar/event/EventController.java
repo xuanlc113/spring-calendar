@@ -62,7 +62,7 @@ public class EventController {
 
     @PutMapping("/event/attendee/{attendeeId}")
     public void updateAttendee(@PathVariable Long attendeeId, @RequestBody Integer status) {
-        eventService.updateAttendee(attendeeId, status);
+        eventService.updateAttendee(attendeeId, status - 1);
     }
 
     @DeleteMapping("/event/attendee/{attendeeId}")

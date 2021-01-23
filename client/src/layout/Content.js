@@ -25,6 +25,7 @@ export default function Content(props) {
           setDateOnly={props.setDateOnly}
           setPeriod={props.setPeriod}
           calendars={props.calendars}
+          openPopup={props.openPopup}
         />
       );
     } else if (props.period === "week") {

@@ -56,7 +56,7 @@ export function useEventEditor(datetime, event) {
   useEffect(() => {
     setRepeatLabel(getRepeatValue(info.rrule));
   }, [info.rrule]);
-  // console.log(duration);
+
   return {
     info,
     infoDispatch,

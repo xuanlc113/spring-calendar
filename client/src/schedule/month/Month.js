@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Row, Col } from "antd";
 import Header from "../Header";
 import MonthTile from "./MonthTile";
+import { useState } from "react";
 
 const Container = styled.div`
   display: flex;
@@ -35,6 +36,12 @@ const MonthGridRow = styled(Row)`
 `;
 
 export default function Month(props) {
+  const [update, setUpdate] = useState(false);
+
+  function refresh() {
+    setUpdate(!update);
+  }
+
   function getMonthTiles() {
     let rows = [];
     for (let i = 0; i < props.dates.length / 7; i++) {
@@ -56,6 +63,9 @@ export default function Month(props) {
             calendars={props.calendars}
             weekStart={props.dates[row * 7]}
             weekEnd={props.dates[row * 7 + 6]}
+            openPopup={props.openPopup}
+            update={update}
+            refresh={refresh}
           />
         </Col>
       );
