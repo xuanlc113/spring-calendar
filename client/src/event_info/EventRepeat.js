@@ -166,9 +166,10 @@ export function useCustomRepeatPopup(date, infoDispatch) {
 
   function okPopup(options) {
     const rrule = new RRule(options);
+    const rruleString = rrule.toString().split(":").slice(-1)[0];
     closePopup();
     infoDispatch({ type: "recurring", value: true });
-    infoDispatch({ type: "rrule", value: rrule.toString() });
+    infoDispatch({ type: "rrule", value: rruleString });
     let end = null;
     if (options.count) {
       end = rrule.all().pop();

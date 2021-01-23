@@ -21,12 +21,12 @@ export function useEventEditor(datetime, event) {
   }, [datetime, JSON.stringify(event)]);
 
   function toggleAllDay(e) {
-    if (info.isAllDay) {
-      infoDispatch({ type: "start", value: duration.datetimeStart });
-      infoDispatch({ type: "duration", value: duration.durationMin });
-    } else {
+    if (e.target.checked) {
       infoDispatch({ type: "start", value: duration.allDayStart });
       infoDispatch({ type: "duration", value: duration.durationDay });
+    } else {
+      infoDispatch({ type: "start", value: duration.datetimeStart });
+      infoDispatch({ type: "duration", value: duration.durationMin });
     }
     infoDispatch({ type: "allDay", value: e.target.checked });
   }

@@ -13,6 +13,7 @@ const Container = styled.div`
   & > p {
     margin: 0;
     color: ${(props) => (props.isSameMonth ? "black" : "#cbcbcb")};
+    cursor: pointer;
   }
 `;
 
