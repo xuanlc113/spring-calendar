@@ -37,7 +37,7 @@ export default function Grid(props) {
   function gridBlock() {
     let blocks = [];
     for (let i = 0; i < 24; i++) {
-      blocks.push(<span />);
+      blocks.push(<span key={i} />);
     }
     return blocks;
   }

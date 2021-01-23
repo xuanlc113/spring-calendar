@@ -46,7 +46,7 @@ export default function Home(props) {
           setDateOnly={setDateOnly}
           period={period}
           setPeriod={setPeriod}
-          calendars={activeCalendars.current}
+          calendars={activeCalendars}
           openPopup={openPopup}
         />
       </SubContainer>

@@ -34,7 +34,11 @@ export default function Header(props) {
     } else {
       headers = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     }
-    return headers.map((i) => <Col flex={1 / headers.length}>{i}</Col>);
+    return headers.map((i) => (
+      <Col flex={1 / headers.length} key={i}>
+        {i}
+      </Col>
+    ));
   }
 
   return (

@@ -23,7 +23,7 @@ export default function useCustomRepeat(rrule, date) {
   function toggleWeekday(weekday) {
     if (options.byweekday.includes(weekday)) {
       if (options.byweekday.length > 1) {
-        const weekdays = options.byweekday.filter((i) => i != weekday);
+        const weekdays = options.byweekday.filter((i) => i !== weekday);
         optionsDispatch({ type: "byweekday", value: weekdays });
       }
     } else {
@@ -145,6 +145,8 @@ function optionsReducer(state, action) {
       );
       return newState;
     }
+    default:
+      return state;
   }
 }
 
@@ -186,6 +188,8 @@ function getDefaultPeriodOptions(val, date) {
         freq: 3,
         interval: 1,
       };
+    default:
+      return {};
   }
 }
 
@@ -212,5 +216,7 @@ function getMonthRepeatOptions(type, date) {
         byweekday: [day],
         bysetpos: Math.ceil(date.date() / 7),
       };
+    default:
+      return {};
   }
 }

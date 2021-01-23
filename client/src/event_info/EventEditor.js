@@ -61,7 +61,6 @@ const { RangePicker: TimeRangePicker } = TimePicker;
 const { Option } = Select;
 
 export default function EventEditor(props) {
-  console.log(props);
   const {
     info,
     infoDispatch,
@@ -134,7 +133,7 @@ export default function EventEditor(props) {
           {attendees.length > 0 && (
             <AttendeeList>
               {attendees.map((a) => (
-                <AttendeeTag>
+                <AttendeeTag key={a.id}>
                   <p>{a.email}</p>
                   <Button
                     type="text"
@@ -225,7 +224,7 @@ export function usePopup() {
     if (eventInfo.title !== "") {
       setIsVisible(true);
     }
-  }, [open]);
+  }, [open, eventInfo.title]);
 
   function openPopup(title, infoDate, infoEvent) {
     setEventInfo({ title, date: infoDate, event: infoEvent });

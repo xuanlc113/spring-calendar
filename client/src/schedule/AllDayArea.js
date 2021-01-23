@@ -31,7 +31,7 @@ export default function AllDayArea(props) {
     const position = [];
     for (let i = 0; i < events.length; i++) {
       position.push(
-        <Col flex={1 / events.length}>
+        <Col flex={1 / events.length} key={i}>
           {events[i].map((event) => (
             <AllDayEvent
               type="day"
@@ -39,6 +39,7 @@ export default function AllDayArea(props) {
               dateRange={props.dates}
               openPopup={props.openPopup}
               refresh={refresh}
+              key={event.id}
             />
           ))}
         </Col>
@@ -56,6 +57,7 @@ export default function AllDayArea(props) {
         dateRange={props.dates}
         openPopup={props.openPopup}
         refresh={refresh}
+        key={event.id}
       />
     ));
   }
@@ -74,9 +76,13 @@ function useAllDay(period, calendars, dates) {
   const [update, setUpdate] = useState(false);
 
   useEffect(() => {
-    (async function () {
-      setEvents(await getAllDayEvents(period, calendars, dates));
-    })();
+    try {
+      (async function () {
+        setEvents(await getAllDayEvents(period, calendars, dates));
+      })();
+    } catch (err) {
+      console.error(err);
+    }
   }, [calendars, update]);
 
   function refresh() {

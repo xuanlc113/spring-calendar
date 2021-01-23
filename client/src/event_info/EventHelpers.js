@@ -22,6 +22,8 @@ export function getDefaultRRules(date, option) {
       return `FREQ=YEARLY;BYMONTH=${
         date.month() + 1
       };BYMONTHDAY=${date.date()};INTERVAL=1`;
+    default:
+      return "";
   }
 }
 

@@ -5,6 +5,7 @@ import { Button } from "antd";
 const Wrapper = styled.div`
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
@@ -14,6 +15,7 @@ export default function Login() {
 
   return (
     <Wrapper>
+      <h1>Calendar</h1>
       {isLoading ? (
         <Button type="primary" size={"large"} loading>
           Log In

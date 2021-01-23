@@ -1,17 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import randomColor from "randomcolor";
 import axios from "axios";
 
 export default function useCalendarSelector(userId) {
-  const activeCalendars = useRef(null);
-  const [calendars, setCalendars] = useState(getCalendars(userId));
-  activeCalendars.current = calendars.filter((i) => i.checked);
-
-  function getCalendars(userId) {
-    return [
-      { label: "My Calendar", id: userId, checked: true, color: "#3495eb" },
-    ];
-  }
+  const [calendars, setCalendars] = useState([]);
+  const [activeCalendars, setActiveCalendars] = useState([]);
 
   function updateCalendars(label) {
     if (
@@ -54,13 +47,16 @@ export default function useCalendarSelector(userId) {
             color: colors[i],
           }))
         );
+        setCalendars(calendars);
       } catch (err) {
         console.log(err);
       }
     })();
-    setCalendars(calendars);
-    activeCalendars.current = calendars.filter((i) => i.checked);
-  }, []);
+  }, [userId]);
+
+  useEffect(() => {
+    setActiveCalendars(calendars.filter((i) => i.checked));
+  }, [JSON.stringify(calendars)]);
 
   return { calendars, updateCalendars, activeCalendars };
 }

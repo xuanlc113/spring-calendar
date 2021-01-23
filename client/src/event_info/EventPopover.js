@@ -44,6 +44,16 @@ const Attendees = styled.div`
   overflow: auto;
 `;
 
+const AttendeeStatus = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  & > p {
+    margin-bottom: 0;
+  }
+`;
+
 const AttendOptions = styled.div`
   margin-top: 0.5em;
   display: flex;
@@ -96,7 +106,6 @@ export default function EventPopover(props) {
   }
 
   async function updateAttendee(status) {
-    console.log("te");
     const [attendee] = props.attendees.filter((a) => a.user.id === userId);
     const attendeeId = attendee.id;
     await axios.put(`/event/attendee/${attendeeId}`, status, {
@@ -111,25 +120,27 @@ export default function EventPopover(props) {
         <h3>{props.canon.title}</h3>
         <div>
           {isCreator() && isOwner() && (
-            <Button
-              type="text"
-              shape="circle"
-              icon={<EditOutlined />}
-              onClick={() =>
-                props.openPopup(
-                  "Edit Event",
-                  props.canon.datetimeStart,
-                  props.canon
-                )
-              }
-            />
+            <>
+              <Button
+                type="text"
+                shape="circle"
+                icon={<EditOutlined />}
+                onClick={() =>
+                  props.openPopup(
+                    "Edit Event",
+                    props.canon.datetimeStart,
+                    props.canon
+                  )
+                }
+              />
+              <Button
+                type="text"
+                shape="circle"
+                icon={<DeleteOutlined />}
+                onClick={() => showDelete()}
+              />
+            </>
           )}
-          <Button
-            type="text"
-            shape="circle"
-            icon={<DeleteOutlined />}
-            onClick={() => showDelete()}
-          />
         </div>
       </PopoverHeader>
       <PopoverInfo>
@@ -159,7 +170,7 @@ export default function EventPopover(props) {
           </PopoverInfo>
           <Attendees>
             {props.attendees.map((a) => (
-              <div>
+              <AttendeeStatus>
                 <p>{a.user.email}</p>
                 {a.status === "ACCEPTED" && (
                   <CheckCircleTwoTone twoToneColor="#06d6a0" />
@@ -167,10 +178,10 @@ export default function EventPopover(props) {
                 {a.status === "DECLINED" && (
                   <CloseCircleTwoTone twoToneColor="#ef476f" />
                 )}
-                {a.status === "ACCEPTED" && (
+                {a.status === "PENDING" && (
                   <MinusCircleTwoTone twoToneColor="#ffd166" />
                 )}
-              </div>
+              </AttendeeStatus>
             ))}
           </Attendees>
           {isOwner() && !isCreator() && (

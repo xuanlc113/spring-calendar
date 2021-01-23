@@ -20,10 +20,14 @@ export default function Schedule(props) {
   const [update, setUpdate] = useState(false);
 
   useEffect(() => {
-    (async function () {
-      setEvents(await getEvents(props.date, props.calendars));
-    })();
-  }, [props.calendars, update]);
+    try {
+      (async function () {
+        setEvents(await getEvents(props.date, props.calendars));
+      })();
+    } catch (err) {
+      console.error(err);
+    }
+  }, [update, props]);
 
   function refresh() {
     setUpdate(!update);
@@ -40,7 +44,12 @@ export default function Schedule(props) {
       <Container onClick={openCursorPopup}>
         <Board>
           {events.map((e) => (
-            <Event {...e} openPopup={props.openPopup} refresh={refresh} />
+            <Event
+              {...e}
+              openPopup={props.openPopup}
+              refresh={refresh}
+              key={e.id}
+            />
           ))}
         </Board>
         <Grid date={props.date} />
@@ -54,7 +63,9 @@ async function getEvents(date, users) {
   for (let user of users) {
     events = events.concat(await getUserEvents(date, user));
   }
-  events.sort((a, b) => a.datetime.diff(b.datetime));
+  events.sort((a, b) =>
+    getEventDatetimeStart(a).diff(getEventDatetimeStart(b))
+  );
   events = positionEvents(events);
   return events;
 }
@@ -87,19 +98,22 @@ async function getUserEvents(date, user) {
 function positionEvents(events) {
   for (let i = 0; i < events.length; i++) {
     let event = events[i];
-    let start = event.datetime.unix();
-    let end = getEndUnix(event);
-    let top = (getTimeInMinutes(event) / 15) * 10;
+    let start = getEventDatetimeStart(event);
+    let end = getEventDatetimeEnd(event);
+    let top = (getTimeInMinutes(start) / 15) * 10;
     let height = (event.canon.duration / 15) * 10;
     let prev = 0;
     let next = 0;
     let j = i - 1;
     let k = i + 1;
-    while (j >= 0 && getEndUnix(events[j]) > start) {
+    while (j >= 0 && getEventDatetimeEnd(events[j]).isAfter(start, "m")) {
       prev++;
       j--;
     }
-    while (k < events.length && events[k].datetime.unix() < end) {
+    while (
+      k < events.length &&
+      getEventDatetimeStart(events[k]).isBefore(end, "m")
+    ) {
       next++;
       k++;
     }
@@ -135,11 +149,18 @@ function positionEvents(events) {
   return events;
 }
 
-function getEndUnix(event) {
-  return event.canon.datetimeStart.unix() + event.canon.duration * 60;
+function getEventDatetimeStart(event) {
+  let canonStart = event.canon.datetimeStart;
+  let datetime = event.datetime;
+
+  return datetime.hour(canonStart.hour()).minute(canonStart.minute());
 }
 
-function getTimeInMinutes(event) {
-  const datetime = event.canon.datetimeStart;
-  return (datetime.unix() - datetime.startOf("day").unix()) / 60;
+function getEventDatetimeEnd(event) {
+  let start = getEventDatetimeStart(event);
+  return start.add(event.canon.duration, "m");
+}
+
+function getTimeInMinutes(start) {
+  return start.diff(start.startOf("d"), "m");
 }

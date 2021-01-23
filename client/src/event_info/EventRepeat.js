@@ -72,6 +72,7 @@ export default function EventRepeat(props) {
         <Space direction="horizontal" size="small">
           {[...Array(7).keys()].map((i) => (
             <WeekdayButton
+              key={i}
               selected={isWeekdaySelected(dayNumber[i])}
               onClick={() => toggleWeekday(dayNumber[i])}
             >

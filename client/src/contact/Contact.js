@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Checkbox } from "antd";
+import { Fragment } from "react";
 
 const Scroll = styled.div`
   overflow-y: auto;
@@ -28,20 +29,27 @@ const ColorCheckbox = styled(Checkbox)`
 `;
 
 export default function Contact(props) {
+  function truncateLabel(label) {
+    if (label.length > 15) {
+      return label.substring(0, 15) + "...";
+    }
+    return label;
+  }
+
   return (
     <Scroll>
       <Container>
         {props.calendars.map((i) => (
-          <>
+          <Fragment key={i.id}>
             <ColorCheckbox
               checked={i.checked}
               onChange={() => props.updateCalendars(i.label)}
               color={i.color}
             >
-              {i.label}
+              {truncateLabel(i.label)}
             </ColorCheckbox>
             <br />
-          </>
+          </Fragment>
         ))}
       </Container>
     </Scroll>

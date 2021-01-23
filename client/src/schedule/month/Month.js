@@ -45,7 +45,11 @@ export default function Month(props) {
   function getMonthTiles() {
     let rows = [];
     for (let i = 0; i < props.dates.length / 7; i++) {
-      rows.push(<MonthGridRow>{getWeekTiles(i)}</MonthGridRow>);
+      rows.push(
+        <MonthGridRow key={props.dates[i].toJSON()}>
+          {getWeekTiles(i)}
+        </MonthGridRow>
+      );
     }
     return rows;
   }
@@ -54,7 +58,7 @@ export default function Month(props) {
     let tiles = [];
     for (let i = 0; i < 7; i++) {
       tiles.push(
-        <Col flex={1 / 7}>
+        <Col flex={1 / 7} key={props.dates[row * 7 + i].toJSON()}>
           <MonthTile
             currentDate={props.currentDate}
             date={props.dates[row * 7 + i]}

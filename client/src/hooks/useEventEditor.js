@@ -101,7 +101,6 @@ function getEventInfo(datetime, event, userId) {
   const round = Math.ceil(datetime.minute() / 15);
   const template = getEventTemplate(userId);
   template.datetimeStart = datetime.minute(round * 15);
-  console.log(template);
   return template;
 }
 

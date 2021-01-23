@@ -152,7 +152,6 @@ function useRequests() {
   async function getRequests() {
     try {
       const { data: requests } = await axios.get(`/contact/requests/${userId}`);
-      console.log(requests[0]);
       setRequests(requests);
     } catch (err) {
       console.log(err);

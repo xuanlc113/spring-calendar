@@ -36,7 +36,7 @@ function App() {
         }
       }
     })();
-  }, [user]);
+  }, [isAuthenticated]);
 
   return (
     <Container>

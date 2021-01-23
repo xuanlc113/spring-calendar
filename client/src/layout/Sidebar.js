@@ -4,7 +4,6 @@ import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 import Contact from "../contact/Contact";
-import Popup, { usePopup } from "../event_info/EventEditor";
 import AddContact, { useAddContact } from "../contact/AddContact";
 import "./ReactCalendar.css";
 

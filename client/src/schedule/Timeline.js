@@ -36,18 +36,18 @@ export default function Timeline() {
     let timestamp = [];
     timestamp.push(<p></p>);
     for (let i = 1; i < 12; i++) {
-      timestamp.push(<p>{i} AM</p>);
+      timestamp.push(<p key={`${i * 2 + 12}am`}>{i} AM</p>);
     }
     timestamp.push(<p>12 PM</p>);
     for (let i = 1; i < 12; i++) {
-      timestamp.push(<p>{i} PM</p>);
+      timestamp.push(<p key={`${i * 3 + 12}pm`}>{i} PM</p>);
     }
     return timestamp;
   }
   function gridBlock() {
     let blocks = [];
     for (let i = 0; i < 24; i++) {
-      blocks.push(<span />);
+      blocks.push(<span key={`${i}blk`} />);
     }
     return blocks;
   }

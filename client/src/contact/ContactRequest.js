@@ -27,7 +27,7 @@ export default function ContactRequest(props) {
   return (
     <Container>
       {props.requests.map((request) => (
-        <Request>
+        <Request key={request.id}>
           <p>{request.sender.email}</p>
           <div>
             <Button

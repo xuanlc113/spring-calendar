@@ -53,6 +53,7 @@ export default function MonthTile(props) {
           date={props.date}
           openPopup={props.openPopup}
           refresh={props.refresh}
+          key={allDayEvents[i].id}
         />
       );
     }
@@ -67,6 +68,7 @@ export default function MonthTile(props) {
           event={dayEvents[i]}
           openPopup={props.openPopup}
           refresh={props.refresh}
+          key={dayEvents[i].id}
         />
       );
     }

@@ -77,7 +77,7 @@ export default function Week(props) {
           <Timeline />
           <Schedules justify="space-around">
             {props.dates.map((date) => (
-              <Col flex={1 / 7}>
+              <Col flex={1 / 7} key={date.toJSON()}>
                 <Schedule
                   date={date}
                   calendars={props.calendars}
