@@ -17,7 +17,8 @@ export default function AllDayArea(props) {
   const { events, refresh } = useAllDay(
     props.type,
     props.calendars,
-    props.dates
+    props.dates,
+    props.reload
   );
 
   function displayAllDayEvents() {
@@ -71,7 +72,7 @@ export default function AllDayArea(props) {
   );
 }
 
-function useAllDay(period, calendars, dates) {
+function useAllDay(period, calendars, dates, reload) {
   const [events, setEvents] = useState([]);
   const [update, setUpdate] = useState(false);
 
@@ -83,7 +84,7 @@ function useAllDay(period, calendars, dates) {
     } catch (err) {
       console.error(err);
     }
-  }, [calendars, update]);
+  }, [calendars.length, reload, update]);
 
   function refresh() {
     setUpdate(!update);

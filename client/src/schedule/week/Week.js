@@ -69,6 +69,7 @@ export default function Week(props) {
             calendars={props.calendars}
             dates={props.dates}
             openPopup={props.openPopup}
+            reload={props.reload}
           />
         </Space>
       </HeaderContainer>
@@ -82,6 +83,7 @@ export default function Week(props) {
                   date={date}
                   calendars={props.calendars}
                   openPopup={props.openPopup}
+                  reload={props.reload}
                 />
               </Col>
             ))}

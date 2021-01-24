@@ -27,7 +27,7 @@ export default function Schedule(props) {
     } catch (err) {
       console.error(err);
     }
-  }, [update, props]);
+  }, [update, props.calendars.length, props.reload]);
 
   function refresh() {
     setUpdate(!update);

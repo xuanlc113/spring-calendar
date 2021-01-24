@@ -30,10 +30,16 @@ export default function MonthTile(props) {
     props.calendars,
     props.weekStart,
     props.weekEnd,
-    props.update
+    props.update,
+    props.reload
   );
 
-  const { dayEvents } = useDayEvents(props.calendars, props.date, props.update);
+  const { dayEvents } = useDayEvents(
+    props.calendars,
+    props.date,
+    props.update,
+    props.reload
+  );
 
   function isSameMonth() {
     return props.date.month() === props.currentDate.month();
@@ -129,14 +135,14 @@ export default function MonthTile(props) {
   );
 }
 
-function useAllDay(calendars, start, end, update) {
+function useAllDay(calendars, start, end, update, reload) {
   const [allDayEvents, setAllDayEvents] = useState([]);
 
   useEffect(() => {
     (async function () {
       setAllDayEvents(await getAllDayEvents(calendars, start, end));
     })();
-  }, [calendars, update]);
+  }, [calendars, update, reload]);
 
   return { allDayEvents };
 }
@@ -178,14 +184,14 @@ async function getCalendarAllDayEvents(calendar, start, end) {
   }
 }
 
-function useDayEvents(calendars, date, update) {
+function useDayEvents(calendars, date, update, reload) {
   const [dayEvents, setDayEvents] = useState([]);
 
   useEffect(() => {
     (async function () {
       setDayEvents(await getDayEvents(calendars, date));
     })();
-  }, [calendars, update]);
+  }, [calendars, update, reload]);
 
   return { dayEvents };
 }

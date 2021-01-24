@@ -26,6 +26,7 @@ export default function Content(props) {
           setPeriod={props.setPeriod}
           calendars={props.calendars}
           openPopup={props.openPopup}
+          reload={props.reload}
         />
       );
     } else if (props.period === "week") {
@@ -35,6 +36,7 @@ export default function Content(props) {
           dates={dates}
           calendars={props.calendars}
           openPopup={props.openPopup}
+          reload={props.reload}
         />
       );
     } else {
@@ -43,6 +45,7 @@ export default function Content(props) {
           date={props.date}
           calendars={props.calendars}
           openPopup={props.openPopup}
+          reload={props.reload}
         />
       );
     }

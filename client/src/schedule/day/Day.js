@@ -60,6 +60,7 @@ export default function Day(props) {
           date={props.date}
           calendars={[i]}
           openPopup={props.openPopup}
+          reload={props.reload}
         />
       </Col>
     ));
@@ -81,6 +82,7 @@ export default function Day(props) {
             calendars={props.calendars}
             dates={[props.date]}
             openPopup={props.openPopup}
+            reload={props.reload}
           />
         </Space>
       </HeaderContainer>

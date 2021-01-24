@@ -48,6 +48,7 @@ export default function Home(props) {
           setPeriod={setPeriod}
           calendars={activeCalendars}
           openPopup={openPopup}
+          reload={isVisible}
         />
       </SubContainer>
       <EventEditor

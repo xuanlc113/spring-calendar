@@ -70,6 +70,7 @@ export default function Month(props) {
             openPopup={props.openPopup}
             update={update}
             refresh={refresh}
+            reload={props.reload}
           />
         </Col>
       );
