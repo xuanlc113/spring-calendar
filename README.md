@@ -6,7 +6,7 @@ A full stack calendar web app for event scheduling
 - custom recurrence events
 - view other user calendars
 
-![Image of Calendar](https://github.com/xuanlc113/spring-calendar/blob/master/preview.png)
+![Image of Calendar](https://github.com/xuanlc113/spring-calendar/blob/master/preview.PNG)
 
 ## Built with
 
@@ -19,16 +19,19 @@ A full stack calendar web app for event scheduling
 
 - Clone the repo
 - Create a local PostgresQL database
-- in `api/src/main/resources/application.properties`, update with created dataase info
+- in `api/src/main/resources/application.properties`, add created database info
 
 ```
-spring.datasource.url=jdbc:postgresql://localhost:5432/<database name>
+spring.datasource.url=jdbc:postgresql://localhost:<database port>/<database name>
 spring.datasource.username=<database username>
 spring.datasource.password=<database password>
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.properties.hibernate.jdbc.time_zone=UTC
 ```
 
 - Create an Auth0 single page web app
-- create `.env` file in `/client`, and paste in
+- Update `.env` file in `/client`
 
 ```
 REACT_APP_AUTH0_DOMAIN=<Auth0 Domain>
